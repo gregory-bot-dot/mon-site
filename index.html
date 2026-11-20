@@ -41,7 +41,12 @@ textarea{min-height:110px;resize:vertical}
 .pill{background:#f3f4f6;padding:6px 14px;border-radius:20px;font-size:13px;cursor:pointer}.pill.active{background:var(--text);color:#fff}
 .styles-list{display:flex;flex-direction:column;gap:8px;max-height:380px;overflow-y:auto}
 .style-actions{display:flex;gap:4px}.style-item .action-btn{border:1px solid var(--border)}
-.fplan{min-height:64px;margin-bottom:10px}.sform{display:flex;flex-direction:column;gap:8px;margin-top:12px}.sform textarea{min-height:80px}
+.home{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+.home-btn{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:26px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;font-family:var(--font);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.home-btn:active{background:var(--pl);border-color:var(--primary)}
+.home-ic{font-size:36px}.home-t{font-weight:700;font-size:15px}.home-d{font-size:12px;color:var(--muted);text-align:center}
+.back{background:var(--card);border:1px solid var(--border);padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;color:var(--text);font-family:var(--font)}
+.vrow{margin-bottom:14px}.fplan{min-height:64px;margin-bottom:10px}.sform{display:flex;flex-direction:column;gap:8px;margin-top:12px}.sform textarea{min-height:80px}
 .style-item{border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;display:flex;align-items:center;gap:12px}
 .style-item.active{border-color:var(--primary);background:var(--pl)}
 .style-icon{font-size:24px}.style-name{font-weight:600;font-size:14px}.style-desc{font-size:11px;color:var(--muted)}
@@ -84,20 +89,21 @@ textarea{min-height:110px;resize:vertical}
 <div class="header">
   <div class="header-title">STORYLAB & AVATAR LAB <span>// v9.3</span></div>
   <div class="badges">
+    <button class="back hidden" id="backBtn" onclick="goHome()">← Menu</button>
     <div class="badge" id="statusBadge"><div class="dot"></div><span>Inactif</span></div>
     <div class="badge" id="apiBadge" onclick="openApiModal()"><div class="dot"></div><span>Clé API</span></div>
   </div>
 </div>
 
 <div class="container">
-  <div class="tabs">
-    <button class="tab-btn active" data-tab="studio">🎬 STORYLAB</button>
-    <button class="tab-btn" data-tab="free">✨ LIBRE</button>
-    <button class="tab-btn" data-tab="avatar">👤 AVATAR</button>
-    <button class="tab-btn" data-tab="history">📂 HISTO</button>
+  <div class="home" id="home">
+    <button class="home-btn" data-tab="studio"><div class="home-ic">🎬</div><div class="home-t">StoryLab</div><div class="home-d">Une histoire en 4 ou 10 plans</div></button>
+    <button class="home-btn" data-tab="free"><div class="home-ic">✨</div><div class="home-t">Libre</div><div class="home-d">Décris, l’IA propose univers et plans</div></button>
+    <button class="home-btn" data-tab="avatar"><div class="home-ic">👤</div><div class="home-t">Avatar</div><div class="home-d">Portraits d’une personne</div></button>
+    <button class="home-btn" data-tab="history"><div class="home-ic">📂</div><div class="home-t">Historique</div><div class="home-d">Tes créations</div></button>
   </div>
 
-  <div id="tab-studio">
+  <div id="tab-studio" class="hidden">
     <div class="card">
       <div class="card-header"><div class="step-num">1</div><div><div class="step-title">Format</div><div class="step-sub">Type de vidéo</div></div></div>
       <div class="grid-options" id="formatGrid">
@@ -124,13 +130,7 @@ textarea{min-height:110px;resize:vertical}
     </div>
 
     <div class="card">
-      <div class="card-header"><div class="step-num">3</div><div><div class="step-title">Actualité</div><div class="step-sub">Google News</div></div></div>
-      <button class="btn sm" onclick="loadRealNews()" style="margin-bottom:12px">📰 Charger les actus</button>
-      <div id="newsList" style="display:flex;flex-direction:column;gap:8px;max-height:220px;overflow-y:auto"></div>
-    </div>
-
-    <div class="card">
-      <div class="card-header"><div class="step-num">4</div><div><div class="step-title">Ton idée / scénario</div><div class="step-sub">Sois précis</div></div></div>
+      <div class="card-header"><div class="step-num">3</div><div><div class="step-title">Ton idée / scénario</div><div class="step-sub">Sois précis</div></div></div>
       <div class="upload-row">
         <label class="upload-btn">📷 Importer une photo (visage), optionnel<input type="file" accept="image/*" data-target="idea"></label>
         <img id="ideaPhotoPreview" class="photo-preview" alt="">
@@ -176,11 +176,19 @@ textarea{min-height:110px;resize:vertical}
       </div>
       <div class="alert warn hidden" id="exportMsg"></div>
     </div>
+
+    <div class="card hidden" id="voiceCard">
+      <div class="card-header"><div class="step-title">Voix off</div></div>
+      <p class="cd" style="margin-bottom:12px">Modifie le texte, puis enregistre ta voix plan par plan. Elle est mixée dans la vidéo.</p>
+      <div id="voiceList"></div>
+      <div class="row"><button class="btn sm" onclick="exportVideo()">🎞️ Vidéo avec voix off</button></div>
+    </div>
   </div>
 
   <div id="tab-free" class="hidden">
     <div class="card">
       <div class="card-header"><div class="step-num">1</div><div><div class="step-title">Ton descriptif</div><div class="step-sub">Libre cours à ton imagination</div></div></div>
+      <div class="upload-row"><label class="upload-btn">📷 Photo de visage (optionnel)<input type="file" accept="image/*" data-target="free"></label><img id="freePhotoPreview" class="photo-preview" alt=""></div>
       <textarea id="freeIdea" placeholder="Décris ce que tu veux voir : une ambiance, une histoire, un personnage, un lieu… Plus tu es libre, plus les idées seront originales."></textarea>
       <div class="row"><select id="fCount"><option value="4">4 plans</option><option value="10" selected>10 plans</option></select></div>
       <div class="row"><button class="btn primary" id="fAnalyzeBtn" onclick="freeAnalyze()">🔍 Analyser et proposer des univers</button></div>
@@ -283,7 +291,7 @@ function refreshKeyUI(){
 /* ---------- Init ---------- */
 document.addEventListener('DOMContentLoaded',()=>{
   loadKeys();renderPills();renderStyles();refreshKeyUI();
-  document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab,b)));
+  document.querySelectorAll('.home-btn').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
   document.querySelectorAll('#formatGrid .option-btn').forEach(btn=>btn.addEventListener('click',()=>{
     document.querySelectorAll('#formatGrid .option-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');APP.format=btn.dataset.format;
@@ -330,11 +338,14 @@ function deleteStyle(s){
   if(APP.style===s.name)APP.style=STYLES[0].name;
   renderPills();renderStyles();
 }
-function switchTab(id,btn){
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
-  ['studio','free','avatar','history'].forEach(t=>$('tab-'+t).classList.toggle('hidden',t!==id));
+const SECTIONS=['studio','free','avatar','history'];
+function switchTab(id){
+  $('home').classList.add('hidden');$('backBtn').classList.remove('hidden');
+  SECTIONS.forEach(t=>$('tab-'+t).classList.toggle('hidden',t!==id));
   if(id==='history')loadHistoryUI();
+  window.scrollTo(0,0);
 }
+function goHome(){SECTIONS.forEach(t=>$('tab-'+t).classList.add('hidden'));$('home').classList.remove('hidden');$('backBtn').classList.add('hidden');window.scrollTo(0,0)}
 function handlePhotoUpload(input,target){
   const f=input.files&&input.files[0];if(!f)return;
   const rd=new FileReader();
@@ -344,7 +355,7 @@ function handlePhotoUpload(input,target){
       const k=Math.min(1,1024/Math.max(img.width,img.height)),c=document.createElement('canvas');
       c.width=img.width*k;c.height=img.height*k;c.getContext('2d').drawImage(img,0,0,c.width,c.height);
       const data=c.toDataURL('image/jpeg',.85);APP.photos[target]=data;
-      const p=$(target==='idea'?'ideaPhotoPreview':'avatarPhotoPreview');p.src=data;p.style.display='block';
+      const p=$(target+'PhotoPreview');p.src=data;p.style.display='block';
     };img.src=e.target.result;
   };
   rd.readAsDataURL(f);
@@ -373,8 +384,8 @@ async function agnesCall(path,payload,tries=4){
       let data={};try{data=await res.json()}catch(e){}
       if(res.ok)return data;
       last=new Error((data.error&&data.error.message)||('Erreur API '+res.status));
-      if(res.status!==429&&res.status<500)throw last;
-    }catch(e){last=e;if(e===last&&/^Erreur API 4|invalide|Annulé/.test(e.message)&&!/429/.test(e.message))throw e}
+      if(res.status!==429&&res.status<500){last.fatal=true;throw last}
+    }catch(e){last=e;if(e.fatal||e.message==='Annulé')throw e}
     await sleep(2000*Math.pow(2,a));
   }
   throw last;
@@ -389,12 +400,20 @@ async function analyzeImage(b64){
     {role:'user',content:[{type:'text',text:'Describe this face.'},{type:'image_url',image_url:{url:b64}}]}]});
   return d.choices[0].message.content.trim();
 }
-async function generateImage(prompt,ratio='9:16',seed){
+async function generateImage(prompt,ratio='9:16',seed,ref){
   const p={model:IMG_MODEL,prompt,size:'1K',ratio,extra_body:{response_format:'url'}};
   if(seed!=null)p.seed=seed;
+  if(ref&&!APP.noRef)p.image=ref;
   let d;
-  try{d=await agnesCall('/images/generations',p)}
-  catch(e){if(p.seed!=null&&/seed/i.test(e.message)){delete p.seed;d=await agnesCall('/images/generations',p)}else throw e}
+  for(let k=0;k<3&&!d;k++){
+    try{d=await agnesCall('/images/generations',p)}
+    catch(e){
+      if(p.seed!=null&&/seed/i.test(e.message)){delete p.seed;continue}
+      if(p.image&&e.fatal){delete p.image;APP.noRef=true;continue}
+      throw e;
+    }
+  }
+  if(!d)throw new Error('Échec de la génération.');
   const it=d.data[0];return it.url||('data:image/png;base64,'+it.b64_json);
 }
 async function toBlob(url){
@@ -433,7 +452,7 @@ function buildPrompt(scene){
 async function renderPlan(n){
   const p=APP.plans[n-1],prompt=buildPrompt(p.scene);
   $('termPrompt').textContent=prompt;
-  p.url=await generateImage(prompt,'9:16',APP.seed);
+  p.url=await generateImage(prompt,'9:16',APP.seed,APP.refPhoto);
   p.blob=await toBlob(p.url);
   updatePlanSlot(n);
 }
@@ -450,47 +469,24 @@ async function regeneratePlan(n){
   finally{APP.busy=false}
 }
 
-/* ---------- Actus (proxies de secours + saisie manuelle) ---------- */
-async function loadRealNews(){
-  const list=$('newsList');list.innerHTML='<div class="slot-msg">⏳ Chargement…</div>';
-  const rss='https://news.google.com/rss?hl=fr&gl=FR&ceid=FR:fr';
-  const proxies=[u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u),u=>'https://corsproxy.io/?'+encodeURIComponent(u)];
-  for(const px of proxies){
-    try{
-      const res=await fetch(px(rss));if(!res.ok)continue;
-      const xml=new DOMParser().parseFromString(await res.text(),'text/xml');
-      const items=Array.from(xml.querySelectorAll('item')).slice(0,6);if(!items.length)continue;
-      list.innerHTML='';
-      items.forEach(it=>{const t=it.querySelector('title').textContent,d=document.createElement('div');d.className='news-item';d.textContent=t;d.onclick=()=>selectNews(t);list.appendChild(d)});
-      return;
-    }catch(e){}
-  }
-  list.innerHTML='';
-  const m=document.createElement('div');m.className='slot-msg err';m.textContent="Actus indisponibles. Colle un titre à la main :";
-  const inp=document.createElement('input');inp.type='text';inp.placeholder='Titre de l’actu, puis Entrée';
-  inp.onkeydown=e=>{if(e.key==='Enter'&&inp.value.trim()){selectNews(inp.value.trim());inp.value=''}};
-  list.append(m,inp);
-}
-function selectNews(t){const a=$('ideaInput');a.value=(a.value?a.value+'\n\n':'')+'Actualité : '+t}
-
 /* ---------- Control room ---------- */
 function ctrl(step,status,desc){
   const i=$('ci'+step);i.className='ci '+status;i.textContent=status==='done'?'✓':status==='error'?'!':step;
   if(desc!==undefined)$('cd'+step).textContent=desc;
 }
 function parseScenario(txt,count){
-  let plans=[],character='';
+  let plans=[],character='',narr=[];
   const m=txt.match(/\{[\s\S]*\}/);
-  if(m){try{const j=JSON.parse(m[0]);character=String(j.character||'');plans=(j.plans||[]).map(String)}catch(e){}}
+  if(m){try{const j=JSON.parse(m[0]);character=String(j.character||'');plans=(j.plans||[]).map(String);narr=(j.narration||[]).map(String)}catch(e){}}
   if(!plans.length)plans=txt.split('\n').map(l=>l.trim()).filter(l=>/^\d+[.)]/.test(l)).map(l=>l.replace(/^\d+[.)]\s*/,''));
-  return{character,plans:plans.slice(0,count)};
+  return{character,narr,plans:plans.slice(0,count)};
 }
 
 /* ---------- Production ---------- */
 async function startProduction(preset){
   if(APP.busy)return;
   preset=(preset&&preset.plans)?preset:null;
-  const idea=preset?preset.idea:$('ideaInput').value.trim(),photo=preset?null:APP.photos.idea;
+  const idea=preset?preset.idea:$('ideaInput').value.trim(),photo=preset?(preset.photo||null):APP.photos.idea;
   if(!idea&&!photo){alert('Décris une idée ou importe une photo.');return}
   if(!APP.keys.length){openApiModal();return}
   APP.busy=true;APP.cancel=false;
@@ -500,12 +496,12 @@ async function startProduction(preset){
   for(let s=1;s<=3;s++)ctrl(s,'',''); 
   $('liveProgress').style.width='0%';$('livePercent').textContent='0%';
   $('plansGrid').innerHTML='';
-  APP.plans=[];APP.character='';APP.seed=Math.floor(Math.random()*1000);APP.stylePrompt=preset?preset.stylePrompt:null;APP.styleLabel=preset?preset.name:null;
+  APP.plans=[];APP.character='';APP.seed=Math.floor(Math.random()*1000);APP.stylePrompt=preset?preset.stylePrompt:null;APP.styleLabel=preset?preset.name:null;APP.refPhoto=photo;APP.noRef=false;
   for(let i=1;i<=count;i++){const d=document.createElement('div');d.className='slot plan-slot';d.id='slot-'+i;d.textContent=i;$('plansGrid').appendChild(d)}
   const images=[];
   try{
     if(preset){
-      APP.character=preset.character;preset.plans.forEach(scene=>APP.plans.push({scene,url:null,blob:null}));
+      APP.character=preset.character;preset.plans.forEach((scene,i)=>APP.plans.push({scene,narr:(preset.narr||[])[i]||'',voice:null,url:null,blob:null}));
       ctrl(1,'done','Fiche fournie');ctrl(2,'done',`${count} plans`);
     }else{
     setStatus('Fiche personnage…');
@@ -515,15 +511,16 @@ async function startProduction(preset){
 
     ctrl(2,'active');setStatus('Scénario…');$('termStatus').textContent='Écriture du scénario…';
     const sys=`Tu es un réalisateur. Crée un storyboard de ${count} plans pour le format "${APP.format}", style "${APP.style}". Idée : "${idea||'à partir du personnage de la photo'}".
-Réponds UNIQUEMENT avec un JSON valide, sans markdown : {"character":"fiche personnage fixe en anglais (visage, cheveux, âge, tenue)","plans":["plan 1","plan 2",...]}.
+Réponds UNIQUEMENT avec un JSON valide, sans markdown : {"character":"fiche personnage fixe en anglais (visage, cheveux, âge, tenue)","plans":["plan 1","plan 2",...],"narration":["une phrase courte de voix off en français par plan"]}.
 "plans" contient exactement ${count} descriptions en anglais : uniquement ACTIONS et CADRAGES (ex: "Wide shot, the man runs across the roof"), sans redécrire le physique.`;
     const raw=await generateText('Assistant de production. Tu réponds en JSON strict.',sys);
     const sc=parseScenario(raw,count);
     if(!photo)APP.character=sc.character;
     while(sc.plans.length<count)sc.plans.push(`Cinematic shot of ${idea||'the character'}`);
-    sc.plans.forEach(scene=>APP.plans.push({scene,url:null,blob:null}));
+    sc.plans.forEach((scene,i)=>APP.plans.push({scene,narr:(sc.narr||[])[i]||'',voice:null,url:null,blob:null}));
     ctrl(1,'done');ctrl(2,'done',`${count} plans`);
     }
+    renderVoice();$('voiceCard').classList.remove('hidden');
 
     ctrl(3,'active');
     for(let i=1;i<=count;i++){
@@ -537,6 +534,7 @@ Réponds UNIQUEMENT avec un JSON valide, sans markdown : {"character":"fiche per
     }
     $('livePercent').textContent='100%';$('liveProgress').style.width='100%';
     ctrl(3,'done','Terminé');$('termStatus').textContent='Terminé';setStatus('Terminé','green');
+    if(photo&&APP.noRef)exportNote('Agnes n’accepte pas la photo comme référence : le visage est décrit en texte seulement.');
     await saveToHistory({type:'STORYLAB',title:(idea||'Photo').substring(0,50),style:APP.styleLabel||APP.style,images});
   }catch(e){
     if(e.message==='Annulé'){setStatus('Annulé','red');$('termStatus').textContent='Annulé';
@@ -562,30 +560,68 @@ async function exportZip(){
   exportNote('');const z=new JSZip();done.forEach(x=>z.file(`plan_${x.n}.jpg`,x.p.blob));
   saveBlobAs(await z.generateAsync({type:'blob'}),'storylab_plans.zip');
 }
+let REC=null;
+function renderVoice(){
+  const box=$('voiceList');box.innerHTML='';
+  APP.plans.forEach((p,i)=>{
+    const w=document.createElement('div');w.className='vrow';
+    const l=document.createElement('div');l.className='cd';l.textContent='Plan '+(i+1)+(p.voice?' ✓ voix enregistrée':'');
+    const t=document.createElement('textarea');t.className='fplan';t.value=p.narr||'';t.oninput=()=>{p.narr=t.value};
+    const r=document.createElement('div');r.className='row';r.style.marginTop='0';
+    const rec=REC&&REC.i===i;
+    const b=document.createElement('button');b.className='btn sm'+(rec?' danger':'');b.textContent=rec?'⏹ Arrêter':'🎙️ Enregistrer';b.onclick=()=>toggleRec(i);
+    r.appendChild(b);
+    if(p.voice){
+      const pl=document.createElement('button');pl.className='btn sm';pl.textContent='▶ Écouter';pl.onclick=()=>{new Audio(URL.createObjectURL(p.voice)).play()};
+      const d=document.createElement('button');d.className='btn sm';d.textContent='🗑️';d.style.width='auto';d.onclick=()=>{p.voice=null;renderVoice()};
+      r.append(pl,d);
+    }
+    w.append(l,t,r);box.appendChild(w);
+  });
+}
+async function toggleRec(i){
+  if(REC&&REC.i===i){REC.mr.stop();return}
+  if(REC){alert('Un enregistrement est déjà en cours.');return}
+  try{
+    const st=await navigator.mediaDevices.getUserMedia({audio:true});
+    const mr=new MediaRecorder(st),ch=[];
+    mr.ondataavailable=e=>{if(e.data.size)ch.push(e.data)};
+    mr.onstop=()=>{st.getTracks().forEach(t=>t.stop());APP.plans[i].voice=new Blob(ch,{type:mr.mimeType||'audio/mp4'});REC=null;renderVoice()};
+    mr.start();REC={i,mr};renderVoice();
+  }catch(e){alert('Micro indisponible : autorise le micro pour ce site dans les réglages du navigateur.')}
+}
 async function exportVideo(){
+  if(!window.MediaRecorder){exportNote('Ce navigateur ne gère pas l’export vidéo.');return}
+  const hasVoice=APP.plans.some(p=>p.voice);
+  let ac=null,dest=null;
+  if(hasVoice){try{ac=new (window.AudioContext||window.webkitAudioContext)();await ac.resume();dest=ac.createMediaStreamDestination()}catch(e){ac=null}}
   await ensureBlobs();
   const done=APP.plans.filter(p=>p.blob);
   if(!done.length){exportNote('Aucune image exploitable pour la vidéo (copie bloquée par le serveur d’images).');return}
-  if(!window.MediaRecorder){exportNote('Ce navigateur ne gère pas l’export vidéo.');return}
   exportNote('Montage en cours, garde cet onglet ouvert…');
   const W=720,H=1280,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+  const stream=c.captureStream(30);
+  if(ac)dest.stream.getAudioTracks().forEach(t=>stream.addTrack(t));
   const mime=['video/mp4','video/webm;codecs=vp9','video/webm'].find(m=>MediaRecorder.isTypeSupported(m))||'';
-  const rec=new MediaRecorder(c.captureStream(30),mime?{mimeType:mime}:undefined),chunks=[];
+  const rec=new MediaRecorder(stream,mime?{mimeType:mime}:undefined),chunks=[];
   rec.ondataavailable=e=>e.data.size&&chunks.push(e.data);
   const fin=new Promise(r=>rec.onstop=r);rec.start();
   for(const p of done){
     const img=new Image();img.src=URL.createObjectURL(p.blob);await img.decode();
+    let dur=3000;
+    if(ac&&p.voice){try{const buf=await ac.decodeAudioData(await p.voice.arrayBuffer());const src=ac.createBufferSource();src.buffer=buf;src.connect(dest);src.start();dur=Math.max(3000,buf.duration*1000+500)}catch(e){}}
     const t0=performance.now();
     await new Promise(res=>{(function f(){
-      const k=Math.min((performance.now()-t0)/3000,1),z=1+.1*k,s=Math.max(W/img.width,H/img.height)*z,w=img.width*s,h=img.height*s;
+      const k=Math.min((performance.now()-t0)/dur,1),z=1+.1*k,s=Math.max(W/img.width,H/img.height)*z,w=img.width*s,h=img.height*s;
       x.fillStyle='#000';x.fillRect(0,0,W,H);x.drawImage(img,(W-w)/2,(H-h)/2,w,h);
       k<1?requestAnimationFrame(f):res();
     })()});
     URL.revokeObjectURL(img.src);
   }
-  rec.stop();await fin;
+  rec.stop();await fin;if(ac)ac.close();
   const ext=(mime||'video/webm').includes('mp4')?'mp4':'webm';
-  saveBlobAs(new Blob(chunks,{type:mime||'video/webm'}),'storylab.'+ext);exportNote('Vidéo prête (sans voix off).');
+  saveBlobAs(new Blob(chunks,{type:mime||'video/webm'}),'storylab.'+ext);
+  exportNote(hasVoice?'Vidéo prête, avec voix off.':'Vidéo prête (sans voix off).');
 }
 
 /* ---------- Mode libre : descriptif, univers, plans, images ---------- */
@@ -632,10 +668,13 @@ async function freePlans(){
   const btn=$('fPlansBtn');btn.disabled=true;btn.textContent='⏳ Écriture…';setStatus('Écriture des plans…');
   try{
     const sys=`Tu es un réalisateur. Crée un storyboard de ${count} plans pour l'univers "${u.name}" (${u.prompt}). Description de l'utilisateur : "${FREE.idea}". Laisse libre cours à ton imagination : une vraie progression, avec une ouverture, de la tension et une chute marquante.
-Réponds UNIQUEMENT avec un JSON valide, sans markdown : {"character":"fiche du personnage principal en anglais (visage, cheveux, âge, tenue), ou chaîne vide s'il n'y en a pas","plans":["plan 1","plan 2",...]}.
+Réponds UNIQUEMENT avec un JSON valide, sans markdown : {"character":"fiche du personnage principal en anglais (visage, cheveux, âge, tenue), ou chaîne vide s'il n'y en a pas","plans":["plan 1","plan 2",...],"narration":["une phrase courte de voix off en français par plan"]}.
 "plans" contient exactement ${count} descriptions en anglais : uniquement ACTIONS et CADRAGES, sans redécrire le physique du personnage.`;
     const sc=parseScenario(await generateText('Assistant de production. Tu réponds en JSON strict.',sys),count);
-    $('fChar').value=sc.character||'';
+    FREE.narr=sc.narr||[];
+    let ch=sc.character||'';
+    if(APP.photos.free){try{ch=await analyzeImage(APP.photos.free)}catch(e){}}
+    $('fChar').value=ch;
     while(sc.plans.length<count)sc.plans.push(`Cinematic shot, ${FREE.idea}`);
     const list=$('fPlansList');list.innerHTML='';
     sc.plans.forEach((p,i)=>{
@@ -651,8 +690,8 @@ function freeGenerate(){
   if(APP.busy){alert('Une production est déjà en cours.');return}
   const plans=[...document.querySelectorAll('.fplan')].map(t=>t.value.trim()).filter(Boolean);
   if(!plans.length||!FREE.sel)return;
-  document.querySelector('.tab-btn[data-tab=studio]').click();
-  startProduction({idea:FREE.idea,character:$('fChar').value.trim(),plans,stylePrompt:FREE.sel.prompt,name:FREE.sel.name});
+  switchTab('studio');
+  startProduction({idea:FREE.idea,photo:APP.photos.free,narr:FREE.narr||[],character:$('fChar').value.trim(),plans,stylePrompt:FREE.sel.prompt,name:FREE.sel.name});
   setTimeout(()=>$('controlRoom').scrollIntoView({behavior:'smooth'}),300);
 }
 
@@ -671,7 +710,7 @@ async function generateAvatar(){
     else full=`${style}. Subject: ${txt}. Highly detailed, masterpiece.`;
     btn.textContent='⏳ Génération…';
     const s=Math.floor(Math.random()*998);
-    const urls=await Promise.all([generateImage(full,ratio,s),generateImage(full,ratio,s+1)]);
+    const urls=await Promise.all([generateImage(full,ratio,s,photo),generateImage(full,ratio,s+1,photo)]);
     const blobs=await Promise.all(urls.map(toBlob));
     urls.forEach((u,i)=>{
       const slot=$('av-slot-'+(i+1));slot.innerHTML='';
