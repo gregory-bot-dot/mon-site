@@ -322,7 +322,9 @@ async function analyzeImage(b64){
 async function generateImage(prompt,ratio='9:16',seed){
   const p={model:IMG_MODEL,prompt,size:'1K',ratio,extra_body:{response_format:'url'}};
   if(seed!=null)p.seed=seed;
-  const d=await agnesCall('/images/generations',p);
+  let d;
+  try{d=await agnesCall('/images/generations',p)}
+  catch(e){if(p.seed!=null&&/seed/i.test(e.message)){delete p.seed;d=await agnesCall('/images/generations',p)}else throw e}
   const it=d.data[0];return it.url||('data:image/png;base64,'+it.b64_json);
 }
 async function toBlob(url){try{const r=await fetch(url);if(!r.ok)return null;return await r.blob()}catch(e){return null}}
@@ -420,7 +422,7 @@ async function startProduction(){
   for(let s=1;s<=3;s++)ctrl(s,'',''); 
   $('liveProgress').style.width='0%';$('livePercent').textContent='0%';
   $('plansGrid').innerHTML='';
-  APP.plans=[];APP.character='';APP.seed=Math.floor(Math.random()*2147483647);
+  APP.plans=[];APP.character='';APP.seed=Math.floor(Math.random()*1000);
   for(let i=1;i<=count;i++){const d=document.createElement('div');d.className='slot plan-slot';d.id='slot-'+i;d.textContent=i;$('plansGrid').appendChild(d)}
   const images=[];
   try{
@@ -510,7 +512,7 @@ async function generateAvatar(){
     if(photo){btn.textContent='⏳ Analyse du visage…';const d=await analyzeImage(photo);full=`${style}. Exact character description: [${d}]. Additional details: ${txt}. Highly detailed, masterpiece.`}
     else full=`${style}. Subject: ${txt}. Highly detailed, masterpiece.`;
     btn.textContent='⏳ Génération…';
-    const s=Math.floor(Math.random()*2147483000);
+    const s=Math.floor(Math.random()*998);
     const urls=await Promise.all([generateImage(full,ratio,s),generateImage(full,ratio,s+1)]);
     const blobs=await Promise.all(urls.map(toBlob));
     urls.forEach((u,i)=>{
