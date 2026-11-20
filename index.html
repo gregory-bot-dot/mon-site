@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>STORYLAB // Agnes AI Studio</title>
+<title>STORYLAB & AVATAR LAB // Agnes AI Studio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -33,6 +33,8 @@
     padding-bottom: 40px;
   }
 
+  .hidden { display: none !important; }
+
   /* Header */
   .header {
     background: var(--bg);
@@ -48,265 +50,121 @@
     justify-content: space-between;
     margin-bottom: 12px;
   }
-  .header-title {
-    font-size: 16px;
-    font-weight: 700;
-  }
-  .header-title span {
-    color: var(--text-muted);
-    font-weight: 400;
-    font-size: 14px;
-  }
-  .status-badges {
-    display: flex;
-    gap: 8px;
-  }
+  .header-title { font-size: 16px; font-weight: 700; }
+  .header-title span { color: var(--text-muted); font-weight: 400; font-size: 14px; }
+  .status-badges { display: flex; gap: 8px; }
   .badge {
-    background: var(--card);
-    border: 1px solid var(--border);
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    cursor: pointer;
+    background: var(--card); border: 1px solid var(--border);
+    padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 500;
+    display: flex; align-items: center; gap: 6px; cursor: pointer;
   }
-  .badge-dot {
-    width: 8px; height: 8px; border-radius: 50%; background: var(--primary);
-  }
+  .badge-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); }
   .badge-dot.green { background: var(--success); }
 
-  /* Container */
-  .container {
-    padding: 16px 20px;
-    max-width: 600px;
-    margin: 0 auto;
+  /* Tabs Navigation */
+  .tabs-container {
+    display: flex; background: #e5e7eb; border-radius: 12px; padding: 4px; margin-bottom: 20px;
+  }
+  .tab-btn {
+    flex: 1; text-align: center; padding: 10px; border-radius: 8px; font-size: 14px; font-weight: 600;
+    color: var(--text-muted); cursor: pointer; border: none; background: transparent; transition: 0.2s;
+  }
+  .tab-btn.active {
+    background: var(--card); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.1);
   }
 
-  /* Cards */
+  /* Container & Cards */
+  .container { padding: 16px 20px; max-width: 600px; margin: 0 auto; }
   .card {
-    background: var(--card);
-    border-radius: var(--radius);
-    padding: 20px;
-    margin-bottom: 16px;
+    background: var(--card); border-radius: var(--radius); padding: 20px; margin-bottom: 16px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);
   }
-  .card-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    margin-bottom: 16px;
-  }
+  .card-header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
   .step-num {
-    background: var(--text);
-    color: white;
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 14px;
-    flex-shrink: 0;
+    background: var(--text); color: white; width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; flex-shrink: 0;
   }
   .step-num.green { background: var(--success); }
-  .step-title {
-    font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+  .step-title { font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+  .step-subtitle { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* Form Elements */
+  select.select-btn, .idea-textarea, .input-text {
+    width: 100%; border: 1px solid var(--border); border-radius: 12px; padding: 12px;
+    font-family: var(--font); font-size: 14px; background: var(--card); outline: none; cursor: pointer;
+    appearance: none; -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14'><path d='M2 5l5 5 5-5' fill='none' stroke='%236b7280' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-repeat: no-repeat; background-position: right 12px center;
   }
-  .step-subtitle {
-    font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;
-  }
+  select.select-btn:focus, .idea-textarea:focus, .input-text:focus { border-color: var(--primary); }
+  .idea-textarea { min-height: 100px; resize: none; cursor: text; }
+  .input-text { cursor: text; background-image: none; margin-bottom: 12px; }
+  .dropdowns { display: flex; gap: 12px; margin-bottom: 16px; }
 
   /* Grid Options (Formats) */
-  .grid-options {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
+  .grid-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .option-btn {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px;
-    text-align: center;
-    cursor: pointer;
-    transition: 0.2s;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px;
+    text-align: center; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 6px;
   }
-  .option-btn.active {
-    border-color: var(--primary);
-    background: var(--primary-light);
-  }
+  .option-btn.active { border-color: var(--primary); background: var(--primary-light); }
   .option-icon { font-size: 24px; }
   .option-title { font-weight: 600; font-size: 14px; }
   .option-desc { font-size: 12px; color: var(--text-muted); }
 
-  /* Pills (Genres) */
-  .pills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 16px;
-  }
+  /* Pills */
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
   .pill {
-    background: #f3f4f6;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 13px;
-    cursor: pointer;
-    border: 1px solid transparent;
+    background: #f3f4f6; padding: 6px 14px; border-radius: 20px; font-size: 13px; cursor: pointer; border: 1px solid transparent;
   }
-  .pill.active {
-    background: var(--text);
-    color: white;
-  }
+  .pill.active { background: var(--text); color: white; }
 
   /* Styles List */
-  .styles-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
+  .styles-list { display: flex; flex-direction: column; gap: 8px; }
   .style-item {
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 12px;
-    cursor: pointer;
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    text-align: left;
+    border: 1px solid var(--border); border-radius: 12px; padding: 12px; cursor: pointer;
+    display: flex; align-items: center; gap: 12px; text-align: left;
   }
-  .style-item.active {
-    border-color: var(--primary);
-    background: var(--primary-light);
-  }
+  .style-item.active { border-color: var(--primary); background: var(--primary-light); }
   .style-icon { font-size: 24px; }
   .style-info { flex: 1; }
   .style-name { font-weight: 600; font-size: 14px; }
   .style-desc { font-size: 11px; color: var(--text-muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .style-plus { background: #e5e7eb; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
 
-  /* Idea Input */
-  .idea-textarea {
-    width: 100%;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 12px;
-    font-family: var(--font);
-    font-size: 14px;
-    resize: none;
-    min-height: 100px;
-    outline: none;
-    margin-bottom: 12px;
-  }
-  .idea-textarea:focus { border-color: var(--primary); }
-  
-  .dropdowns {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 16px;
-  }
-  .select-btn {
-    flex: 1;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 12px;
-    font-size: 14px;
-    background: var(--card);
-    cursor: pointer;
-    text-align: left;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
+  /* Buttons */
   .btn-primary {
-    width: 100%;
-    background: #1a73e8;
-    color: white;
-    border: none;
-    border-radius: 12px;
-    padding: 16px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+    width: 100%; background: #1a73e8; color: white; border: none; border-radius: 12px; padding: 16px;
+    font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
   }
   .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
-
-  /* Alert Info */
-  .alert-success {
-    background: #ecfdf5;
-    color: #065f46;
-    padding: 12px;
-    border-radius: 8px;
-    font-size: 13px;
-    margin-top: 12px;
-    text-align: center;
+  .btn-secondary {
+    width: 100%; background: #f3f4f6; color: var(--text); border: none; border-radius: 12px; padding: 16px;
+    font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
   }
 
-  /* Live Preview */
-  .live-preview {
-    background: black;
-    border-radius: var(--radius);
-    overflow: hidden;
-    margin-bottom: 16px;
-    position: relative;
-  }
-  .live-preview img {
-    width: 100%;
-    height: auto;
-    display: block;
-  }
+  .alert-success { background: #ecfdf5; color: #065f46; padding: 12px; border-radius: 8px; font-size: 13px; margin-top: 12px; text-align: center; }
+
+  /* Live Preview & Progress */
+  .live-preview { background: black; border-radius: var(--radius); overflow: hidden; margin-bottom: 16px; position: relative; }
+  .live-preview img { width: 100%; height: auto; display: block; max-height: 400px; object-fit: contain; }
   .live-overlay {
-    position: absolute;
-    top: 12px; left: 12px;
-    background: rgba(0,0,0,0.6);
-    color: white;
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 600;
-    display: flex; align-items: center; gap: 6px;
+    position: absolute; top: 12px; left: 12px; background: rgba(0,0,0,0.6); color: white;
+    padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px;
   }
   .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); }
-  
-  .progress-container {
-    padding: 16px;
-    background: var(--card);
-  }
-  .progress-labels {
-    display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px;
-  }
-  .progress-bar {
-    width: 100%; height: 6px; background: #e5e7eb; border-radius: 3px; overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%; background: var(--primary); width: 0%; transition: width 0.3s;
-  }
+  .progress-container { padding: 16px; background: var(--card); }
+  .progress-labels { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; }
+  .progress-bar { width: 100%; height: 6px; background: #e5e7eb; border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.3s; }
 
   /* Control Room */
-  .control-list {
-    display: flex;
-    flex-direction: column;
-  }
-  .control-item {
-    display: flex;
-    gap: 16px;
-    padding: 16px 0;
-    border-bottom: 1px solid var(--border);
-  }
+  .control-list { display: flex; flex-direction: column; }
+  .control-item { display: flex; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--border); }
   .control-item:last-child { border-bottom: none; }
   .control-icon {
-    width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: white;
-    flex-shrink: 0;
+    width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: white; flex-shrink: 0;
   }
   .control-icon.done { background: var(--success); }
   .control-icon.active { background: var(--primary); }
@@ -316,67 +174,45 @@
   .control-desc { font-size: 12px; color: var(--text-muted); }
   .control-progress { font-size: 12px; font-weight: 600; color: var(--primary); margin-top: 4px; }
 
-  /* AI Activity Terminal */
-  .terminal {
-    background: var(--dark-bg);
-    border-radius: 12px;
-    padding: 16px;
-    font-family: var(--mono);
-    font-size: 12px;
-    color: #9ca3af;
-    line-height: 1.6;
-  }
+  /* Terminal */
+  .terminal { background: var(--dark-bg); border-radius: 12px; padding: 16px; font-family: var(--mono); font-size: 12px; color: #9ca3af; line-height: 1.6; }
   .term-row { display: flex; justify-content: space-between; }
   .term-val { color: white; }
   .term-val.blue { color: #60a5fa; }
   .term-val.green { color: #34d399; }
-  .term-prompt { 
-    margin-top: 12px; padding-top: 12px; border-top: 1px solid #374151; 
-    white-space: pre-wrap; word-break: break-word; color: #d1d5db;
-  }
+  .term-prompt { margin-top: 12px; padding-top: 12px; border-top: 1px solid #374151; white-space: pre-wrap; word-break: break-word; color: #d1d5db; }
 
-  /* Plans Grid */
-  .plans-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-  }
+  /* Grids (Plans & Avatars) */
+  .plans-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .avatar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+  
   .plan-slot {
-    background: #e5e7eb;
-    border-radius: 12px;
-    aspect-ratio: 9/16;
-    position: relative;
-    overflow: hidden;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 24px; font-weight: 700; color: #9ca3af;
+    background: #e5e7eb; border-radius: 12px; aspect-ratio: 9/16; position: relative; overflow: hidden;
+    display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; color: #9ca3af;
   }
-  .plan-slot img {
-    width: 100%; height: 100%; object-fit: cover; display: block;
+  .avatar-slot {
+    background: #e5e7eb; border-radius: 12px; aspect-ratio: 3/4; position: relative; overflow: hidden;
+    display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; color: #9ca3af;
   }
+  .plan-slot img, .avatar-slot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  
   .plan-label {
-    position: absolute; bottom: 0; left: 0; right: 0;
-    background: rgba(255,255,255,0.9);
-    padding: 6px; font-size: 11px; font-weight: 600; color: var(--text);
-    display: flex; flex-direction: column;
+    position: absolute; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.9);
+    padding: 6px; font-size: 11px; font-weight: 600; color: var(--text); display: flex; flex-direction: column;
   }
   .plan-status { color: var(--success); font-size: 10px; }
 
-  /* API Modal */
-  .modal-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000;
-    display: none; align-items: center; justify-content: center; padding: 20px;
-  }
+  /* Modal */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; }
   .modal-overlay.open { display: flex; }
-  .modal {
-    background: var(--card); border-radius: 16px; width: 100%; max-width: 400px; padding: 20px;
-  }
+  .modal { background: var(--card); border-radius: 16px; width: 100%; max-width: 400px; padding: 20px; }
 </style>
 </head>
 <body>
 
 <div class="header">
   <div class="header-top">
-    <div class="header-title">STORYLAB <span>// Agnes AI Studio — v8.2</span></div>
+    <div class="header-title">AGNES STUDIO <span>// v8.3</span></div>
   </div>
   <div class="status-badges">
     <div class="badge" id="statusBadge"><div class="badge-dot"></div> Requête...</div>
@@ -385,232 +221,175 @@
 </div>
 
 <div class="container">
-  <!-- CARD 1 : FORMAT -->
-  <div class="card">
-    <div class="card-header">
-      <div class="step-num">1</div>
-      <div>
-        <div class="step-title">FORMAT</div>
-        <div class="step-subtitle">TYPE DE VIDÉO</div>
+  <!-- ONGLETS -->
+  <div class="tabs-container">
+    <button class="tab-btn active" onclick="switchTab('studio')">🎬 STORYLAB</button>
+    <button class="tab-btn" onclick="switchTab('avatar')">👤 AVATAR LAB</button>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- CONTENU STORYLAB (Vidéo)                   -->
+  <!-- ========================================== -->
+  <div id="tab-studio">
+    <!-- FORMAT -->
+    <div class="card">
+      <div class="card-header">
+        <div class="step-num">1</div>
+        <div><div class="step-title">FORMAT</div><div class="step-subtitle">TYPE DE VIDÉO</div></div>
+      </div>
+      <div class="grid-options" id="formatGrid">
+        <div class="option-btn active" data-format="Court-métrage"><div class="option-icon">🎬</div><div class="option-title">Court-métrage</div><div class="option-desc">Fiction en 70s</div></div>
+        <div class="option-btn" data-format="JT / Reportage"><div class="option-icon">📺</div><div class="option-title">JT / Reportage</div><div class="option-desc">Info factuelle</div></div>
+        <div class="option-btn" data-format="Clip musical"><div class="option-icon">🎵</div><div class="option-title">Clip musical</div><div class="option-desc">Visuel et rythme</div></div>
+        <div class="option-btn" data-format="TikTok / Hook"><div class="option-icon">📱</div><div class="option-title">TikTok / Hook</div><div class="option-desc">Vertical, impact</div></div>
+        <div class="option-btn" data-format="Documentaire"><div class="option-icon">🎙️</div><div class="option-title">Documentaire</div><div class="option-desc">Observation</div></div>
+        <div class="option-btn" data-format="Épisode animé"><div class="option-icon">📼</div><div class="option-title">Épisode animé</div><div class="option-desc">Série / cartoon</div></div>
       </div>
     </div>
-    <div class="grid-options" id="formatGrid">
-      <div class="option-btn active" data-format="Court-métrage">
-        <div class="option-icon">🎬</div>
-        <div class="option-title">Court-métrage</div>
-        <div class="option-desc">Fiction en 70s</div>
+
+    <!-- UNIVERS VISUEL -->
+    <div class="card">
+      <div class="card-header">
+        <div class="step-num green">✓</div>
+        <div><div class="step-title">UNIVERS VISUEL</div><div class="step-subtitle">GENRE CINÉMATOGRAPHIQUE</div></div>
       </div>
-      <div class="option-btn" data-format="JT / Reportage">
-        <div class="option-icon">📺</div>
-        <div class="option-title">JT / Reportage</div>
-        <div class="option-desc">Info factuelle</div>
+      <div class="pills" id="genrePills">
+        <div class="pill active" data-genre="Tous">Tous</div>
+        <div class="pill" data-genre="action">action</div>
+        <div class="pill" data-genre="sport">sport</div>
+        <div class="pill" data-genre="sf">sf</div>
+        <div class="pill" data-genre="crime">crime</div>
+        <div class="pill" data-genre="animation">animation</div>
+        <div class="pill" data-genre="anime">anime</div>
+        <div class="pill" data-genre="doc">doc</div>
+        <div class="pill" data-genre="social">social</div>
       </div>
-      <div class="option-btn" data-format="Clip musical">
-        <div class="option-icon">🎵</div>
-        <div class="option-title">Clip musical</div>
-        <div class="option-desc">Visuel et rythme</div>
+      <div class="styles-list" id="stylesList"></div>
+    </div>
+
+    <!-- ACTUALITÉ -->
+    <div class="card">
+      <div class="card-header">
+        <div class="step-num green">✓</div>
+        <div><div class="step-title">ACTUALITÉ</div><div class="step-subtitle">GOOGLE NEWS</div></div>
       </div>
-      <div class="option-btn" data-format="TikTok / Hook">
-        <div class="option-icon">📱</div>
-        <div class="option-title">TikTok / Hook</div>
-        <div class="option-desc">Vertical, impact</div>
+      <div class="dropdowns">
+        <button class="btn-secondary active" onclick="toggleNewsMode('auto')" id="btnNewsAuto">📰 Auto</button>
+        <button class="btn-secondary" onclick="toggleNewsMode('manuel')" id="btnNewsManuel">✍️ Manuel</button>
       </div>
-      <div class="option-btn" data-format="Documentaire">
-        <div class="option-icon">🎙️</div>
-        <div class="option-title">Documentaire</div>
-        <div class="option-desc">Observation</div>
+      <select class="select-btn" style="margin-bottom:16px;">
+        <option>France</option><option>International</option><option>États-Unis</option>
+      </select>
+      <button class="btn-primary" style="background:#f3f4f6; color:var(--text);" onclick="loadNews()">📰 Charger les actualités</button>
+      <div id="newsList" style="margin-top:16px; display:flex; flex-direction:column; gap:8px;"></div>
+    </div>
+
+    <!-- TON IDÉE -->
+    <div class="card">
+      <div class="card-header">
+        <div class="step-num">5</div>
+        <div><div class="step-title">TON IDÉE</div><div class="step-subtitle">EN UNE OU DEUX PHRASES</div></div>
       </div>
-      <div class="option-btn" data-format="Épisode animé">
-        <div class="option-icon">📼</div>
-        <div class="option-title">Épisode animé</div>
-        <div class="option-desc">Série / cartoon</div>
+      <textarea class="idea-textarea" id="ideaInput" placeholder="Un maître de kung-fu extraterrestre vient sauver les étudiants pendant le blocus..."></textarea>
+      <div class="dropdowns">
+        <select class="select-btn">
+          <option>30 s</option><option>70 s</option><option>120 s</option>
+        </select>
+        <select class="select-btn" id="planCountSelect">
+          <option value="4">4 plans</option>
+          <option value="10" selected>10 plans</option>
+        </select>
       </div>
+      <button class="btn-primary" id="launchBtn" onclick="startProduction()">🎬 Lancer la production complète</button>
+      <div class="alert-success" id="readyAlert">✓ Tout est prêt. Clique pour lancer.</div>
+    </div>
+
+    <!-- LIVE PREVIEW -->
+    <div class="live-preview" id="livePreview" style="display:none;">
+      <div class="live-overlay"><div class="live-dot"></div> LIVE</div>
+      <img id="liveImage" src="" alt="Live">
+      <div class="progress-container">
+        <div class="progress-labels"><span id="liveLabel">IMAGE 1</span><span id="livePercent">0%</span></div>
+        <div class="progress-bar"><div class="progress-fill" id="liveProgress"></div></div>
+      </div>
+    </div>
+
+    <!-- CONTROL ROOM -->
+    <div class="card" id="controlRoom" style="display:none;">
+      <div class="card-header"><div><div class="step-title">CONTROL ROOM</div><div class="step-subtitle">PRODUCTION</div></div></div>
+      <div class="control-list" id="controlList">
+        <div class="control-item" data-step="1"><div class="control-icon pending">1</div><div class="control-text"><div class="control-title">Conception</div><div class="control-desc">Format, univers, idée</div></div></div>
+        <div class="control-item" data-step="2"><div class="control-icon pending">2</div><div class="control-text"><div class="control-title">Compréhension</div><div class="control-desc">Analyse de l'idée</div></div></div>
+        <div class="control-item" data-step="3"><div class="control-icon pending">3</div><div class="control-text"><div class="control-title">Bible créative</div><div class="control-desc">Personnages, décors, DA</div></div></div>
+        <div class="control-item" data-step="4"><div class="control-icon pending">4</div><div class="control-text"><div class="control-title">Histoire</div><div class="control-desc">Structure narrative</div></div></div>
+        <div class="control-item" data-step="5"><div class="control-icon pending">5</div><div class="control-text"><div class="control-title">Plans</div><div class="control-desc">Storyboard et continuité</div></div></div>
+        <div class="control-item" data-step="6"><div class="control-icon pending">6</div><div class="control-text"><div class="control-title">Production</div><div class="control-desc" id="prodDesc">Plan 0/10</div></div></div>
+      </div>
+    </div>
+
+    <!-- AI ACTIVITY -->
+    <div class="card" id="aiActivity" style="display:none;">
+      <div class="card-header" style="justify-content:space-between;">
+        <div class="step-title">AI ACTIVITY</div>
+        <div class="badge" style="color:var(--primary); border-color:var(--primary);">REQUÊTE...</div>
+      </div>
+      <div class="terminal">
+        <div class="term-row"><span>Statut</span> <span class="term-val blue" id="termStatus">Requête...</span></div>
+        <div class="term-row"><span>Modèle</span> <span class="term-val">agnes-image-2.5-flash</span></div>
+        <div class="term-row"><span>Requête</span> <span class="term-val" id="termReq">Image 1</span></div>
+        <div class="term-row"><span>Plans</span> <span class="term-val" id="termPlans">0 / 10</span></div>
+        <div class="term-prompt" id="termPrompt">Setting: Lens...</div>
+      </div>
+    </div>
+
+    <!-- PLANS GRID -->
+    <div class="card" id="plansCard" style="display:none;">
+      <div class="card-header" style="justify-content:space-between;">
+        <div class="step-title">PLANS</div>
+        <div class="badge" id="plansCounter">0 / 10</div>
+      </div>
+      <div class="plans-grid" id="plansGrid"></div>
     </div>
   </div>
 
-  <!-- CARD 2 : UNIVERS VISUEL -->
-  <div class="card">
-    <div class="card-header">
-      <div class="step-num green">✓</div>
-      <div>
-        <div class="step-title">UNIVERS VISUEL</div>
-        <div class="step-subtitle">GENRE CINÉMATOGRAPHIQUE</div>
+  <!-- ========================================== -->
+  <!-- CONTENU AVATAR LAB (Ultra-réaliste)        -->
+  <!-- ========================================== -->
+  <div id="tab-avatar" class="hidden">
+    <div class="card">
+      <div class="card-header">
+        <div class="step-num" style="background:var(--primary);">1</div>
+        <div><div class="step-title">GÉNÉRATEUR D'AVATAR</div><div class="step-subtitle">ULTRA-RÉALISTE & 3D</div></div>
       </div>
-    </div>
-    <div class="pills" id="genrePills">
-      <div class="pill active" data-genre="Tous">Tous</div>
-      <div class="pill" data-genre="action">action</div>
-      <div class="pill" data-genre="sport">sport</div>
-      <div class="pill" data-genre="sf">sf</div>
-      <div class="pill" data-genre="crime">crime</div>
-      <div class="pill" data-genre="animation">animation</div>
-      <div class="pill" data-genre="anime">anime</div>
-      <div class="pill" data-genre="doc">doc</div>
-      <div class="pill" data-genre="social">social</div>
-    </div>
-    <div class="styles-list" id="stylesList">
-      <!-- Rempli par JS -->
-    </div>
-  </div>
+      
+      <label class="step-subtitle" style="display:block; margin-bottom:8px;">Description physique</label>
+      <textarea class="idea-textarea" id="avatarPrompt" placeholder="Ex: Une femme de 30 ans, cheveux roux tressés, yeux verts, veste en cuir noire, éclairage cinématographique..."></textarea>
 
-  <!-- CARD 3 : ACTUALITÉ -->
-  <div class="card">
-    <div class="card-header">
-      <div class="step-num green">✓</div>
-      <div>
-        <div class="step-title">ACTUALITÉ</div>
-        <div class="step-subtitle">GOOGLE NEWS — TISSÉE DANS L'HISTOIRE</div>
+      <div class="dropdowns">
+        <select class="select-btn" id="avatarStyle">
+          <option value="ultra-realistic photograph, 8k, highly detailed skin texture, cinematic lighting, shot on 85mm lens, photorealistic">📸 Ultra Réaliste (Photo)</option>
+          <option value="3d character design, unreal engine 5, ray tracing, subsurface scattering, 8k resolution">🧊 3D Engine (UE5)</option>
+          <option value="cinematic portrait, dramatic lighting, movie still, 35mm film">🎬 Cinéma (Film)</option>
+        </select>
+        <select class="select-btn" id="avatarRatio">
+          <option value="3:4">Portrait (3:4)</option>
+          <option value="1:1">Carré (1:1)</option>
+          <option value="9:16">Vertical (9:16)</option>
+        </select>
       </div>
-    </div>
-    <div style="display:flex; gap:8px; margin-bottom:16px;">
-      <button class="select-btn active" style="justify-content:center;" onclick="toggleNewsMode('auto')" id="btnNewsAuto">📰 Auto</button>
-      <button class="select-btn" style="justify-content:center;" onclick="toggleNewsMode('manuel')" id="btnNewsManuel">✍️ Manuel</button>
-    </div>
-    <div class="select-btn" style="margin-bottom:16px;">
-      <span>France</span> <span>▼</span>
-    </div>
-    <button class="btn-primary" style="background:#f3f4f6; color:var(--text);" onclick="loadNews()">
-      <span>📰 Charger les actualités</span>
-    </button>
-    <div id="newsList" style="margin-top:16px; display:flex; flex-direction:column; gap:8px;">
-      <!-- Rempli par JS -->
-    </div>
-  </div>
 
-  <!-- CARD 5 : TON IDÉE -->
-  <div class="card">
-    <div class="card-header">
-      <div class="step-num">5</div>
-      <div>
-        <div class="step-title">TON IDÉE</div>
-        <div class="step-subtitle">EN UNE OU DEUX PHRASES</div>
-      </div>
+      <button class="btn-primary" id="avatarBtn" onclick="generateAvatar()">👤 Générer l'avatar (x2)</button>
     </div>
-    <textarea class="idea-textarea" id="ideaInput" placeholder="Un maître de kung-fu extraterrestre vient sauver les étudiants pendant le blocus..."></textarea>
-    <div class="dropdowns">
-      <div class="select-btn">70 s <span>▼</span></div>
-      <div class="select-btn">10 plans <span>▼</span></div>
-    </div>
-    <button class="btn-primary" id="launchBtn" onclick="startProduction()">
-      🎬 Lancer la production complète
-    </button>
-    <div class="alert-success" id="readyAlert">
-      ✓ Tout est prêt. Clique pour lancer.
-    </div>
-  </div>
 
-  <!-- LIVE PREVIEW -->
-  <div class="live-preview" id="livePreview" style="display:none;">
-    <div class="live-overlay"><div class="live-dot"></div> LIVE</div>
-    <img id="liveImage" src="" alt="Live">
-    <div class="progress-container">
-      <div class="progress-labels">
-        <span id="liveLabel">IMAGE 1</span>
-        <span id="livePercent">0%</span>
+    <!-- RESULTATS AVATARS -->
+    <div class="card" id="avatarResultCard" style="display:none;">
+      <div class="card-header">
+        <div class="step-title">RÉSULTATS</div>
       </div>
-      <div class="progress-bar">
-        <div class="progress-fill" id="liveProgress"></div>
+      <div class="avatar-grid" id="avatarGrid">
+        <div class="avatar-slot" id="av-slot-1">1</div>
+        <div class="avatar-slot" id="av-slot-2">2</div>
       </div>
-    </div>
-  </div>
-
-  <!-- CONTROL ROOM -->
-  <div class="card" id="controlRoom" style="display:none;">
-    <div class="card-header">
-      <div>
-        <div class="step-title">CONTROL ROOM</div>
-        <div class="step-subtitle">PRODUCTION</div>
-      </div>
-    </div>
-    <div class="control-list" id="controlList">
-      <div class="control-item" data-step="1">
-        <div class="control-icon pending">1</div>
-        <div class="control-text">
-          <div class="control-title">Conception</div>
-          <div class="control-desc">Format, univers, actualité, idée</div>
-        </div>
-      </div>
-      <div class="control-item" data-step="2">
-        <div class="control-icon pending">2</div>
-        <div class="control-text">
-          <div class="control-title">Compréhension</div>
-          <div class="control-desc">Analyse idée + actualité</div>
-        </div>
-      </div>
-      <div class="control-item" data-step="3">
-        <div class="control-icon pending">3</div>
-        <div class="control-text">
-          <div class="control-title">Bible créative</div>
-          <div class="control-desc">Personnages, décors, DA</div>
-        </div>
-      </div>
-      <div class="control-item" data-step="4">
-        <div class="control-icon pending">4</div>
-        <div class="control-text">
-          <div class="control-title">Histoire</div>
-          <div class="control-desc">Structure HOOK → FIN</div>
-        </div>
-      </div>
-      <div class="control-item" data-step="5">
-        <div class="control-icon pending">5</div>
-        <div class="control-text">
-          <div class="control-title">Plans</div>
-          <div class="control-desc">Storyboard et continuité</div>
-        </div>
-      </div>
-      <div class="control-item" data-step="6">
-        <div class="control-icon pending">6</div>
-        <div class="control-text">
-          <div class="control-title">Production</div>
-          <div class="control-desc" id="prodDesc">Plan 0/10</div>
-        </div>
-      </div>
-      <div class="control-item" data-step="7">
-        <div class="control-icon pending">7</div>
-        <div class="control-text">
-          <div class="control-title">Contrôle</div>
-          <div class="control-desc">QA et cohérence</div>
-        </div>
-      </div>
-      <div class="control-item" data-step="8">
-        <div class="control-icon pending">8</div>
-        <div class="control-text">
-          <div class="control-title">Terminé</div>
-          <div class="control-desc">Master prêt</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- AI ACTIVITY -->
-  <div class="card" id="aiActivity" style="display:none;">
-    <div class="card-header" style="justify-content:space-between;">
-      <div class="step-title">AI ACTIVITY</div>
-      <div class="badge" style="color:var(--primary); border-color:var(--primary);">REQUÊTE...</div>
-    </div>
-    <div class="terminal">
-      <div class="term-row"><span>Statut</span> <span class="term-val blue" id="termStatus">Requête...</span></div>
-      <div class="term-row"><span>Modèle</span> <span class="term-val">agnes-image-2.5-flash</span></div>
-      <div class="term-row"><span>Endpoint</span> <span class="term-val">.../v1/images/generations</span></div>
-      <div class="term-row"><span>Requête</span> <span class="term-val" id="termReq">Image 1</span></div>
-      <div class="term-row"><span>Durée</span> <span class="term-val" id="termTime">00:00</span></div>
-      <div class="term-row"><span>Retry</span> <span class="term-val">0</span></div>
-      <div class="term-row"><span>Cooldown</span> <span class="term-val">—</span></div>
-      <div class="term-row"><span>Plans</span> <span class="term-val" id="termPlans">0 / 10</span></div>
-      <div class="term-prompt" id="termPrompt">
-        Setting: Lens, Nord-Pas-de-Calais...
-      </div>
-    </div>
-  </div>
-
-  <!-- PLANS GRID -->
-  <div class="card" id="plansCard" style="display:none;">
-    <div class="card-header" style="justify-content:space-between;">
-      <div class="step-title">PLANS</div>
-      <div class="badge" id="plansCounter">0 / 10</div>
-    </div>
-    <div class="plans-grid" id="plansGrid">
-      <!-- Rempli par JS -->
     </div>
   </div>
 
@@ -623,97 +402,52 @@
     <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">Collez vos clés API (une par ligne, format <code>sk-...</code>).</p>
     <textarea id="apiKeyInput" style="width:100%; height:100px; padding:12px; border:1px solid var(--border); border-radius:8px; font-family:var(--mono); font-size:12px; margin-bottom:16px; resize:none;"></textarea>
     <div style="display:flex; gap:8px;">
-      <button class="btn-primary" style="background:#e5e7eb; color:var(--text);" onclick="closeApiModal()">Annuler</button>
+      <button class="btn-secondary" onclick="closeApiModal()">Annuler</button>
       <button class="btn-primary" onclick="saveApiKeys()">Sauvegarder</button>
     </div>
   </div>
-</div><script>
-/* ============================================================
-   STORYLAB v8.2 — Moteur de production
-   Basé sur le code ArtForge — API Agnes
-============================================================ */
+</div>
 
+<script>
+/* ============================================================
+   LOGIQUE GLOBALE
+============================================================ */
 const AGNES_BASE = 'https://apihub.agnes-ai.com/v1';
 const AGNES_TEXT_MODEL = 'agnes-3.0-flash';
 const AGNES_IMG_MODEL = 'agnes-image-2.5-flash';
 
-// État de l'application
 const APP = {
   format: 'Court-métrage',
   genre: 'Tous',
   style: 'Kung-fu classique',
-  idea: '',
   keys: [],
-  isProducing: false,
-  currentStep: 0,
-  totalPlans: 10
+  isProducing: false
 };
 
-// Styles disponibles (Univers visuel)
 const STYLES = [
-  { genre: 'action', name: 'Kung-fu classique', icon: '🥋', desc: 'Chorégraphie lisible, décors physiques, costumes colorés...', prompt: 'classic kung-fu movie style, 1970s martial arts film, vibrant colors, dynamic poses, physical sets' },
-  { genre: 'action', name: 'Shaolin 70s granuleux', icon: '🏯', desc: 'Grain 16mm lourd, lumière ambrée, poussière...', prompt: '1970s Shaw Brothers kung fu movie, 16mm film grain, heavy amber lighting, dusty monastery, vintage cinematic' },
-  { genre: 'sport', name: 'Footballeurs héros secrets', icon: '⚽', desc: 'Double vie jour/nuit, stade, gestes spectaculaires...', prompt: 'superhero football players, secret identity, stadium at night, spectacular moves, cinematic sports photography' },
-  { genre: 'sf', name: 'Science-fiction', icon: '🚀', desc: 'Néons, hologrammes, architecture monumentale...', prompt: 'futuristic sci-fi movie, massive architecture, neon lights, holograms, epic scale, cinematic lighting' },
-  { genre: 'crime', name: 'Mafia / Scarface', icon: '🕴️', desc: 'Costumes 80s, cigares, chaînes en or, Miami...', prompt: '1980s Miami mafia movie, Scarface style, gold chains, cigars, pastel suits, neons, cinematic' },
-  { genre: 'animation', name: 'Simpson', icon: '🟡', desc: 'Jaune poussin, contours noirs, Springfield...', prompt: 'The Simpsons cartoon style, yellow skin, black outlines, Springfield background, flat colors' },
-  { genre: 'animation', name: 'South Park', icon: '📐', desc: 'Papier découpé, couleurs vives, satire trash...', prompt: 'South Park cartoon style, paper cutout animation, bright colors, simple shapes' },
-  { genre: 'animation', name: 'Studio Ghibli', icon: '🌿', desc: 'Nature luxuriante, ciel peint, magie douce...', prompt: 'Studio Ghibli anime style, lush nature, hand-painted skies, soft magic, detailed backgrounds' },
-  { genre: 'doc', name: 'Groland / absurde', icon: '📺', desc: 'Faux documentaire loufoque, absurdité...', prompt: 'mockumentary style, absurd humor, deadpan delivery, realistic but weird situations' },
-  { genre: 'doc', name: 'Reportage TV mainstream', icon: '📡', desc: 'Studio, prompteur, journalisme calibré...', prompt: 'mainstream TV news report, studio setting, teleprompter, professional journalism, bright lighting' },
-  { genre: 'social', name: 'TikTok / Hook', icon: '⚡', desc: 'Vertical, rapide, zoom, sous-titres dynamiques...', prompt: 'TikTok viral video style, vertical format, fast pace, dynamic zooms, bold subtitles, high contrast' }
+  { genre: 'action', name: 'Kung-fu classique', icon: '🥋', desc: 'Chorégraphie lisible...', prompt: 'classic kung-fu movie style, 1970s martial arts film, vibrant colors, dynamic poses' },
+  { genre: 'action', name: 'Shaolin 70s granuleux', icon: '🏯', desc: 'Grain 16mm lourd...', prompt: '1970s Shaw Brothers kung fu movie, 16mm film grain, heavy amber lighting' },
+  { genre: 'sport', name: 'Footballeurs héros secrets', icon: '⚽', desc: 'Double vie jour/nuit...', prompt: 'superhero football players, secret identity, stadium at night' },
+  { genre: 'sf', name: 'Science-fiction', icon: '🚀', desc: 'Néons, hologrammes...', prompt: 'futuristic sci-fi movie, massive architecture, neon lights, holograms' },
+  { genre: 'crime', name: 'Mafia / Scarface', icon: '🕴️', desc: 'Costumes 80s...', prompt: '1980s Miami mafia movie, Scarface style, gold chains, cigars' },
+  { genre: 'animation', name: 'Simpson', icon: '🟡', desc: 'Jaune poussin...', prompt: 'The Simpsons cartoon style, yellow skin, black outlines' },
+  { genre: 'animation', name: 'South Park', icon: '📐', desc: 'Papier découpé...', prompt: 'South Park cartoon style, paper cutout animation, bright colors' },
+  { genre: 'animation', name: 'Studio Ghibli', icon: '🌿', desc: 'Nature luxuriante...', prompt: 'Studio Ghibli anime style, lush nature, hand-painted skies' },
+  { genre: 'doc', name: 'Groland / absurde', icon: '📺', desc: 'Faux documentaire...', prompt: 'mockumentary style, absurd humor, deadpan delivery' },
+  { genre: 'doc', name: 'Reportage TV', icon: '📡', desc: 'Studio, prompteur...', prompt: 'mainstream TV news report, studio setting, teleprompter' },
+  { genre: 'social', name: 'TikTok / Hook', icon: '⚡', desc: 'Vertical, rapide...', prompt: 'TikTok viral video style, vertical format, fast pace' }
 ];
 
 const NEWS = [
-  { title: 'DIRECT - Des blocos en place aux lycées de l\'Harteloire et Lesven à Brest', source: 'Le Télégramme', date: '2026-10-07 07:45:47' },
-  { title: 'Lycéen gravement blessé à Lens: Laurent Nuñez annonce suspendre l\'utilisation des grenades assourdissantes', source: 'BFM', date: '2026-10-07 08:12:00' }
+  { title: 'DIRECT - Des blocos en place aux lycées de l\'Harteloire et Lesven à Brest', source: 'Le Télégramme', date: '2026-10-07 07:45' },
+  { title: 'Lycéen gravement blessé à Lens: Laurent Nuñez annonce suspendre l\'utilisation des grenades', source: 'BFM', date: '2026-10-07 08:12' }
 ];
 
-// Initialisation au chargement
 document.addEventListener('DOMContentLoaded', () => {
   loadKeys();
   renderStyles();
-  setupEvents();
-});
-
-// --- GESTION DES CLÉS API ---
-function loadKeys() {
-  try {
-    const saved = JSON.parse(localStorage.getItem('storylab_keys') || '[]');
-    if (saved.length > 0) {
-      APP.keys = saved;
-      document.getElementById('apiBadge').innerHTML = '<div class="badge-dot green"></div> Agnes connectée';
-    } else {
-      document.getElementById('apiBadge').innerHTML = '<div class="badge-dot" style="background:#ef4444"></div> Non configurée';
-    }
-  } catch(e) {}
-}
-
-function openApiModal() {
-  document.getElementById('apiModal').classList.add('open');
-  document.getElementById('apiKeyInput').value = APP.keys.join('\n');
-}
-
-function closeApiModal() {
-  document.getElementById('apiModal').classList.remove('open');
-}
-
-function saveApiKeys() {
-  const raw = document.getElementById('apiKeyInput').value;
-  const keys = raw.split('\n').map(k => k.trim()).filter(k => k.startsWith('sk-'));
-  if (keys.length > 0) {
-    APP.keys = keys;
-    localStorage.setItem('storylab_keys', JSON.stringify(keys));
-    document.getElementById('apiBadge').innerHTML = '<div class="badge-dot green"></div> Agnes connectée';
-    closeApiModal();
-  } else {
-    alert('Veuillez entrer au moins une clé valide (sk-...)');
-  }
-}
-
-// --- UI INTERACTIONS ---
-function setupEvents() {
-  // Formats
+  
+  // Format buttons
   document.querySelectorAll('#formatGrid .option-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('#formatGrid .option-btn').forEach(b => b.classList.remove('active'));
@@ -722,7 +456,7 @@ function setupEvents() {
     });
   });
 
-  // Genres
+  // Genre Pills
   document.querySelectorAll('#genrePills .pill').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('#genrePills .pill').forEach(b => b.classList.remove('active'));
@@ -732,7 +466,7 @@ function setupEvents() {
     });
   });
 
-  // Mode Actualité
+  // News Buttons
   document.getElementById('btnNewsAuto').addEventListener('click', () => {
     document.getElementById('btnNewsAuto').classList.add('active');
     document.getElementById('btnNewsManuel').classList.remove('active');
@@ -741,8 +475,46 @@ function setupEvents() {
     document.getElementById('btnNewsManuel').classList.add('active');
     document.getElementById('btnNewsAuto').classList.remove('active');
   });
+});
+
+// --- NAVIGATION ONGLETS ---
+function switchTab(tabId) {
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+  
+  document.getElementById('tab-studio').classList.add('hidden');
+  document.getElementById('tab-avatar').classList.add('hidden');
+  
+  document.getElementById('tab-' + tabId).classList.remove('hidden');
 }
 
+// --- GESTION API KEYS ---
+function loadKeys() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('storylab_keys') || '[]');
+    if (saved.length > 0) {
+      APP.keys = saved;
+      document.getElementById('apiBadge').innerHTML = '<div class="badge-dot green"></div> Agnes connectée';
+    }
+  } catch(e) {}
+}
+function openApiModal() {
+  document.getElementById('apiModal').classList.add('open');
+  document.getElementById('apiKeyInput').value = APP.keys.join('\n');
+}
+function closeApiModal() { document.getElementById('apiModal').classList.remove('open'); }
+function saveApiKeys() {
+  const raw = document.getElementById('apiKeyInput').value;
+  const keys = raw.split('\n').map(k => k.trim()).filter(k => k.startsWith('sk-'));
+  if (keys.length > 0) {
+    APP.keys = keys;
+    localStorage.setItem('storylab_keys', JSON.stringify(keys));
+    document.getElementById('apiBadge').innerHTML = '<div class="badge-dot green"></div> Agnes connectée';
+    closeApiModal();
+  } else { alert('Veuillez entrer une clé valide (sk-...)'); }
+}
+
+// --- RENDER STYLES ---
 function renderStyles() {
   const list = document.getElementById('stylesList');
   const filtered = APP.genre === 'Tous' ? STYLES : STYLES.filter(s => s.genre === APP.genre);
@@ -750,10 +522,7 @@ function renderStyles() {
   list.innerHTML = filtered.map(s => `
     <div class="style-item ${s.name === APP.style ? 'active' : ''}" data-name="${s.name}">
       <div class="style-icon">${s.icon}</div>
-      <div class="style-info">
-        <div class="style-name">${s.name}</div>
-        <div class="style-desc">${s.desc}</div>
-      </div>
+      <div class="style-info"><div class="style-name">${s.name}</div><div class="style-desc">${s.desc}</div></div>
       <div class="style-plus">+</div>
     </div>
   `).join('');
@@ -777,31 +546,22 @@ function loadNews() {
         <div style="font-size:11px; color:var(--primary);">${n.source} <span style="color:var(--text-muted)">${n.date}</span></div>
       </div>
     `).join('');
-  }, 800);
+  }, 600);
 }
 
 function selectNews(title) {
   const textarea = document.getElementById('ideaInput');
-  if (textarea.value) {
-    textarea.value += '\n\nActualité : ' + title;
-  } else {
-    textarea.value = 'Actualité : ' + title;
-  }
+  textarea.value = textarea.value ? textarea.value + '\n\nActualité : ' + title : 'Actualité : ' + title;
 }
 
-// --- APPELS API AGNES ---
-async function agnesCall(path, payload, isImage = false) {
-  if (APP.keys.length === 0) throw new Error("Aucune clé API configurée. Cliquez sur 'Agnes connectée' en haut.");
-  
-  // Rotation basique des clés
+// --- APPELS AGNES API ---
+async function agnesCall(path, payload) {
+  if (APP.keys.length === 0) throw new Error("Aucune clé API. Cliquez sur 'Agnes connectée' en haut.");
   const key = APP.keys[Math.floor(Math.random() * APP.keys.length)];
   
   const res = await fetch(AGNES_BASE + path, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + key
-    },
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
     body: JSON.stringify(payload)
   });
 
@@ -811,33 +571,19 @@ async function agnesCall(path, payload, isImage = false) {
 }
 
 async function generateText(system, user) {
-  const payload = {
-    model: AGNES_TEXT_MODEL,
-    messages: [
-      { role: 'system', content: system },
-      { role: 'user', content: user }
-    ],
-    temperature: 0.7,
-    max_tokens: 2000
-  };
+  const payload = { model: AGNES_TEXT_MODEL, messages: [{ role: 'system', content: system }, { role: 'user', content: user }], temperature: 0.7, max_tokens: 2000 };
   const data = await agnesCall('/chat/completions', payload);
   return data.choices[0].message.content.trim();
 }
 
-async function generateImage(prompt) {
-  const payload = {
-    model: AGNES_IMG_MODEL,
-    prompt: prompt,
-    size: '1K',
-    ratio: '9:16',
-    extra_body: { response_format: 'url' }
-  };
-  const data = await agnesCall('/images/generations', payload, true);
+async function generateImage(prompt, ratio = '9:16') {
+  const payload = { model: AGNES_IMG_MODEL, prompt: prompt, size: '1K', ratio: ratio, extra_body: { response_format: 'url' } };
+  const data = await agnesCall('/images/generations', payload);
   const img = data.data[0];
   return img.url || 'data:image/png;base64,' + img.b64_json;
 }
 
-// --- LOGIQUE DE PRODUCTION ---
+// --- LOGIQUE STORYLAB ---
 function updateControlRoom(step, status, desc = '') {
   const items = document.querySelectorAll('.control-item');
   if (items[step - 1]) {
@@ -845,10 +591,7 @@ function updateControlRoom(step, status, desc = '') {
     icon.className = 'control-icon ' + status;
     if (status === 'done') icon.innerHTML = '✓';
     else if (status === 'active') icon.innerHTML = step;
-    
-    if (desc) {
-      items[step - 1].querySelector('.control-desc').innerHTML = desc;
-    }
+    if (desc) items[step - 1].querySelector('.control-desc').innerHTML = desc;
   }
 }
 
@@ -857,139 +600,89 @@ function updateTerminal(status, reqNum, plansDone, promptText = '') {
   document.getElementById('termStatus').className = 'term-val ' + (status === 'Terminé' ? 'green' : 'blue');
   if (reqNum) document.getElementById('termReq').textContent = 'Image ' + reqNum;
   if (plansDone !== undefined) document.getElementById('termPlans').textContent = plansDone + ' / 10';
-  if (promptText) {
-    // On tronque pour l'affichage terminal
-    document.getElementById('termPrompt').textContent = promptText.length > 200 ? promptText.substring(0, 200) + '...' : promptText;
-  }
+  if (promptText) document.getElementById('termPrompt').textContent = promptText.length > 200 ? promptText.substring(0, 200) + '...' : promptText;
 }
 
 async function startProduction() {
   if (APP.isProducing) return;
   const idea = document.getElementById('ideaInput').value.trim();
-  if (!idea) {
-    alert('Veuillez décrire votre idée (Étape 5).');
-    return;
-  }
-  if (APP.keys.length === 0) {
-    openApiModal();
-    return;
-  }
+  if (!idea) { alert('Décrivez votre idée.'); return; }
+  if (APP.keys.length === 0) { openApiModal(); return; }
 
   APP.isProducing = true;
-  APP.idea = idea;
+  const planCount = parseInt(document.getElementById('planCountSelect').value) || 10;
   const launchBtn = document.getElementById('launchBtn');
   launchBtn.disabled = true;
   launchBtn.innerHTML = '⏳ Production en cours...';
   document.getElementById('readyAlert').style.display = 'none';
 
-  // Reset UI
   document.getElementById('controlRoom').style.display = 'block';
   document.getElementById('aiActivity').style.display = 'block';
   document.getElementById('plansCard').style.display = 'block';
   document.getElementById('livePreview').style.display = 'block';
   
-  document.querySelectorAll('.control-icon').forEach(i => { i.className = 'control-icon pending'; });
-  document.querySelectorAll('.control-item').forEach((item, index) => {
-    item.querySelector('.control-icon').innerHTML = index + 1;
-  });
+  document.querySelectorAll('.control-icon').forEach((i, idx) => { i.className = 'control-icon pending'; i.innerHTML = idx + 1; });
+  document.getElementById('plansCounter').textContent = `0 / ${planCount}`;
 
   const plansGrid = document.getElementById('plansGrid');
   plansGrid.innerHTML = '';
-  for (let i = 1; i <= 10; i++) {
-    plansGrid.innerHTML += `<div class="plan-slot" id="slot-${i}">${i}</div>`;
-  }
+  for (let i = 1; i <= planCount; i++) plansGrid.innerHTML += `<div class="plan-slot" id="slot-${i}">${i}</div>`;
 
   const selectedStyle = STYLES.find(s => s.name === APP.style) || STYLES[0];
 
   try {
-    // --- ÉTAPE 1 à 4 : Texte et Scénario ---
-    updateControlRoom(1, 'done');
-    updateControlRoom(2, 'active');
+    updateControlRoom(1, 'done'); updateControlRoom(2, 'active');
     
-    const sysPrompt = `Tu es un réalisateur de cinéma expert. Tu dois créer un storyboard de 10 plans pour un projet de type "${APP.format}" dans le style "${APP.style}" (${selectedStyle.prompt}). 
-L'idée de l'utilisateur est : "${APP.idea}".
-Génère exactement 10 descriptions de plans. Chaque plan doit être une phrase descriptive en anglais, très visuelle, qui servira de prompt pour une IA générative d'images.
-Format de sortie STRICT : Un numéro, un point, puis la description. Exemple :
-1. A wide shot of a cyberpunk city...
-2. Close up of the hero's face...
-Ne mets aucun autre texte.`;
+    const sysPrompt = `Tu es un réalisateur de cinéma. Crée un storyboard de ${planCount} plans pour "${APP.format}" style "${APP.style}".
+Idée : "${idea}".
+Génère exactement ${planCount} descriptions en anglais, très visuelles.
+Format STRICT : 1. Description... 2. Description... Pas d'autre texte.`;
 
     updateTerminal('Analyse...', 0, 0, sysPrompt);
-    const scriptText = await generateText("Tu es un assistant de production cinématographique.", sysPrompt);
+    const scriptText = await generateText("Tu es un assistant de production.", sysPrompt);
     
-    // Parser le script (on récupère les 10 lignes)
     const plansPrompts = scriptText.split('\n')
-      .map(l => l.trim())
-      .filter(l => /^\d+[\.\)]/.test(l))
+      .map(l => l.trim()).filter(l => /^\d+[\.\)]/.test(l))
       .map(l => l.replace(/^\d+[\.\)]\s*/, ''))
-      .slice(0, 10);
+      .slice(0, planCount);
 
-    // Remplir si l'IA a oublié des lignes
-    while (plansPrompts.length < 10) {
-      plansPrompts.push(`A cinematic shot of ${APP.idea}, ${selectedStyle.prompt}`);
-    }
+    while (plansPrompts.length < planCount) plansPrompts.push(`Cinematic shot of ${idea}, ${selectedStyle.prompt}`);
 
-    updateControlRoom(2, 'done');
-    updateControlRoom(3, 'done');
-    updateControlRoom(4, 'done');
-    updateControlRoom(5, 'done');
-    updateControlRoom(6, 'active', 'Plan 0/10');
+    updateControlRoom(2, 'done'); updateControlRoom(3, 'done'); updateControlRoom(4, 'done'); updateControlRoom(5, 'done');
+    updateControlRoom(6, 'active', `Plan 0/${planCount}`);
     
-    // --- ÉTAPE 5 & 6 : Génération des images ---
     const liveImg = document.getElementById('liveImage');
     const livePercent = document.getElementById('livePercent');
     const liveProgress = document.getElementById('liveProgress');
     const liveLabel = document.getElementById('liveLabel');
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < planCount; i++) {
       const planNum = i + 1;
-      const prompt = `Cinematic shot, ${APP.format} style. ${plansPrompts[i]}. Style: ${selectedStyle.prompt}. High quality, 8k resolution.`;
+      const prompt = `Cinematic shot, ${APP.format} style. ${plansPrompts[i]}. Style: ${selectedStyle.prompt}. 8k.`;
       
       updateTerminal('Génération...', planNum, i, prompt);
-      updateControlRoom(6, 'active', `Plan ${planNum}/10`);
-      
-      // Animation de la barre de progression live
+      updateControlRoom(6, 'active', `Plan ${planNum}/${planCount}`);
       liveLabel.textContent = `IMAGE ${planNum}`;
-      livePercent.textContent = `${Math.round((i / 10) * 100)}%`;
-      liveProgress.style.width = `${(i / 10) * 100}%`;
+      livePercent.textContent = `${Math.round((i / planCount) * 100)}%`;
+      liveProgress.style.width = `${(i / planCount) * 100}%`;
 
       try {
-        const imgUrl = await generateImage(prompt);
-        
-        // Mettre à jour le slot
-        const slot = document.getElementById(`slot-${planNum}`);
-        slot.innerHTML = `
-          <img src="${imgUrl}" alt="Plan ${planNum}">
-          <div class="plan-label">PLAN ${planNum}<div class="plan-status">done</div></div>
-        `;
-        
-        // Mettre à jour le live preview avec la dernière image générée
+        const imgUrl = await generateImage(prompt, '9:16');
+        document.getElementById(`slot-${planNum}`).innerHTML = `<img src="${imgUrl}"><div class="plan-label">PLAN ${planNum}<div class="plan-status">done</div></div>`;
         liveImg.src = imgUrl;
-        
-        // Petite pause pour éviter le rate limit (comme vu sur ta capture : cooldown)
-        if (i < 9) await new Promise(r => setTimeout(r, 2000));
-        
+        if (i < planCount - 1) await new Promise(r => setTimeout(r, 2000)); // Cooldown
       } catch (err) {
-        console.error('Erreur image', planNum, err);
-        document.getElementById(`slot-${planNum}`).innerHTML = `<div style="color:red; font-size:12px; text-align:center; padding:10px;">Erreur API</div>`;
+        document.getElementById(`slot-${planNum}`).innerHTML = `<div style="color:red; font-size:12px; padding:10px;">Erreur</div>`;
       }
     }
 
-    // --- FINALISATION ---
-    livePercent.textContent = `100%`;
-    liveProgress.style.width = `100%`;
-    document.getElementById('plansCounter').textContent = `10 / 10`;
-    
-    updateTerminal('Terminé', 10, 10);
-    updateControlRoom(6, 'done', 'Plan 10/10');
-    updateControlRoom(7, 'done');
-    updateControlRoom(8, 'done', 'Master prêt');
-    
-    // Bouton lecture
-    document.getElementById('livePreview').innerHTML += `<div style="position:absolute; bottom:40px; right:16px; background:var(--primary); color:white; padding:8px 16px; border-radius:20px; font-weight:600; font-size:12px; cursor:pointer;">▶ Lire le master</div>`;
+    livePercent.textContent = `100%`; liveProgress.style.width = `100%`;
+    document.getElementById('plansCounter').textContent = `${planCount} / ${planCount}`;
+    updateTerminal('Terminé', planCount, planCount);
+    updateControlRoom(6, 'done', `Plan ${planCount}/${planCount}`);
 
   } catch (err) {
-    alert('Erreur de production : ' + err.message);
+    alert('Erreur : ' + err.message);
     updateTerminal('Erreur', 0, 0, err.message);
   } finally {
     APP.isProducing = false;
@@ -997,8 +690,47 @@ Ne mets aucun autre texte.`;
     launchBtn.innerHTML = '🎬 Lancer la production complète';
   }
 }
+
+// --- LOGIQUE AVATAR LAB ---
+async function generateAvatar() {
+  const promptInput = document.getElementById('avatarPrompt').value.trim();
+  if (!promptInput) { alert('Veuillez décrire le physique de l\'avatar.'); return; }
+  if (APP.keys.length === 0) { openApiModal(); return; }
+
+  const btn = document.getElementById('avatarBtn');
+  btn.disabled = true;
+  btn.innerHTML = '⏳ Génération en cours...';
+
+  const stylePrefix = document.getElementById('avatarStyle').value;
+  const ratio = document.getElementById('avatarRatio').value;
+  const fullPrompt = `${stylePrefix}. Subject: ${promptInput}. Highly detailed, masterpiece.`;
+
+  document.getElementById('avatarResultCard').style.display = 'block';
+  const slot1 = document.getElementById('av-slot-1');
+  const slot2 = document.getElementById('av-slot-2');
+  
+  slot1.innerHTML = '<div class="spinner" style="font-size:12px; color:var(--text-muted);">⏳</div>';
+  slot2.innerHTML = '<div class="spinner" style="font-size:12px; color:var(--text-muted);">⏳</div>';
+
+  try {
+    // Générer 2 variations en parallèle
+    const [url1, url2] = await Promise.all([
+      generateImage(fullPrompt, ratio),
+      generateImage(fullPrompt, ratio)
+    ]);
+
+    slot1.innerHTML = `<img src="${url1}" alt="Avatar 1">`;
+    slot2.innerHTML = `<img src="${url2}" alt="Avatar 2">`;
+
+  } catch (err) {
+    alert('Erreur de génération : ' + err.message);
+    slot1.innerHTML = '❌ Erreur';
+    slot2.innerHTML = '❌ Erreur';
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '👤 Générer l\'avatar (x2)';
+  }
+}
 </script>
 </body>
 </html>
-
-
