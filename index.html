@@ -39,7 +39,9 @@ textarea{min-height:110px;resize:vertical}
 .option-icon{font-size:24px}.option-title{font-weight:600;font-size:14px}.option-desc{font-size:12px;color:var(--muted)}
 .pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
 .pill{background:#f3f4f6;padding:6px 14px;border-radius:20px;font-size:13px;cursor:pointer}.pill.active{background:var(--text);color:#fff}
-.styles-list{display:flex;flex-direction:column;gap:8px;max-height:250px;overflow-y:auto}
+.styles-list{display:flex;flex-direction:column;gap:8px;max-height:380px;overflow-y:auto}
+.style-actions{display:flex;gap:4px}.style-item .action-btn{border:1px solid var(--border)}
+.sform{display:flex;flex-direction:column;gap:8px;margin-top:12px}.sform textarea{min-height:80px}
 .style-item{border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;display:flex;align-items:center;gap:12px}
 .style-item.active{border-color:var(--primary);background:var(--pl)}
 .style-icon{font-size:24px}.style-name{font-weight:600;font-size:14px}.style-desc{font-size:11px;color:var(--muted)}
@@ -107,11 +109,17 @@ textarea{min-height:110px;resize:vertical}
 
     <div class="card">
       <div class="card-header"><div class="step-num">2</div><div><div class="step-title">Univers visuel</div></div></div>
-      <div class="pills" id="genrePills">
-        <div class="pill active" data-genre="Tous">Tous</div><div class="pill" data-genre="action">action</div><div class="pill" data-genre="sf">sf</div>
-        <div class="pill" data-genre="animation">animation</div><div class="pill" data-genre="horreur">horreur</div><div class="pill" data-genre="romance">romance</div>
-      </div>
+      <div class="pills" id="genrePills"></div>
       <div class="styles-list" id="stylesList"></div>
+      <button class="btn sm" style="margin-top:12px" onclick="newStyle()">＋ Créer mon univers</button>
+      <div class="sform hidden" id="styleForm">
+        <input type="text" id="sfName" placeholder="Nom (ex : Blade Runner)">
+        <input type="text" id="sfIcon" placeholder="Icône (un emoji, ex : 🌃)">
+        <input type="text" id="sfGenre" placeholder="Genre (ex : sf, fantasy, perso)">
+        <input type="text" id="sfDesc" placeholder="Courte description affichée">
+        <textarea id="sfPrompt" placeholder="Le style visuel, de préférence en anglais. Ex : 1990s anime, cel shading, vibrant colors"></textarea>
+        <div class="row" style="margin-top:0"><button class="btn sm" onclick="toggleStyleForm(false)">Annuler</button><button class="btn primary sm" onclick="submitStyle()">Enregistrer</button></div>
+      </div>
     </div>
 
     <div class="card">
@@ -221,8 +229,20 @@ const STYLES=[
  {genre:'animation',name:'Simpson',icon:'🟡',desc:'Peau jaune, dessin télé',prompt:'The Simpsons cartoon style, yellow skin'},
  {genre:'animation',name:'Studio Ghibli',icon:'🌿',desc:'Nature luxuriante, ciels peints',prompt:'Studio Ghibli anime style, lush nature, hand-painted skies'},
  {genre:'horreur',name:'Horreur psychologique',icon:'👻',desc:'Ambiance sombre, brume',prompt:'psychological horror movie, dark atmosphere, fog'},
- {genre:'romance',name:'Romance cinématographique',icon:'❤️',desc:'Lumière douce, heure dorée',prompt:'cinematic romance, soft warm lighting, golden hour'}
+ {genre:'romance',name:'Romance cinématographique',icon:'❤️',desc:'Lumière douce, heure dorée',prompt:'cinematic romance, soft warm lighting, golden hour'},
+ {genre:'action',name:'Western spaghetti',icon:'🤠',desc:'Soleil écrasant, gros plans, poussière',prompt:'spaghetti western, Sergio Leone style, dusty desert, extreme close-ups, anamorphic lens'},
+ {genre:'sf',name:'Post-apocalyptique',icon:'☢️',desc:'Ruines, poussière, lumière orange',prompt:'post-apocalyptic wasteland, ruined city, orange dust haze, gritty'},
+ {genre:'noir',name:'Polar noir',icon:'🕵️',desc:'Noir et blanc, ombres dures, fumée',prompt:'film noir, black and white, hard shadows, venetian blind light, cigarette smoke'},
+ {genre:'animation',name:'Anime années 90',icon:'🎌',desc:'Cel shading, couleurs saturées',prompt:'1990s anime style, cel shading, vibrant colors, retro anime film'},
+ {genre:'animation',name:'Comics',icon:'💥',desc:'Encrage épais, trames, poses dynamiques',prompt:'american comic book style, bold ink outlines, halftone dots, dynamic poses'},
+ {genre:'documentaire',name:'Documentaire nature',icon:'🌍',desc:'Lumière naturelle, téléobjectif',prompt:'nature documentary, telephoto lens, natural light, ultra sharp'},
+ {genre:'documentaire',name:'Reportage JT',icon:'📰',desc:'Style journalistique, lumière plate',prompt:'television news report, photojournalism, natural flat light, handheld camera'},
+ {genre:'fantasy',name:'Fantasy épique',icon:'🐉',desc:'Châteaux, dragons, lumière épique',prompt:'epic fantasy movie, castles, dragons, volumetric light, painterly cinematic'},
+ {genre:'horreur',name:'Found footage VHS',icon:'📼',desc:'Grain VHS, caméra à l’épaule',prompt:'found footage horror, VHS grain, handheld camera, night vision, low quality'}
 ];
+let CUSTOM=[];try{CUSTOM=JSON.parse(localStorage.getItem('storylab_styles')||'[]')}catch(e){}
+const allStyles=()=>STYLES.concat(CUSTOM);
+function saveCustom(){try{localStorage.setItem('storylab_styles',JSON.stringify(CUSTOM))}catch(e){}}
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
@@ -238,27 +258,53 @@ function refreshKeyUI(){
 
 /* ---------- Init ---------- */
 document.addEventListener('DOMContentLoaded',()=>{
-  loadKeys();renderStyles();refreshKeyUI();
+  loadKeys();renderPills();renderStyles();refreshKeyUI();
   document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab,b)));
   document.querySelectorAll('#formatGrid .option-btn').forEach(btn=>btn.addEventListener('click',()=>{
     document.querySelectorAll('#formatGrid .option-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');APP.format=btn.dataset.format;
   }));
-  document.querySelectorAll('#genrePills .pill').forEach(btn=>btn.addEventListener('click',()=>{
-    document.querySelectorAll('#genrePills .pill').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');APP.genre=btn.dataset.genre;renderStyles();
-  }));
   document.querySelectorAll('input[type=file][data-target]').forEach(i=>i.addEventListener('change',()=>handlePhotoUpload(i,i.dataset.target)));
 });
 
+function renderPills(){
+  const box=$('genrePills');box.innerHTML='';
+  const genres=['Tous',...new Set(allStyles().map(s=>s.genre))];
+  if(!genres.includes(APP.genre))APP.genre='Tous';
+  genres.forEach(g=>{const p=document.createElement('div');p.className='pill'+(g===APP.genre?' active':'');p.textContent=g;p.onclick=()=>{APP.genre=g;renderPills();renderStyles()};box.appendChild(p)});
+}
 function renderStyles(){
   const list=$('stylesList');list.innerHTML='';
-  STYLES.filter(s=>APP.genre==='Tous'||s.genre===APP.genre).forEach(s=>{
+  allStyles().filter(s=>APP.genre==='Tous'||s.genre===APP.genre).forEach(s=>{
     const d=document.createElement('div');d.className='style-item'+(s.name===APP.style?' active':'');
-    d.innerHTML=`<div class="style-icon">${s.icon}</div><div><div class="style-name">${esc(s.name)}</div><div class="style-desc">${esc(s.desc)}</div></div>`;
+    d.innerHTML=`<div class="style-icon">${esc(s.icon)}</div><div style="flex:1"><div class="style-name">${esc(s.name)}</div><div class="style-desc">${esc(s.desc)}</div></div>`;
     d.addEventListener('click',()=>{APP.style=s.name;renderStyles()});
+    if(CUSTOM.includes(s)){
+      const a=document.createElement('div');a.className='style-actions';
+      const e=document.createElement('button');e.className='action-btn';e.textContent='✏️';e.onclick=ev=>{ev.stopPropagation();editStyle(s)};
+      const x=document.createElement('button');x.className='action-btn';x.textContent='🗑️';x.onclick=ev=>{ev.stopPropagation();deleteStyle(s)};
+      a.append(e,x);d.appendChild(a);
+    }
     list.appendChild(d);
   });
+}
+let editingStyle=null;
+function toggleStyleForm(show){$('styleForm').classList.toggle('hidden',!show)}
+function newStyle(){editingStyle=null;['sfName','sfIcon','sfDesc','sfPrompt'].forEach(i=>$(i).value='');$('sfGenre').value=APP.genre!=='Tous'?APP.genre:'perso';toggleStyleForm(true);$('sfName').focus()}
+function editStyle(s){editingStyle=s;$('sfName').value=s.name;$('sfIcon').value=s.icon;$('sfGenre').value=s.genre;$('sfDesc').value=s.desc;$('sfPrompt').value=s.prompt;toggleStyleForm(true)}
+function submitStyle(){
+  const name=$('sfName').value.trim(),pr=$('sfPrompt').value.trim();
+  if(!name||!pr){alert('Le nom et le style visuel sont obligatoires.');return}
+  if(allStyles().some(x=>x.name===name&&x!==editingStyle)){alert('Ce nom existe déjà.');return}
+  const o={genre:$('sfGenre').value.trim().toLowerCase()||'perso',name,icon:$('sfIcon').value.trim()||'🎨',desc:$('sfDesc').value.trim()||'Univers perso',prompt:pr};
+  if(editingStyle)Object.assign(editingStyle,o);else CUSTOM.push(o);
+  saveCustom();APP.style=name;toggleStyleForm(false);renderPills();renderStyles();
+}
+function deleteStyle(s){
+  if(!confirm('Supprimer « '+s.name+' » ?'))return;
+  CUSTOM.splice(CUSTOM.indexOf(s),1);saveCustom();
+  if(APP.style===s.name)APP.style=STYLES[0].name;
+  renderPills();renderStyles();
 }
 function switchTab(id,btn){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
@@ -327,7 +373,14 @@ async function generateImage(prompt,ratio='9:16',seed){
   catch(e){if(p.seed!=null&&/seed/i.test(e.message)){delete p.seed;d=await agnesCall('/images/generations',p)}else throw e}
   const it=d.data[0];return it.url||('data:image/png;base64,'+it.b64_json);
 }
-async function toBlob(url){try{const r=await fetch(url);if(!r.ok)return null;return await r.blob()}catch(e){return null}}
+async function toBlob(url){
+  if(url.startsWith('data:')){try{return await (await fetch(url)).blob()}catch(e){return null}}
+  const tries=[url,'https://corsproxy.io/?'+encodeURIComponent(url),'https://api.allorigins.win/raw?url='+encodeURIComponent(url)];
+  for(const u of tries){
+    try{const r=await fetch(u);if(!r.ok)continue;const b=await r.blob();if(b.size>1000&&/^image\//.test(b.type||'image/'))return b}catch(e){}
+  }
+  return null;
+}
 
 /* ---------- Téléchargement ---------- */
 function saveBlobAs(blob,name){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000)}
@@ -350,7 +403,7 @@ function updatePlanSlot(n){
   slot.append(act,img,lb);
 }
 function buildPrompt(scene){
-  const st=(STYLES.find(s=>s.name===APP.style)||STYLES[0]).prompt;
+  const st=(allStyles().find(s=>s.name===APP.style)||STYLES[0]).prompt;
   return `Cinematic photo. ${APP.character?`Main character (identical in every shot): [${APP.character}]. `:''}Scene: ${scene}. Style: ${st}. 8k.`;
 }
 async function renderPlan(n){
@@ -466,7 +519,13 @@ Réponds UNIQUEMENT avec un JSON valide, sans markdown : {"character":"fiche per
 
 /* ---------- Export zip / vidéo ---------- */
 function exportNote(t){const m=$('exportMsg');m.textContent=t;m.classList.toggle('hidden',!t)}
+async function ensureBlobs(){
+  exportNote('Récupération des images…');
+  for(const p of APP.plans){if(p.url&&!p.blob)p.blob=await toBlob(p.url)}
+  exportNote('');
+}
 async function exportZip(){
+  await ensureBlobs();
   const done=APP.plans.map((p,i)=>({p,n:i+1})).filter(x=>x.p.blob);
   if(!done.length){exportNote('Aucune image téléchargeable. Le serveur d’images bloque peut-être la copie : utilise ⬇️ sur chaque plan.');return}
   if(typeof JSZip==='undefined'){exportNote('Module zip indisponible (hors ligne ?).');return}
@@ -474,6 +533,7 @@ async function exportZip(){
   saveBlobAs(await z.generateAsync({type:'blob'}),'storylab_plans.zip');
 }
 async function exportVideo(){
+  await ensureBlobs();
   const done=APP.plans.filter(p=>p.blob);
   if(!done.length){exportNote('Aucune image exploitable pour la vidéo (copie bloquée par le serveur d’images).');return}
   if(!window.MediaRecorder){exportNote('Ce navigateur ne gère pas l’export vidéo.');return}
