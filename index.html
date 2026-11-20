@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>STORYLAB & AVATAR LAB // v9.1</title>
+<title>STORYLAB & AVATAR LAB // v9.2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -109,7 +109,7 @@
   .term-val { color: white; }
   .term-val.blue { color: #60a5fa; }
   .term-val.green { color: #34d399; }
-  .term-prompt { margin-top: 12px; padding-top: 12px; border-top: 1px solid #374151; white-space: pre-wrap; word-break: break-word; color: #d1d5db; }
+  .term-prompt { margin-top: 12px; padding-top: 12px; border-top: 1px solid #374151; white-space: pre-wrap; word-break: break-word; color: #d1d5db; font-size: 11px;}
 
   /* Grids */
   .plans-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
@@ -143,7 +143,7 @@
 
 <div class="header">
   <div class="header-top">
-    <div class="header-title">AGNES STUDIO <span>// v9.1</span></div>
+    <div class="header-title">AGNES STUDIO <span>// v9.2</span></div>
   </div>
   <div class="status-badges">
     <div class="badge" id="statusBadge"><div class="badge-dot"></div> Requête...</div>
@@ -269,7 +269,6 @@
         <div><div class="step-title">AVATAR ULTRA-RÉALISTE</div></div>
       </div>
       
-      <!-- UPLOAD PHOTO (Avatar) -->
       <div class="upload-row">
         <label class="upload-btn">
           📷 Importer un portrait (Référence)
@@ -326,7 +325,7 @@
 
 <script>
 /* ============================================================
-   LOGIQUE GLOBALE v9.1 (Avec Vision API)
+   LOGIQUE GLOBALE v9.2 (Corrections Boutons + Fidélité)
 ============================================================ */
 const AGNES_BASE = 'https://apihub.agnes-ai.com/v1';
 const AGNES_TEXT_MODEL = 'agnes-3.0-flash';
@@ -416,7 +415,7 @@ async function agnesCall(path, payload) {
   const key = APP.keys[Math.floor(Math.random() * APP.keys.length)];
   const res = await fetch(AGNES_BASE + path, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key }, body: JSON.stringify(payload) });
   const data = await res.json();
-  if (!res.ok) throw new Error(data.error?.message || 'Erreur API');
+  if (!res.ok) throw new Error(data.error?.message || 'Erreur inconnue API');
   return data;
 }
 
@@ -425,13 +424,13 @@ async function generateText(system, user) {
   return data.choices[0].message.content.trim();
 }
 
-// FONCTION VISION : Analyse une image et renvoie une description textuelle
+// FONCTION VISION : Extrait une description ultra précise du visage
 async function analyzeImage(base64Image) {
   const payload = {
     model: AGNES_TEXT_MODEL,
     messages: [
-      { role: "system", content: "Tu es un expert en analyse visuelle. Décris le visage, la coiffure, les traits distinctifs, les vêtements et la morphologie de la personne sur cette image de façon très précise. Si c'est un objet, décris-le. Sois factuel." },
-      { role: "user", content: [ { type: "text", text: "Décris cette image pour que je puisse recréer ce personnage avec une IA." }, { type: "image_url", image_url: { url: base64Image } } ] }
+      { role: "system", content: "Tu es un expert en biométrie. Décris UNIQUEMENT le visage et les traits physiques de la personne sur cette image : couleur des yeux, coiffure exacte, couleur des cheveux, forme du visage, âge apparent, sexe, et ce qu'elle porte. Sois extrêmement précis et descriptif. Ne décris pas le décor." },
+      { role: "user", content: [ { type: "text", text: "Décris ce visage." }, { type: "image_url", image_url: { url: base64Image } } ] }
     ]
   };
   const data = await agnesCall('/chat/completions', payload);
@@ -443,30 +442,67 @@ async function generateImage(prompt, ratio = '9:16') {
   return data.data[0].url || 'data:image/png;base64,' + data.data[0].b64_json;
 }
 
-// --- ACTIONS IMAGES ---
-async function downloadImage(url, filename) {
+// --- CORRECTION BOUTONS IMAGES (Plus stable) ---
+function downloadImage(url, filename) {
   try {
-    const res = await fetch(url); const blob = await res.blob();
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename; a.click(); URL.revokeObjectURL(a.href);
+    // Créer un lien temporaire pour forcer le téléchargement
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.target = "_blank"; // Sécurité si le navigateur bloque le download direct cross-origin
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   } catch(e) { window.open(url, '_blank'); }
 }
-window.regeneratePlan = async function(planNum, prompt) {
+
+window.regeneratePlan = async function(planNum, promptText) {
   const slot = document.getElementById(`slot-${planNum}`);
   slot.innerHTML = '<div style="font-size:12px; color:var(--text-muted);">Régénération...</div>';
   try {
-    const url = await generateImage(prompt, '9:16');
-    updatePlanSlot(planNum, url, prompt);
-  } catch(e) { alert('Erreur: ' + e.message); slot.innerHTML = '❌'; }
+    const url = await generateImage(promptText, '9:16');
+    updatePlanSlot(planNum, url, promptText);
+  } catch(e) { 
+    slot.innerHTML = `<div style="color:red; font-size:11px; padding:10px; text-align:center;">Erreur : ${e.message}</div>`; 
+  }
 };
-function updatePlanSlot(planNum, url, prompt) {
-  document.getElementById(`slot-${planNum}`).innerHTML = `
-    <div class="slot-actions">
-      <button class="action-btn" onclick="downloadImage('${url}', 'plan_${planNum}.jpg')" title="Télécharger">⬇️</button>
-      <button class="action-btn" onclick="regeneratePlan(${planNum}, \`${prompt.replace(/`/g, '\\`')}\`)" title="Régénérer">↻</button>
-    </div>
-    <img src="${url}">
-    <div class="plan-label">PLAN ${planNum}<div class="plan-status">done</div></div>
-  `;
+
+function updatePlanSlot(planNum, url, promptText) {
+  const slot = document.getElementById(`slot-${planNum}`);
+  if(!slot) return;
+  
+  // On vide le slot
+  slot.innerHTML = '';
+  
+  // Création des éléments via JS (évite les bugs de guillemets dans le HTML généré)
+  const actionsDiv = document.createElement('div');
+  actionsDiv.className = 'slot-actions';
+  
+  const dlBtn = document.createElement('button');
+  dlBtn.className = 'action-btn';
+  dlBtn.innerHTML = '⬇️';
+  dlBtn.title = 'Télécharger';
+  dlBtn.onclick = () => downloadImage(url, `plan_${planNum}.jpg`);
+  
+  const regenBtn = document.createElement('button');
+  regenBtn.className = 'action-btn';
+  regenBtn.innerHTML = '↻';
+  regenBtn.title = 'Régénérer';
+  regenBtn.onclick = () => window.regeneratePlan(planNum, promptText);
+  
+  actionsDiv.appendChild(dlBtn);
+  actionsDiv.appendChild(regenBtn);
+  
+  const img = document.createElement('img');
+  img.src = url;
+  
+  const labelDiv = document.createElement('div');
+  labelDiv.className = 'plan-label';
+  labelDiv.innerHTML = `PLAN ${planNum}<div class="plan-status">done</div>`;
+  
+  slot.appendChild(actionsDiv);
+  slot.appendChild(img);
+  slot.appendChild(labelDiv);
 }
 
 // --- ACTUALITÉS ---
@@ -528,34 +564,43 @@ async function startProduction() {
 
   const selectedStyle = STYLES.find(s => s.name === APP.style) || STYLES[0];
   let generatedImages = [];
+  let faceDescription = "";
 
   try {
-    // Étape 1 : Analyse de l'image si présente
+    // ÉTAPE 1 : Analyse visage
     if (hasPhoto) {
       updateControlRoom(1, 'active');
-      document.getElementById('termStatus').textContent = 'Analyse photo...';
-      const desc = await analyzeImage(APP.uploadedIdeaPhoto);
-      idea = `[PERSONNAGE DE RÉFÉRENCE : ${desc}] ` + idea; // On injecte la description
+      document.getElementById('termStatus').textContent = 'Analyse du visage...';
+      faceDescription = await analyzeImage(APP.uploadedIdeaPhoto);
       updateControlRoom(1, 'done');
     } else {
       updateControlRoom(1, 'done', 'Aucune photo');
     }
 
-    // Étape 2 : Scénario
+    // ÉTAPE 2 : Scénario
     updateControlRoom(2, 'active');
     document.getElementById('termStatus').textContent = 'Écriture scénario...';
-    const sysPrompt = `Tu es un réalisateur. Crée un storyboard de ${planCount} plans pour "${APP.format}" style "${APP.style}". Idée : "${idea}". Génère exactement ${planCount} descriptions en anglais. Format STRICT : 1. Description...`;
-    const scriptText = await generateText("Assistant production.", sysPrompt);
+    const sysPrompt = `Tu es un réalisateur. Crée un storyboard de ${planCount} plans pour "${APP.format}" style "${APP.style}". Idée : "${idea}". 
+    ATTENTION : Ne décris pas le physique des personnages dans le storyboard, on s'occupe de ça après. Décris seulement les ACTIONS et les CADRAGES (ex: "Plan large, l'homme court", "Gros plan sur son visage"). 
+    Génère exactement ${planCount} descriptions en anglais. Format STRICT : 1. Description...`;
     
+    const scriptText = await generateText("Assistant production.", sysPrompt);
     const plansPrompts = scriptText.split('\n').map(l => l.trim()).filter(l => /^\d+[\.\)]/.test(l)).map(l => l.replace(/^\d+[\.\)]\s*/, '')).slice(0, planCount);
-    while (plansPrompts.length < planCount) plansPrompts.push(`Cinematic shot of ${idea}, ${selectedStyle.prompt}`);
+    while (plansPrompts.length < planCount) plansPrompts.push(`Cinematic shot of ${idea}`);
     updateControlRoom(2, 'done');
 
-    // Étape 3 : Images
+    // ÉTAPE 3 : Images
     updateControlRoom(3, 'active');
     for (let i = 0; i < planCount; i++) {
       const planNum = i + 1;
-      const prompt = `Cinematic shot. ${plansPrompts[i]}. Style: ${selectedStyle.prompt}. 8k.`;
+      
+      // C'EST ICI LA MAGIE : On force la description du visage dans CHAQUE image
+      let prompt = "";
+      if (faceDescription) {
+        prompt = `Cinematic photo. The main character's face MUST strictly match this description: [${faceDescription}]. Action/Scene: ${plansPrompts[i]}. Style: ${selectedStyle.prompt}. 8k.`;
+      } else {
+        prompt = `Cinematic photo. Action/Scene: ${plansPrompts[i]}. Style: ${selectedStyle.prompt}. 8k.`;
+      }
       
       updateControlRoom(3, 'active', `Plan ${planNum}/${planCount}`);
       document.getElementById('termStatus').textContent = 'Génération...';
@@ -568,8 +613,11 @@ async function startProduction() {
         updatePlanSlot(planNum, imgUrl, prompt);
         document.getElementById('liveImage').src = imgUrl;
         generatedImages.push(imgUrl);
-        if (i < planCount - 1) await new Promise(r => setTimeout(r, 2000));
-      } catch (err) { document.getElementById(`slot-${planNum}`).innerHTML = `<div style="color:red; font-size:12px;">Erreur</div>`; }
+        // Cooldown augmenté à 3.5s pour éviter les erreurs de Rate Limit (API gratuite)
+        if (i < planCount - 1) await new Promise(r => setTimeout(r, 3500)); 
+      } catch (err) { 
+        document.getElementById(`slot-${planNum}`).innerHTML = `<div style="color:red; font-size:11px; padding:10px; text-align:center;">Erreur : ${err.message}</div>`; 
+      }
     }
 
     document.getElementById('livePercent').textContent = `100%`; document.getElementById('liveProgress').style.width = `100%`;
@@ -607,25 +655,39 @@ async function generateAvatar() {
     if (hasPhoto) {
       btn.innerHTML = '⏳ Analyse du visage...';
       const desc = await analyzeImage(APP.uploadedAvatarPhoto);
-      fullPrompt = `${stylePrefix}. Subject: [${desc}]. ${promptInput}. Highly detailed, masterpiece.`;
+      // On force la description complète
+      fullPrompt = `${stylePrefix}. Exact character description: [${desc}]. Additional details: ${promptInput}. Highly detailed, masterpiece.`;
       btn.innerHTML = '⏳ Génération...';
     } else {
       fullPrompt = `${stylePrefix}. Subject: ${promptInput}. Highly detailed, masterpiece.`;
     }
 
     const [url1, url2] = await Promise.all([generateImage(fullPrompt, ratio), generateImage(fullPrompt, ratio)]);
-    const slotHTML = (url) => `
-      <div class="slot-actions"><button class="action-btn" onclick="downloadImage('${url}', 'avatar.jpg')">⬇️</button></div>
-      <img src="${url}">
-    `;
-    document.getElementById('av-slot-1').innerHTML = slotHTML(url1);
-    document.getElementById('av-slot-2').innerHTML = slotHTML(url2);
+    
+    // Fonction locale pour injecter les slots avatars
+    const fillAvSlot = (slotId, url) => {
+      const slot = document.getElementById(slotId);
+      slot.innerHTML = '';
+      const actDiv = document.createElement('div');
+      actDiv.className = 'slot-actions';
+      const btnDl = document.createElement('button');
+      btnDl.className = 'action-btn'; btnDl.innerHTML = '⬇️';
+      btnDl.onclick = () => downloadImage(url, 'avatar.jpg');
+      actDiv.appendChild(btnDl);
+      
+      const img = document.createElement('img'); img.src = url;
+      slot.appendChild(actDiv); slot.appendChild(img);
+    };
+
+    fillAvSlot('av-slot-1', url1);
+    fillAvSlot('av-slot-2', url2);
 
     saveToHistory({ type: 'AVATAR', title: (hasPhoto ? 'Avatar (Photo)' : promptInput.substring(0, 30)), style: 'Avatar', images: [url1, url2] });
 
   } catch (err) {
     alert('Erreur : ' + err.message);
-    document.getElementById('av-slot-1').innerHTML = '❌'; document.getElementById('av-slot-2').innerHTML = '❌';
+    document.getElementById('av-slot-1').innerHTML = `<div style="color:red; font-size:11px; text-align:center;">Erreur : ${err.message}</div>`; 
+    document.getElementById('av-slot-2').innerHTML = '';
   } finally {
     btn.disabled = false; btn.innerHTML = '👤 Générer l\'avatar (x2)';
   }
