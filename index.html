@@ -3,170 +3,100 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>STORYLAB & AVATAR LAB // v9.2</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<title>STORYLAB & AVATAR LAB // v9.3</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
-  :root {
-    --bg: #f3f4f6; --card: #ffffff; --text: #111827; --text-muted: #6b7280;
-    --primary: #0ea5e9; --primary-light: #e0f2fe; --success: #10b981;
-    --border: #e5e7eb; --dark-bg: #111827; --radius: 16px;
-    --font: 'Inter', sans-serif; --mono: 'JetBrains Mono', monospace;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.5; padding-bottom: 40px; }
-  .hidden { display: none !important; }
-
-  /* Header & Tabs */
-  .header { background: var(--bg); padding: 16px 20px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); }
-  .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-  .header-title { font-size: 16px; font-weight: 700; }
-  .header-title span { color: var(--text-muted); font-weight: 400; font-size: 14px; }
-  .status-badges { display: flex; gap: 8px; }
-  .badge { background: var(--card); border: 1px solid var(--border); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 6px; cursor: pointer; }
-  .badge-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); }
-  .badge-dot.green { background: var(--success); }
-
-  .tabs-container { display: flex; background: #e5e7eb; border-radius: 12px; padding: 4px; margin-bottom: 20px; overflow-x: auto; }
-  .tab-btn { flex: 1; text-align: center; padding: 10px; border-radius: 8px; font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; border: none; background: transparent; white-space: nowrap; transition: 0.2s; }
-  .tab-btn.active { background: var(--card); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-
-  /* Cards & Layout */
-  .container { padding: 16px 20px; max-width: 600px; margin: 0 auto; }
-  .card { background: var(--card); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-  .card-header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
-  .step-num { background: var(--text); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; flex-shrink: 0; }
-  .step-num.green { background: var(--success); }
-  .step-title { font-size: 16px; font-weight: 700; text-transform: uppercase; }
-  .step-subtitle { font-size: 12px; color: var(--text-muted); text-transform: uppercase; }
-
-  /* Forms */
-  select.select-btn, .idea-textarea {
-    width: 100%; border: 1px solid var(--border); border-radius: 12px; padding: 12px; font-family: var(--font); font-size: 14px; background: var(--card); outline: none; cursor: pointer;
-  }
-  select.select-btn { appearance: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14'><path d='M2 5l5 5 5-5' fill='none' stroke='%236b7280' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/></svg>"); background-repeat: no-repeat; background-position: right 12px center; }
-  select.select-btn:focus, .idea-textarea:focus { border-color: var(--primary); }
-  .idea-textarea { min-height: 120px; resize: vertical; cursor: text; }
-  .dropdowns { display: flex; gap: 12px; margin-bottom: 16px; }
-
-  /* Upload Photo */
-  .upload-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-  .upload-btn {
-    display: flex; align-items: center; gap: 8px; background: var(--primary-light); color: var(--primary); 
-    border: 1px dashed var(--primary); padding: 10px 16px; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; width: 100%; justify-content: center;
-  }
-  .upload-btn input { display: none; }
-  .photo-preview { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; border: 2px solid var(--primary); display: none; }
-
-  /* UI Elements */
-  .grid-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .option-btn { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; text-align: center; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 6px; }
-  .option-btn.active { border-color: var(--primary); background: var(--primary-light); }
-  .option-icon { font-size: 24px; }
-  .option-title { font-weight: 600; font-size: 14px; }
-  .option-desc { font-size: 12px; color: var(--text-muted); }
-
-  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
-  .pill { background: #f3f4f6; padding: 6px 14px; border-radius: 20px; font-size: 13px; cursor: pointer; border: 1px solid transparent; }
-  .pill.active { background: var(--text); color: white; }
-
-  .styles-list { display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto; padding-right: 4px; }
-  .style-item { border: 1px solid var(--border); border-radius: 12px; padding: 12px; cursor: pointer; display: flex; align-items: center; gap: 12px; }
-  .style-item.active { border-color: var(--primary); background: var(--primary-light); }
-  .style-icon { font-size: 24px; }
-  .style-info { flex: 1; }
-  .style-name { font-weight: 600; font-size: 14px; }
-  .style-desc { font-size: 11px; color: var(--text-muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-
-  .btn-primary { width: 100%; background: #1a73e8; color: white; border: none; border-radius: 12px; padding: 16px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
-  .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
-  .btn-secondary { width: 100%; background: #f3f4f6; color: var(--text); border: none; border-radius: 12px; padding: 16px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
-  .alert-success { background: #ecfdf5; color: #065f46; padding: 12px; border-radius: 8px; font-size: 13px; margin-top: 12px; text-align: center; }
-
-  /* Live Preview & Terminal */
-  .live-preview { background: black; border-radius: var(--radius); overflow: hidden; margin-bottom: 16px; position: relative; }
-  .live-preview img { width: 100%; height: auto; display: block; max-height: 400px; object-fit: contain; }
-  .live-overlay { position: absolute; top: 12px; left: 12px; background: rgba(0,0,0,0.6); color: white; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
-  .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); }
-  .progress-container { padding: 16px; background: var(--card); }
-  .progress-labels { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; }
-  .progress-bar { width: 100%; height: 6px; background: #e5e7eb; border-radius: 3px; overflow: hidden; }
-  .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.3s; }
-
-  .control-list { display: flex; flex-direction: column; }
-  .control-item { display: flex; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--border); }
-  .control-item:last-child { border-bottom: none; }
-  .control-icon { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: white; flex-shrink: 0; }
-  .control-icon.done { background: var(--success); }
-  .control-icon.active { background: var(--primary); }
-  .control-icon.pending { background: #e5e7eb; color: var(--text-muted); }
-  .control-title { font-weight: 600; font-size: 14px; }
-  .control-desc { font-size: 12px; color: var(--text-muted); }
-  
-  .terminal { background: var(--dark-bg); border-radius: 12px; padding: 16px; font-family: var(--mono); font-size: 12px; color: #9ca3af; line-height: 1.6; }
-  .term-row { display: flex; justify-content: space-between; }
-  .term-val { color: white; }
-  .term-val.blue { color: #60a5fa; }
-  .term-val.green { color: #34d399; }
-  .term-prompt { margin-top: 12px; padding-top: 12px; border-top: 1px solid #374151; white-space: pre-wrap; word-break: break-word; color: #d1d5db; font-size: 11px;}
-
-  /* Grids */
-  .plans-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  .avatar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
-  .history-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
-
-  .plan-slot, .avatar-slot { background: #e5e7eb; border-radius: 12px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; color: #9ca3af; }
-  .plan-slot { aspect-ratio: 9/16; }
-  .avatar-slot { aspect-ratio: 3/4; }
-  .plan-slot img, .avatar-slot img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  
-  .slot-actions { position: absolute; top: 8px; right: 8px; display: flex; gap: 4px; z-index: 10; }
-  .action-btn { background: rgba(255,255,255,0.9); border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 14px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: 0.2s; }
-  .action-btn:hover { background: white; transform: scale(1.1); }
-
-  .plan-label { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.9); padding: 6px; font-size: 11px; font-weight: 600; color: var(--text); display: flex; flex-direction: column; }
-  .plan-status { color: var(--success); font-size: 10px; }
-
-  .history-card { border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
-  .history-title { font-weight: 700; font-size: 14px; margin-bottom: 8px; }
-  .history-meta { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
-  .history-thumbs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; }
-  .history-thumbs img { width: 80px; height: 140px; object-fit: cover; border-radius: 8px; cursor: pointer; }
-
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; }
-  .modal-overlay.open { display: flex; }
-  .modal { background: var(--card); border-radius: 16px; width: 100%; max-width: 400px; padding: 20px; }
+:root{--bg:#f3f4f6;--card:#fff;--text:#111827;--muted:#6b7280;--primary:#0ea5e9;--pl:#e0f2fe;--ok:#10b981;--err:#dc2626;--border:#e5e7eb;--dark:#111827;--r:16px;--font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.5;padding-bottom:40px}
+.hidden{display:none!important}
+.header{background:var(--bg);padding:16px 20px 4px;position:sticky;top:0;z-index:100;border-bottom:1px solid var(--border)}
+.header-title{font-size:16px;font-weight:700;margin-bottom:10px}.header-title span{color:var(--muted);font-weight:400;font-size:14px}
+.badges{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.badge{background:var(--card);border:1px solid var(--border);padding:6px 12px;border-radius:20px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:6px;cursor:pointer}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}.dot.green{background:var(--ok)}.dot.blue{background:var(--primary)}.dot.red{background:var(--err)}
+.tabs{display:flex;background:var(--border);border-radius:12px;padding:4px;margin-bottom:20px;overflow-x:auto}
+.tab-btn{flex:1;padding:10px;border-radius:8px;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;border:0;background:transparent;white-space:nowrap}
+.tab-btn.active{background:var(--card);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.container{padding:16px 20px;max-width:600px;margin:0 auto}
+.card{background:var(--card);border-radius:var(--r);padding:20px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.card-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px}
+.step-num{background:var(--text);color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
+.step-title{font-size:16px;font-weight:700;text-transform:uppercase}.step-sub{font-size:12px;color:var(--muted);text-transform:uppercase}
+select,textarea,input[type=text]{width:100%;border:1px solid var(--border);border-radius:12px;padding:12px;font-family:var(--font);font-size:14px;background:var(--card);outline:none}
+select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14'><path d='M2 5l5 5 5-5' fill='none' stroke='%236b7280' stroke-width='1.8' stroke-linecap='round'/></svg>");background-repeat:no-repeat;background-position:right 12px center}
+select:focus,textarea:focus,input:focus{border-color:var(--primary)}
+textarea{min-height:110px;resize:vertical}
+.row{display:flex;gap:12px;margin-top:12px}
+.upload-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.upload-btn{display:flex;align-items:center;gap:8px;background:var(--pl);color:var(--primary);border:1px dashed var(--primary);padding:10px 16px;border-radius:12px;font-weight:600;font-size:14px;cursor:pointer;width:100%;justify-content:center;text-align:center}
+.upload-btn input{display:none}
+.photo-preview{width:60px;height:60px;border-radius:8px;object-fit:cover;border:2px solid var(--primary);display:none}
+.grid-options{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.option-btn{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px}
+.option-btn.active{border-color:var(--primary);background:var(--pl)}
+.option-icon{font-size:24px}.option-title{font-weight:600;font-size:14px}.option-desc{font-size:12px;color:var(--muted)}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.pill{background:#f3f4f6;padding:6px 14px;border-radius:20px;font-size:13px;cursor:pointer}.pill.active{background:var(--text);color:#fff}
+.styles-list{display:flex;flex-direction:column;gap:8px;max-height:250px;overflow-y:auto}
+.style-item{border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;display:flex;align-items:center;gap:12px}
+.style-item.active{border-color:var(--primary);background:var(--pl)}
+.style-icon{font-size:24px}.style-name{font-weight:600;font-size:14px}.style-desc{font-size:11px;color:var(--muted)}
+.btn{width:100%;border:0;border-radius:12px;padding:16px;font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;background:#f3f4f6;color:var(--text)}
+.btn.primary{background:#1a73e8;color:#fff}.btn.danger{background:#fee2e2;color:var(--err)}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.btn.sm{padding:10px;font-size:14px}
+.alert{padding:12px;border-radius:8px;font-size:13px;margin-top:12px;text-align:center;background:#ecfdf5;color:#065f46}
+.alert.warn{background:#fef3c7;color:#92400e}
+.live{background:#000;border-radius:var(--r);overflow:hidden;margin-bottom:16px;position:relative}
+.live img{width:100%;max-height:400px;object-fit:contain;display:block}
+.live-tag{position:absolute;top:12px;left:12px;background:rgba(0,0,0,.6);color:#fff;padding:4px 10px;border-radius:12px;font-size:12px;font-weight:600}
+.prog{padding:16px;background:var(--card)}
+.prog-l{display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:8px}
+.bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden}.fill{height:100%;background:var(--primary);width:0;transition:width .3s}
+.ctrl{display:flex;gap:16px;padding:14px 0;border-bottom:1px solid var(--border)}.ctrl:last-child{border:0}
+.ci{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;flex-shrink:0;background:var(--border)}
+.ci.done{background:var(--ok)}.ci.active{background:var(--primary)}.ci.error{background:var(--err)}
+.ct{font-weight:600;font-size:14px}.cd{font-size:12px;color:var(--muted)}
+.terminal{background:var(--dark);border-radius:12px;padding:16px;font-family:var(--mono);font-size:12px;color:#9ca3af}
+.term-row{display:flex;justify-content:space-between}.term-val{color:#60a5fa}
+.term-prompt{margin-top:12px;padding-top:12px;border-top:1px solid #374151;white-space:pre-wrap;word-break:break-word;color:#d1d5db;font-size:11px}
+.plans-grid,.avatar-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.avatar-grid{margin-top:4px}
+.slot{background:var(--border);border-radius:12px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#9ca3af}
+.plan-slot{aspect-ratio:9/16}.av-slot{aspect-ratio:3/4}
+.slot img{width:100%;height:100%;object-fit:cover;display:block}
+.slot-actions{position:absolute;top:8px;right:8px;display:flex;gap:4px;z-index:10}
+.action-btn{background:rgba(255,255,255,.9);border:0;border-radius:50%;width:32px;height:32px;font-size:14px;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,.2)}
+.plan-label{position:absolute;bottom:0;left:0;right:0;background:rgba(255,255,255,.9);padding:6px;font-size:11px;font-weight:600}
+.slot-msg{font-size:12px;color:var(--muted);padding:10px;text-align:center;font-weight:400}.slot-msg.err{color:var(--err)}
+.hist-card{border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px}
+.hist-title{font-weight:700;font-size:14px;margin-bottom:4px}.hist-meta{font-size:12px;color:var(--muted);margin-bottom:12px}
+.thumbs{display:flex;gap:8px;overflow-x:auto}.thumbs img{width:80px;height:140px;object-fit:cover;border-radius:8px;cursor:pointer}
+.news-item{border:1px solid var(--border);border-radius:8px;padding:12px;cursor:pointer;font-size:13px;font-weight:600}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}.modal{background:var(--card);border-radius:16px;width:100%;max-width:400px;padding:20px}
 </style>
 </head>
 <body>
-
 <div class="header">
-  <div class="header-top">
-    <div class="header-title">AGNES STUDIO <span>// v9.2</span></div>
-  </div>
-  <div class="status-badges">
-    <div class="badge" id="statusBadge"><div class="badge-dot"></div> Requête...</div>
-    <div class="badge" id="apiBadge" onclick="openApiModal()"><div class="badge-dot green"></div> Agnes connectée</div>
+  <div class="header-title">STORYLAB & AVATAR LAB <span>// v9.3</span></div>
+  <div class="badges">
+    <div class="badge" id="statusBadge"><div class="dot"></div><span>Inactif</span></div>
+    <div class="badge" id="apiBadge" onclick="openApiModal()"><div class="dot"></div><span>Clé API</span></div>
   </div>
 </div>
 
 <div class="container">
-  <div class="tabs-container">
-    <button class="tab-btn active" onclick="switchTab('studio')">🎬 STORYLAB</button>
-    <button class="tab-btn" onclick="switchTab('avatar')">👤 AVATAR LAB</button>
-    <button class="tab-btn" onclick="switchTab('history')">📂 HISTORIQUE</button>
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="studio">🎬 STORYLAB</button>
+    <button class="tab-btn" data-tab="avatar">👤 AVATAR LAB</button>
+    <button class="tab-btn" data-tab="history">📂 HISTORIQUE</button>
   </div>
 
-  <!-- ========================================== -->
-  <!-- CONTENU STORYLAB                           -->
-  <!-- ========================================== -->
   <div id="tab-studio">
     <div class="card">
-      <div class="card-header">
-        <div class="step-num">1</div>
-        <div><div class="step-title">FORMAT</div><div class="step-subtitle">TYPE DE VIDÉO</div></div>
-      </div>
+      <div class="card-header"><div class="step-num">1</div><div><div class="step-title">Format</div><div class="step-sub">Type de vidéo</div></div></div>
       <div class="grid-options" id="formatGrid">
         <div class="option-btn active" data-format="Court-métrage"><div class="option-icon">🎬</div><div class="option-title">Court-métrage</div><div class="option-desc">Fiction</div></div>
         <div class="option-btn" data-format="JT / Reportage"><div class="option-icon">📺</div><div class="option-title">JT / Reportage</div><div class="option-desc">Info</div></div>
@@ -176,545 +106,455 @@
     </div>
 
     <div class="card">
-      <div class="card-header">
-        <div class="step-num green">✓</div>
-        <div><div class="step-title">UNIVERS VISUEL</div></div>
-      </div>
+      <div class="card-header"><div class="step-num">2</div><div><div class="step-title">Univers visuel</div></div></div>
       <div class="pills" id="genrePills">
-        <div class="pill active" data-genre="Tous">Tous</div>
-        <div class="pill" data-genre="action">action</div>
-        <div class="pill" data-genre="sf">sf</div>
-        <div class="pill" data-genre="animation">animation</div>
-        <div class="pill" data-genre="horreur">horreur</div>
-        <div class="pill" data-genre="romance">romance</div>
+        <div class="pill active" data-genre="Tous">Tous</div><div class="pill" data-genre="action">action</div><div class="pill" data-genre="sf">sf</div>
+        <div class="pill" data-genre="animation">animation</div><div class="pill" data-genre="horreur">horreur</div><div class="pill" data-genre="romance">romance</div>
       </div>
       <div class="styles-list" id="stylesList"></div>
     </div>
 
     <div class="card">
-      <div class="card-header">
-        <div class="step-num green">✓</div>
-        <div><div class="step-title">ACTUALITÉ</div><div class="step-subtitle">GOOGLE NEWS</div></div>
-      </div>
-      <button class="btn-primary" style="background:#f3f4f6; color:var(--text); margin-bottom:12px;" onclick="loadRealNews()">📰 Charger les actus</button>
-      <div id="newsList" style="display:flex; flex-direction:column; gap:8px; max-height:200px; overflow-y:auto;"></div>
+      <div class="card-header"><div class="step-num">3</div><div><div class="step-title">Actualité</div><div class="step-sub">Google News</div></div></div>
+      <button class="btn sm" onclick="loadRealNews()" style="margin-bottom:12px">📰 Charger les actus</button>
+      <div id="newsList" style="display:flex;flex-direction:column;gap:8px;max-height:220px;overflow-y:auto"></div>
     </div>
 
     <div class="card">
-      <div class="card-header">
-        <div class="step-num">5</div>
-        <div><div class="step-title">TON IDÉE / SCÉNARIO</div><div class="step-subtitle">SOIS PRÉCIS</div></div>
-      </div>
-      
-      <!-- UPLOAD PHOTO (Storylab) -->
+      <div class="card-header"><div class="step-num">4</div><div><div class="step-title">Ton idée / scénario</div><div class="step-sub">Sois précis</div></div></div>
       <div class="upload-row">
-        <label class="upload-btn">
-          📷 Importer une photo (visage) - Optionnel
-          <input type="file" accept="image/*" onchange="handlePhotoUpload(this, 'idea')">
-        </label>
-        <img id="ideaPhotoPreview" class="photo-preview">
+        <label class="upload-btn">📷 Importer une photo (visage), optionnel<input type="file" accept="image/*" data-target="idea"></label>
+        <img id="ideaPhotoPreview" class="photo-preview" alt="">
       </div>
-
-      <textarea class="idea-textarea" id="ideaInput" placeholder="Décris ta scène en détail : un homme en costume se réveille sur la lune, éclairage cinématographique, plan large..."></textarea>
-      
-      <div class="dropdowns" style="margin-top:12px;">
-        <select class="select-btn" id="planCountSelect">
-          <option value="4">4 plans</option>
-          <option value="10" selected>10 plans</option>
-        </select>
+      <textarea id="ideaInput" placeholder="Décris ta scène : un homme en costume se réveille sur la lune, plan large…"></textarea>
+      <div class="row">
+        <select id="planCountSelect"><option value="4">4 plans</option><option value="10" selected>10 plans</option></select>
       </div>
-      <button class="btn-primary" id="launchBtn" onclick="startProduction()">🎬 Lancer la production</button>
-      <div class="alert-success" id="readyAlert">✓ Prêt.</div>
+      <div class="row">
+        <button class="btn primary" id="launchBtn" onclick="startProduction()">🎬 Lancer la production</button>
+        <button class="btn danger hidden" id="cancelBtn" style="width:auto" onclick="APP.cancel=true">Annuler</button>
+      </div>
+      <div class="alert" id="readyAlert"></div>
     </div>
 
-    <div class="live-preview" id="livePreview" style="display:none;">
-      <div class="live-overlay"><div class="live-dot"></div> LIVE</div>
-      <img id="liveImage" src="" alt="Live">
-      <div class="progress-container">
-        <div class="progress-labels"><span id="liveLabel">IMAGE 1</span><span id="livePercent">0%</span></div>
-        <div class="progress-bar"><div class="progress-fill" id="liveProgress"></div></div>
-      </div>
+    <div class="live hidden" id="livePreview">
+      <div class="live-tag">LIVE</div>
+      <img id="liveImage" src="" alt="Aperçu en direct">
+      <div class="prog"><div class="prog-l"><span id="liveLabel">Plan 1</span><span id="livePercent">0%</span></div><div class="bar"><div class="fill" id="liveProgress"></div></div></div>
     </div>
 
-    <div class="card" id="controlRoom" style="display:none;">
-      <div class="card-header"><div><div class="step-title">CONTROL ROOM</div></div></div>
-      <div class="control-list">
-        <div class="control-item" data-step="1"><div class="control-icon pending">1</div><div class="control-text"><div class="control-title">Analyse Photo (si fournie)</div></div></div>
-        <div class="control-item" data-step="2"><div class="control-icon pending">2</div><div class="control-text"><div class="control-title">Création du Scénario</div></div></div>
-        <div class="control-item" data-step="3"><div class="control-icon pending">3</div><div class="control-text"><div class="control-title">Production Visuelle</div><div class="control-desc" id="prodDesc">Plan 0/10</div></div></div>
-      </div>
+    <div class="card hidden" id="controlRoom">
+      <div class="card-header"><div class="step-title">Control room</div></div>
+      <div class="ctrl"><div class="ci" id="ci1">1</div><div><div class="ct">Fiche personnage</div><div class="cd" id="cd1"></div></div></div>
+      <div class="ctrl"><div class="ci" id="ci2">2</div><div><div class="ct">Scénario</div><div class="cd" id="cd2"></div></div></div>
+      <div class="ctrl"><div class="ci" id="ci3">3</div><div><div class="ct">Production visuelle</div><div class="cd" id="cd3"></div></div></div>
     </div>
 
-    <div class="card" id="aiActivity" style="display:none;">
-      <div class="card-header"><div class="step-title">AI ACTIVITY</div></div>
+    <div class="card hidden" id="aiActivity">
+      <div class="card-header"><div class="step-title">AI activity</div></div>
       <div class="terminal">
-        <div class="term-row"><span>Statut</span> <span class="term-val blue" id="termStatus">Requête...</span></div>
-        <div class="term-prompt" id="termPrompt">Setting...</div>
+        <div class="term-row"><span>Statut</span><span class="term-val" id="termStatus">—</span></div>
+        <div class="term-prompt" id="termPrompt"></div>
       </div>
     </div>
 
-    <div class="card" id="plansCard" style="display:none;">
-      <div class="card-header"><div class="step-title">PLANS</div></div>
+    <div class="card hidden" id="plansCard">
+      <div class="card-header"><div class="step-title">Plans</div></div>
       <div class="plans-grid" id="plansGrid"></div>
+      <div class="row" id="exportRow">
+        <button class="btn sm" onclick="exportZip()">📦 Zip des plans</button>
+        <button class="btn sm" onclick="exportVideo()">🎞️ Vidéo</button>
+      </div>
+      <div class="alert warn hidden" id="exportMsg"></div>
     </div>
   </div>
 
-  <!-- ========================================== -->
-  <!-- CONTENU AVATAR LAB                         -->
-  <!-- ========================================== -->
   <div id="tab-avatar" class="hidden">
     <div class="card">
-      <div class="card-header">
-        <div class="step-num" style="background:var(--primary);">1</div>
-        <div><div class="step-title">AVATAR ULTRA-RÉALISTE</div></div>
-      </div>
-      
+      <div class="card-header"><div class="step-num">1</div><div><div class="step-title">Avatar ultra-réaliste</div></div></div>
       <div class="upload-row">
-        <label class="upload-btn">
-          📷 Importer un portrait (Référence)
-          <input type="file" accept="image/*" onchange="handlePhotoUpload(this, 'avatar')">
-        </label>
-        <img id="avatarPhotoPreview" class="photo-preview">
+        <label class="upload-btn">📷 Importer un portrait (référence)<input type="file" accept="image/*" data-target="avatar"></label>
+        <img id="avatarPhotoPreview" class="photo-preview" alt="">
       </div>
-
-      <textarea class="idea-textarea" id="avatarPrompt" placeholder="Ex: (Si tu importes une photo, décris juste le style ou la tenue. Sinon, décris le physique : Femme 30 ans, cheveux roux...)"></textarea>
-      <div class="dropdowns" style="margin-top:12px;">
-        <select class="select-btn" id="avatarStyle">
-          <option value="ultra-realistic photograph, 8k, highly detailed skin texture, cinematic lighting, shot on 85mm lens">📸 Ultra Réaliste</option>
+      <textarea id="avatarPrompt" placeholder="Avec une photo, décris juste le style ou la tenue. Sinon décris le physique : femme 30 ans, cheveux roux…"></textarea>
+      <div class="row">
+        <select id="avatarStyle">
+          <option value="ultra-realistic photograph, 8k, highly detailed skin texture, cinematic lighting, shot on 85mm lens">📸 Ultra réaliste</option>
           <option value="3d character design, unreal engine 5, ray tracing, 8k resolution">🧊 3D Engine (UE5)</option>
           <option value="cinematic portrait, dramatic lighting, movie still, 35mm film">🎬 Cinéma</option>
         </select>
-        <select class="select-btn" id="avatarRatio">
-          <option value="3:4">Portrait (3:4)</option>
-          <option value="1:1">Carré (1:1)</option>
-        </select>
+        <select id="avatarRatio"><option value="3:4">Portrait (3:4)</option><option value="1:1">Carré (1:1)</option></select>
       </div>
-      <button class="btn-primary" id="avatarBtn" onclick="generateAvatar()">👤 Générer l'avatar (x2)</button>
+      <div class="row"><button class="btn primary" id="avatarBtn" onclick="generateAvatar()">👤 Générer l'avatar (x2)</button></div>
     </div>
-    <div class="card" id="avatarResultCard" style="display:none;">
-      <div class="avatar-grid" id="avatarGrid">
-        <div class="avatar-slot" id="av-slot-1">1</div>
-        <div class="avatar-slot" id="av-slot-2">2</div>
-      </div>
+    <div class="card hidden" id="avatarResultCard">
+      <div class="avatar-grid"><div class="slot av-slot" id="av-slot-1">1</div><div class="slot av-slot" id="av-slot-2">2</div></div>
     </div>
   </div>
 
-  <!-- ========================================== -->
-  <!-- CONTENU HISTORIQUE                         -->
-  <!-- ========================================== -->
   <div id="tab-history" class="hidden">
     <div class="card">
-      <div class="card-header"><div class="step-title">MES CRÉATIONS</div></div>
-      <button class="btn-secondary" onclick="clearHistory()" style="margin-bottom:16px;">🗑️ Effacer l'historique</button>
-      <div id="historyList" class="history-grid"></div>
+      <div class="card-header"><div class="step-title">Mes créations</div></div>
+      <button class="btn danger sm" onclick="clearHistory()" style="margin-bottom:16px">🗑️ Effacer l'historique</button>
+      <div id="historyList"></div>
     </div>
   </div>
-
 </div>
 
 <div class="modal-overlay" id="apiModal">
   <div class="modal">
-    <h2 style="margin-bottom:16px;">🔑 Clés API Agnes</h2>
-    <textarea id="apiKeyInput" style="width:100%; height:100px; padding:12px; border:1px solid var(--border); border-radius:8px; font-family:var(--mono); font-size:12px; margin-bottom:16px; resize:none;"></textarea>
-    <div style="display:flex; gap:8px;">
-      <button class="btn-secondary" onclick="closeApiModal()">Annuler</button>
-      <button class="btn-primary" onclick="saveApiKeys()">Sauvegarder</button>
-    </div>
+    <h2 style="margin-bottom:8px">🔑 Clés API Agnes</h2>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Une clé par ligne, commençant par sk-</p>
+    <textarea id="apiKeyInput" style="height:100px;font-family:var(--mono);font-size:12px;margin-bottom:16px;resize:none"></textarea>
+    <div style="display:flex;gap:8px"><button class="btn" onclick="closeApiModal()">Annuler</button><button class="btn primary" onclick="saveApiKeys()">Sauvegarder</button></div>
   </div>
 </div>
 
 <script>
-/* ============================================================
-   LOGIQUE GLOBALE v9.2 (Corrections Boutons + Fidélité)
-============================================================ */
-const AGNES_BASE = 'https://apihub.agnes-ai.com/v1';
-const AGNES_TEXT_MODEL = 'agnes-3.0-flash';
-const AGNES_IMG_MODEL = 'agnes-image-2.5-flash';
-
-const APP = {
-  format: 'Court-métrage', genre: 'Tous', style: 'Kung-fu classique',
-  keys: [], isProducing: false, uploadedIdeaPhoto: null, uploadedAvatarPhoto: null
-};
-
-const STYLES = [
-  { genre: 'action', name: 'Kung-fu classique', icon: '🥋', desc: 'Chorégraphie lisible...', prompt: 'classic kung-fu movie style, 1970s martial arts film' },
-  { genre: 'action', name: 'Shaolin 70s', icon: '🏯', desc: 'Grain 16mm lourd...', prompt: '1970s Shaw Brothers kung fu movie, 16mm film grain' },
-  { genre: 'sf', name: 'Science-fiction', icon: '🚀', desc: 'Néons, hologrammes...', prompt: 'futuristic sci-fi movie, massive architecture, neon lights' },
-  { genre: 'sf', name: 'Cyberpunk 2077', icon: '🌆', desc: 'Pluie, chrome, néons...', prompt: 'Cyberpunk 2077 style, neon lights, rainy night, high tech low life' },
-  { genre: 'animation', name: 'Simpson', icon: '🟡', desc: 'Jaune poussin...', prompt: 'The Simpsons cartoon style, yellow skin' },
-  { genre: 'animation', name: 'Studio Ghibli', icon: '🌿', desc: 'Nature luxuriante...', prompt: 'Studio Ghibli anime style, lush nature, hand-painted skies' },
-  { genre: 'horreur', name: 'Horreur Psychologique', icon: '👻', desc: 'Ambiance sombre...', prompt: 'psychological horror movie, dark atmosphere, fog' },
-  { genre: 'romance', name: 'Romance Cinématographique', icon: '❤️', desc: 'Lumière douce...', prompt: 'cinematic romance, soft warm lighting, golden hour' }
+const AGNES_BASE='https://apihub.agnes-ai.com/v1', TEXT_MODEL='agnes-3.0-flash', IMG_MODEL='agnes-image-2.5-flash';
+const APP={format:'Court-métrage',genre:'Tous',style:'Kung-fu classique',keys:[],busy:false,cancel:false,photos:{idea:null,avatar:null},plans:[]};
+const STYLES=[
+ {genre:'action',name:'Kung-fu classique',icon:'🥋',desc:'Chorégraphie lisible, cadres larges',prompt:'classic kung-fu movie style, 1970s martial arts film'},
+ {genre:'action',name:'Shaolin 70s',icon:'🏯',desc:'Grain 16mm lourd, couleurs chaudes',prompt:'1970s Shaw Brothers kung fu movie, 16mm film grain'},
+ {genre:'sf',name:'Science-fiction',icon:'🚀',desc:'Néons, hologrammes, architecture massive',prompt:'futuristic sci-fi movie, massive architecture, neon lights'},
+ {genre:'sf',name:'Cyberpunk 2077',icon:'🌆',desc:'Pluie, chrome, néons',prompt:'Cyberpunk 2077 style, neon lights, rainy night, high tech low life'},
+ {genre:'animation',name:'Simpson',icon:'🟡',desc:'Peau jaune, dessin télé',prompt:'The Simpsons cartoon style, yellow skin'},
+ {genre:'animation',name:'Studio Ghibli',icon:'🌿',desc:'Nature luxuriante, ciels peints',prompt:'Studio Ghibli anime style, lush nature, hand-painted skies'},
+ {genre:'horreur',name:'Horreur psychologique',icon:'👻',desc:'Ambiance sombre, brume',prompt:'psychological horror movie, dark atmosphere, fog'},
+ {genre:'romance',name:'Romance cinématographique',icon:'❤️',desc:'Lumière douce, heure dorée',prompt:'cinematic romance, soft warm lighting, golden hour'}
 ];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
-document.addEventListener('DOMContentLoaded', () => {
-  loadKeys();
-  renderStyles();
-  
-  document.querySelectorAll('#formatGrid .option-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('#formatGrid .option-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active'); APP.format = btn.dataset.format;
-    });
-  });
+/* ---------- Statut ---------- */
+function setStatus(text,color='blue'){const b=$('statusBadge');b.querySelector('.dot').className='dot '+color;b.querySelector('span').textContent=text}
+function refreshKeyUI(){
+  const ok=APP.keys.length>0;
+  $('apiBadge').querySelector('.dot').className='dot '+(ok?'green':'red');
+  $('apiBadge').querySelector('span').textContent=ok?`Agnes connectée (${APP.keys.length})`:'Clé API manquante';
+  const a=$('readyAlert');a.className='alert'+(ok?'':' warn');a.textContent=ok?'✓ Prêt.':'Ajoute une clé API (badge en haut) pour commencer.';
+}
 
-  document.querySelectorAll('#genrePills .pill').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('#genrePills .pill').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active'); APP.genre = btn.dataset.genre; renderStyles();
-    });
-  });
+/* ---------- Init ---------- */
+document.addEventListener('DOMContentLoaded',()=>{
+  loadKeys();renderStyles();refreshKeyUI();
+  document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab,b)));
+  document.querySelectorAll('#formatGrid .option-btn').forEach(btn=>btn.addEventListener('click',()=>{
+    document.querySelectorAll('#formatGrid .option-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');APP.format=btn.dataset.format;
+  }));
+  document.querySelectorAll('#genrePills .pill').forEach(btn=>btn.addEventListener('click',()=>{
+    document.querySelectorAll('#genrePills .pill').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');APP.genre=btn.dataset.genre;renderStyles();
+  }));
+  document.querySelectorAll('input[type=file][data-target]').forEach(i=>i.addEventListener('change',()=>handlePhotoUpload(i,i.dataset.target)));
 });
 
-function switchTab(tabId) {
-  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-  event.target.classList.add('active');
-  ['studio', 'avatar', 'history'].forEach(id => document.getElementById('tab-' + id).classList.add('hidden'));
-  document.getElementById('tab-' + tabId).classList.remove('hidden');
-  if(tabId === 'history') loadHistoryUI();
+function renderStyles(){
+  const list=$('stylesList');list.innerHTML='';
+  STYLES.filter(s=>APP.genre==='Tous'||s.genre===APP.genre).forEach(s=>{
+    const d=document.createElement('div');d.className='style-item'+(s.name===APP.style?' active':'');
+    d.innerHTML=`<div class="style-icon">${s.icon}</div><div><div class="style-name">${esc(s.name)}</div><div class="style-desc">${esc(s.desc)}</div></div>`;
+    d.addEventListener('click',()=>{APP.style=s.name;renderStyles()});
+    list.appendChild(d);
+  });
 }
-
-// --- GESTION UPLOAD PHOTO ---
-function handlePhotoUpload(input, target) {
-  if (input.files && input.files[0]) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      const base64 = e.target.result;
-      const previewId = target === 'idea' ? 'ideaPhotoPreview' : 'avatarPhotoPreview';
-      const preview = document.getElementById(previewId);
-      preview.src = base64;
-      preview.style.display = 'block';
-      
-      if (target === 'idea') APP.uploadedIdeaPhoto = base64;
-      else APP.uploadedAvatarPhoto = base64;
-    };
-    reader.readAsDataURL(input.files[0]);
-  }
+function switchTab(id,btn){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+  ['studio','avatar','history'].forEach(t=>$('tab-'+t).classList.toggle('hidden',t!==id));
+  if(id==='history')loadHistoryUI();
 }
-
-// --- API KEYS ---
-function loadKeys() {
-  try {
-    const saved = JSON.parse(localStorage.getItem('storylab_keys') || '[]');
-    if (saved.length > 0) { APP.keys = saved; document.getElementById('apiBadge').innerHTML = '<div class="badge-dot green"></div> Agnes connectée'; }
-  } catch(e) {}
-}
-function openApiModal() { document.getElementById('apiModal').classList.add('open'); document.getElementById('apiKeyInput').value = APP.keys.join('\n'); }
-function closeApiModal() { document.getElementById('apiModal').classList.remove('open'); }
-function saveApiKeys() {
-  const keys = document.getElementById('apiKeyInput').value.split('\n').map(k => k.trim()).filter(k => k.startsWith('sk-'));
-  if (keys.length > 0) {
-    APP.keys = keys; localStorage.setItem('storylab_keys', JSON.stringify(keys));
-    document.getElementById('apiBadge').innerHTML = '<div class="badge-dot green"></div> Agnes connectée'; closeApiModal();
-  } else alert('Clé invalide.');
-}
-
-// --- API AGNES ---
-async function agnesCall(path, payload) {
-  if (APP.keys.length === 0) throw new Error("Clé API manquante.");
-  const key = APP.keys[Math.floor(Math.random() * APP.keys.length)];
-  const res = await fetch(AGNES_BASE + path, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key }, body: JSON.stringify(payload) });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error?.message || 'Erreur inconnue API');
-  return data;
-}
-
-async function generateText(system, user) {
-  const data = await agnesCall('/chat/completions', { model: AGNES_TEXT_MODEL, messages: [{ role: 'system', content: system }, { role: 'user', content: user }], temperature: 0.7 });
-  return data.choices[0].message.content.trim();
-}
-
-// FONCTION VISION : Extrait une description ultra précise du visage
-async function analyzeImage(base64Image) {
-  const payload = {
-    model: AGNES_TEXT_MODEL,
-    messages: [
-      { role: "system", content: "Tu es un expert en biométrie. Décris UNIQUEMENT le visage et les traits physiques de la personne sur cette image : couleur des yeux, coiffure exacte, couleur des cheveux, forme du visage, âge apparent, sexe, et ce qu'elle porte. Sois extrêmement précis et descriptif. Ne décris pas le décor." },
-      { role: "user", content: [ { type: "text", text: "Décris ce visage." }, { type: "image_url", image_url: { url: base64Image } } ] }
-    ]
+function handlePhotoUpload(input,target){
+  const f=input.files&&input.files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=e=>{
+    // Réduit la photo pour alléger la requête d'analyse
+    const img=new Image();img.onload=()=>{
+      const k=Math.min(1,1024/Math.max(img.width,img.height)),c=document.createElement('canvas');
+      c.width=img.width*k;c.height=img.height*k;c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+      const data=c.toDataURL('image/jpeg',.85);APP.photos[target]=data;
+      const p=$(target==='idea'?'ideaPhotoPreview':'avatarPhotoPreview');p.src=data;p.style.display='block';
+    };img.src=e.target.result;
   };
-  const data = await agnesCall('/chat/completions', payload);
-  return data.choices[0].message.content.trim();
+  rd.readAsDataURL(f);
 }
 
-async function generateImage(prompt, ratio = '9:16') {
-  const data = await agnesCall('/images/generations', { model: AGNES_IMG_MODEL, prompt: prompt, size: '1K', ratio: ratio, extra_body: { response_format: 'url' } });
-  return data.data[0].url || 'data:image/png;base64,' + data.data[0].b64_json;
+/* ---------- Clés ---------- */
+function loadKeys(){try{APP.keys=JSON.parse(localStorage.getItem('storylab_keys')||'[]')}catch(e){APP.keys=[]}}
+function openApiModal(){$('apiModal').classList.add('open');$('apiKeyInput').value=APP.keys.join('\n')}
+function closeApiModal(){$('apiModal').classList.remove('open')}
+function saveApiKeys(){
+  const keys=$('apiKeyInput').value.split('\n').map(k=>k.trim()).filter(k=>k.startsWith('sk-'));
+  if(!keys.length){alert('Aucune clé valide : elle doit commencer par sk-.');return}
+  APP.keys=keys;try{localStorage.setItem('storylab_keys',JSON.stringify(keys))}catch(e){}
+  refreshKeyUI();closeApiModal();
 }
 
-// --- CORRECTION BOUTONS IMAGES (Plus stable) ---
-function downloadImage(url, filename) {
-  try {
-    // Créer un lien temporaire pour forcer le téléchargement
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.target = "_blank"; // Sécurité si le navigateur bloque le download direct cross-origin
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  } catch(e) { window.open(url, '_blank'); }
-}
-
-window.regeneratePlan = async function(planNum, promptText) {
-  const slot = document.getElementById(`slot-${planNum}`);
-  slot.innerHTML = '<div style="font-size:12px; color:var(--text-muted);">Régénération...</div>';
-  try {
-    const url = await generateImage(promptText, '9:16');
-    updatePlanSlot(planNum, url, promptText);
-  } catch(e) { 
-    slot.innerHTML = `<div style="color:red; font-size:11px; padding:10px; text-align:center;">Erreur : ${e.message}</div>`; 
+/* ---------- API avec retry / backoff ---------- */
+async function agnesCall(path,payload,tries=4){
+  if(!APP.keys.length)throw new Error('Clé API manquante.');
+  let last;
+  for(let a=0;a<tries;a++){
+    if(APP.cancel)throw new Error('Annulé');
+    const key=APP.keys[Math.floor(Math.random()*APP.keys.length)];
+    try{
+      const res=await fetch(AGNES_BASE+path,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+key},body:JSON.stringify(payload)});
+      let data={};try{data=await res.json()}catch(e){}
+      if(res.ok)return data;
+      last=new Error((data.error&&data.error.message)||('Erreur API '+res.status));
+      if(res.status!==429&&res.status<500)throw last;
+    }catch(e){last=e;if(e===last&&/^Erreur API 4|invalide|Annulé/.test(e.message)&&!/429/.test(e.message))throw e}
+    await sleep(2000*Math.pow(2,a));
   }
-};
+  throw last;
+}
+async function generateText(system,user){
+  const d=await agnesCall('/chat/completions',{model:TEXT_MODEL,messages:[{role:'system',content:system},{role:'user',content:user}],temperature:.7});
+  return d.choices[0].message.content.trim();
+}
+async function analyzeImage(b64){
+  const d=await agnesCall('/chat/completions',{model:TEXT_MODEL,messages:[
+    {role:'system',content:"Tu es un expert en biométrie. Décris UNIQUEMENT le visage et les traits physiques de la personne : couleur des yeux, coiffure exacte, couleur des cheveux, forme du visage, âge apparent, sexe, tenue. Sois précis et descriptif, en anglais, sans décor."},
+    {role:'user',content:[{type:'text',text:'Describe this face.'},{type:'image_url',image_url:{url:b64}}]}]});
+  return d.choices[0].message.content.trim();
+}
+async function generateImage(prompt,ratio='9:16',seed){
+  const p={model:IMG_MODEL,prompt,size:'1K',ratio,extra_body:{response_format:'url'}};
+  if(seed!=null)p.seed=seed;
+  const d=await agnesCall('/images/generations',p);
+  const it=d.data[0];return it.url||('data:image/png;base64,'+it.b64_json);
+}
+async function toBlob(url){try{const r=await fetch(url);if(!r.ok)return null;return await r.blob()}catch(e){return null}}
 
-function updatePlanSlot(planNum, url, promptText) {
-  const slot = document.getElementById(`slot-${planNum}`);
-  if(!slot) return;
-  
-  // On vide le slot
-  slot.innerHTML = '';
-  
-  // Création des éléments via JS (évite les bugs de guillemets dans le HTML généré)
-  const actionsDiv = document.createElement('div');
-  actionsDiv.className = 'slot-actions';
-  
-  const dlBtn = document.createElement('button');
-  dlBtn.className = 'action-btn';
-  dlBtn.innerHTML = '⬇️';
-  dlBtn.title = 'Télécharger';
-  dlBtn.onclick = () => downloadImage(url, `plan_${planNum}.jpg`);
-  
-  const regenBtn = document.createElement('button');
-  regenBtn.className = 'action-btn';
-  regenBtn.innerHTML = '↻';
-  regenBtn.title = 'Régénérer';
-  regenBtn.onclick = () => window.regeneratePlan(planNum, promptText);
-  
-  actionsDiv.appendChild(dlBtn);
-  actionsDiv.appendChild(regenBtn);
-  
-  const img = document.createElement('img');
-  img.src = url;
-  
-  const labelDiv = document.createElement('div');
-  labelDiv.className = 'plan-label';
-  labelDiv.innerHTML = `PLAN ${planNum}<div class="plan-status">done</div>`;
-  
-  slot.appendChild(actionsDiv);
-  slot.appendChild(img);
-  slot.appendChild(labelDiv);
+/* ---------- Téléchargement ---------- */
+function saveBlobAs(blob,name){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000)}
+async function downloadImage(url,name,blob){
+  if(!blob)blob=await toBlob(url);
+  if(blob)saveBlobAs(blob,name);else window.open(url,'_blank');
 }
 
-// --- ACTUALITÉS ---
-async function loadRealNews() {
-  const list = document.getElementById('newsList');
-  list.innerHTML = '<div style="text-align:center; padding:16px; color:var(--text-muted);">⏳ Chargement...</div>';
-  try {
-    const res = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://news.google.com/rss?hl=fr&gl=FR&ceid=FR:fr'));
-    const data = await res.json();
-    const xmlDoc = new DOMParser().parseFromString(data.contents, "text/xml");
-    const items = Array.from(xmlDoc.querySelectorAll("item")).slice(0, 5);
-    list.innerHTML = items.map(item => {
-      const title = item.querySelector("title").textContent;
-      return `<div style="border:1px solid var(--border); border-radius:8px; padding:12px; cursor:pointer;" onclick="selectNews('${title.replace(/'/g, "\\'")}')">
-        <div style="font-size:13px; font-weight:600;">${title}</div>
-      </div>`;
-    }).join('');
-  } catch (e) { list.innerHTML = 'Erreur news.'; }
+/* ---------- Plans ---------- */
+function msgSlot(slot,text,err){slot.innerHTML='';const d=document.createElement('div');d.className='slot-msg'+(err?' err':'');d.textContent=text;slot.appendChild(d)}
+function updatePlanSlot(n){
+  const slot=$('slot-'+n),p=APP.plans[n-1];if(!slot||!p)return;
+  slot.innerHTML='';
+  const act=document.createElement('div');act.className='slot-actions';
+  const dl=document.createElement('button');dl.className='action-btn';dl.textContent='⬇️';dl.title='Télécharger';dl.onclick=()=>downloadImage(p.url,`plan_${n}.jpg`,p.blob);
+  const rg=document.createElement('button');rg.className='action-btn';rg.textContent='↻';rg.title='Modifier et régénérer';rg.onclick=()=>regeneratePlan(n);
+  act.append(dl,rg);
+  const img=document.createElement('img');img.src=p.url;img.alt='Plan '+n;
+  const lb=document.createElement('div');lb.className='plan-label';lb.textContent='PLAN '+n;
+  slot.append(act,img,lb);
 }
-function selectNews(title) {
-  const textarea = document.getElementById('ideaInput');
-  textarea.value = textarea.value ? textarea.value + '\n\nActualité : ' + title : 'Actualité : ' + title;
+function buildPrompt(scene){
+  const st=(STYLES.find(s=>s.name===APP.style)||STYLES[0]).prompt;
+  return `Cinematic photo. ${APP.character?`Main character (identical in every shot): [${APP.character}]. `:''}Scene: ${scene}. Style: ${st}. 8k.`;
+}
+async function renderPlan(n){
+  const p=APP.plans[n-1],prompt=buildPrompt(p.scene);
+  $('termPrompt').textContent=prompt;
+  p.url=await generateImage(prompt,'9:16',APP.seed);
+  p.blob=await toBlob(p.url);
+  updatePlanSlot(n);
+}
+async function regeneratePlan(n){
+  if(APP.busy)return;
+  const p=APP.plans[n-1];
+  const s=prompt('Modifier la scène (laisse tel quel pour relancer) :',p.scene);
+  if(s===null)return;
+  p.scene=s.trim()||p.scene;
+  APP.busy=true;APP.cancel=false;setStatus('Régénération…');
+  msgSlot($('slot-'+n),'Régénération…');
+  try{await renderPlan(n);setStatus('Terminé','green')}
+  catch(e){msgSlot($('slot-'+n),'Erreur : '+e.message,true);setStatus('Erreur','red')}
+  finally{APP.busy=false}
 }
 
-// --- STORYLAB PRODUCTION ---
-function updateControlRoom(step, status, desc = '') {
-  const items = document.querySelectorAll('.control-item');
-  if (items[step - 1]) {
-    const icon = items[step - 1].querySelector('.control-icon');
-    icon.className = 'control-icon ' + status;
-    icon.innerHTML = status === 'done' ? '✓' : step;
-    if (desc) items[step - 1].querySelector('.control-desc').innerHTML = desc;
+/* ---------- Actus (proxies de secours + saisie manuelle) ---------- */
+async function loadRealNews(){
+  const list=$('newsList');list.innerHTML='<div class="slot-msg">⏳ Chargement…</div>';
+  const rss='https://news.google.com/rss?hl=fr&gl=FR&ceid=FR:fr';
+  const proxies=[u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u),u=>'https://corsproxy.io/?'+encodeURIComponent(u)];
+  for(const px of proxies){
+    try{
+      const res=await fetch(px(rss));if(!res.ok)continue;
+      const xml=new DOMParser().parseFromString(await res.text(),'text/xml');
+      const items=Array.from(xml.querySelectorAll('item')).slice(0,6);if(!items.length)continue;
+      list.innerHTML='';
+      items.forEach(it=>{const t=it.querySelector('title').textContent,d=document.createElement('div');d.className='news-item';d.textContent=t;d.onclick=()=>selectNews(t);list.appendChild(d)});
+      return;
+    }catch(e){}
   }
+  list.innerHTML='';
+  const m=document.createElement('div');m.className='slot-msg err';m.textContent="Actus indisponibles. Colle un titre à la main :";
+  const inp=document.createElement('input');inp.type='text';inp.placeholder='Titre de l’actu, puis Entrée';
+  inp.onkeydown=e=>{if(e.key==='Enter'&&inp.value.trim()){selectNews(inp.value.trim());inp.value=''}};
+  list.append(m,inp);
+}
+function selectNews(t){const a=$('ideaInput');a.value=(a.value?a.value+'\n\n':'')+'Actualité : '+t}
+
+/* ---------- Control room ---------- */
+function ctrl(step,status,desc){
+  const i=$('ci'+step);i.className='ci '+status;i.textContent=status==='done'?'✓':status==='error'?'!':step;
+  if(desc!==undefined)$('cd'+step).textContent=desc;
+}
+function parseScenario(txt,count){
+  let plans=[],character='';
+  const m=txt.match(/\{[\s\S]*\}/);
+  if(m){try{const j=JSON.parse(m[0]);character=String(j.character||'');plans=(j.plans||[]).map(String)}catch(e){}}
+  if(!plans.length)plans=txt.split('\n').map(l=>l.trim()).filter(l=>/^\d+[.)]/.test(l)).map(l=>l.replace(/^\d+[.)]\s*/,''));
+  return{character,plans:plans.slice(0,count)};
 }
 
-async function startProduction() {
-  if (APP.isProducing) return;
-  let idea = document.getElementById('ideaInput').value.trim();
-  const hasPhoto = !!APP.uploadedIdeaPhoto;
-  
-  if (!idea && !hasPhoto) { alert('Décrivez une idée ou importez une photo.'); return; }
-  if (APP.keys.length === 0) { openApiModal(); return; }
+/* ---------- Production ---------- */
+async function startProduction(){
+  if(APP.busy)return;
+  const idea=$('ideaInput').value.trim(),photo=APP.photos.idea;
+  if(!idea&&!photo){alert('Décris une idée ou importe une photo.');return}
+  if(!APP.keys.length){openApiModal();return}
+  APP.busy=true;APP.cancel=false;
+  const count=parseInt($('planCountSelect').value)||10;
+  $('launchBtn').disabled=true;$('launchBtn').textContent='⏳ Production…';$('cancelBtn').classList.remove('hidden');
+  ['controlRoom','aiActivity','plansCard','livePreview'].forEach(id=>$(id).classList.remove('hidden'));
+  for(let s=1;s<=3;s++)ctrl(s,'',''); 
+  $('liveProgress').style.width='0%';$('livePercent').textContent='0%';
+  $('plansGrid').innerHTML='';
+  APP.plans=[];APP.character='';APP.seed=Math.floor(Math.random()*2147483647);
+  for(let i=1;i<=count;i++){const d=document.createElement('div');d.className='slot plan-slot';d.id='slot-'+i;d.textContent=i;$('plansGrid').appendChild(d)}
+  const images=[];
+  try{
+    setStatus('Fiche personnage…');
+    ctrl(1,'active');$('termStatus').textContent='Analyse du visage…';
+    if(photo){APP.character=await analyzeImage(photo);ctrl(1,'done','Basée sur ta photo')}
+    else ctrl(1,'active','Créée avec le scénario');
 
-  APP.isProducing = true;
-  const planCount = parseInt(document.getElementById('planCountSelect').value) || 10;
-  const launchBtn = document.getElementById('launchBtn');
-  launchBtn.disabled = true; launchBtn.innerHTML = '⏳ Production...';
-  
-  document.getElementById('controlRoom').style.display = 'block';
-  document.getElementById('aiActivity').style.display = 'block';
-  document.getElementById('plansCard').style.display = 'block';
-  document.getElementById('livePreview').style.display = 'block';
-  
-  document.querySelectorAll('.control-icon').forEach((i, idx) => { i.className = 'control-icon pending'; i.innerHTML = idx + 1; });
+    ctrl(2,'active');setStatus('Scénario…');$('termStatus').textContent='Écriture du scénario…';
+    const sys=`Tu es un réalisateur. Crée un storyboard de ${count} plans pour le format "${APP.format}", style "${APP.style}". Idée : "${idea||'à partir du personnage de la photo'}".
+Réponds UNIQUEMENT avec un JSON valide, sans markdown : {"character":"fiche personnage fixe en anglais (visage, cheveux, âge, tenue)","plans":["plan 1","plan 2",...]}.
+"plans" contient exactement ${count} descriptions en anglais : uniquement ACTIONS et CADRAGES (ex: "Wide shot, the man runs across the roof"), sans redécrire le physique.`;
+    const raw=await generateText('Assistant de production. Tu réponds en JSON strict.',sys);
+    const sc=parseScenario(raw,count);
+    if(!photo)APP.character=sc.character;
+    while(sc.plans.length<count)sc.plans.push(`Cinematic shot of ${idea||'the character'}`);
+    sc.plans.forEach(scene=>APP.plans.push({scene,url:null,blob:null}));
+    ctrl(1,'done');ctrl(2,'done',`${count} plans`);
 
-  const plansGrid = document.getElementById('plansGrid');
-  plansGrid.innerHTML = '';
-  for (let i = 1; i <= planCount; i++) plansGrid.innerHTML += `<div class="plan-slot" id="slot-${i}">${i}</div>`;
-
-  const selectedStyle = STYLES.find(s => s.name === APP.style) || STYLES[0];
-  let generatedImages = [];
-  let faceDescription = "";
-
-  try {
-    // ÉTAPE 1 : Analyse visage
-    if (hasPhoto) {
-      updateControlRoom(1, 'active');
-      document.getElementById('termStatus').textContent = 'Analyse du visage...';
-      faceDescription = await analyzeImage(APP.uploadedIdeaPhoto);
-      updateControlRoom(1, 'done');
-    } else {
-      updateControlRoom(1, 'done', 'Aucune photo');
+    ctrl(3,'active');
+    for(let i=1;i<=count;i++){
+      if(APP.cancel)throw new Error('Annulé');
+      ctrl(3,'active',`Plan ${i}/${count}`);setStatus(`Plan ${i}/${count}`);$('termStatus').textContent='Génération…';
+      $('liveLabel').textContent='Plan '+i;
+      $('livePercent').textContent=Math.round((i-1)/count*100)+'%';$('liveProgress').style.width=((i-1)/count*100)+'%';
+      try{await renderPlan(i);$('liveImage').src=APP.plans[i-1].url;images.push(APP.plans[i-1].blob||APP.plans[i-1].url)}
+      catch(e){if(e.message==='Annulé')throw e;msgSlot($('slot-'+i),'Erreur : '+e.message,true)}
+      if(i<count)await sleep(1500);
     }
-
-    // ÉTAPE 2 : Scénario
-    updateControlRoom(2, 'active');
-    document.getElementById('termStatus').textContent = 'Écriture scénario...';
-    const sysPrompt = `Tu es un réalisateur. Crée un storyboard de ${planCount} plans pour "${APP.format}" style "${APP.style}". Idée : "${idea}". 
-    ATTENTION : Ne décris pas le physique des personnages dans le storyboard, on s'occupe de ça après. Décris seulement les ACTIONS et les CADRAGES (ex: "Plan large, l'homme court", "Gros plan sur son visage"). 
-    Génère exactement ${planCount} descriptions en anglais. Format STRICT : 1. Description...`;
-    
-    const scriptText = await generateText("Assistant production.", sysPrompt);
-    const plansPrompts = scriptText.split('\n').map(l => l.trim()).filter(l => /^\d+[\.\)]/.test(l)).map(l => l.replace(/^\d+[\.\)]\s*/, '')).slice(0, planCount);
-    while (plansPrompts.length < planCount) plansPrompts.push(`Cinematic shot of ${idea}`);
-    updateControlRoom(2, 'done');
-
-    // ÉTAPE 3 : Images
-    updateControlRoom(3, 'active');
-    for (let i = 0; i < planCount; i++) {
-      const planNum = i + 1;
-      
-      // C'EST ICI LA MAGIE : On force la description du visage dans CHAQUE image
-      let prompt = "";
-      if (faceDescription) {
-        prompt = `Cinematic photo. The main character's face MUST strictly match this description: [${faceDescription}]. Action/Scene: ${plansPrompts[i]}. Style: ${selectedStyle.prompt}. 8k.`;
-      } else {
-        prompt = `Cinematic photo. Action/Scene: ${plansPrompts[i]}. Style: ${selectedStyle.prompt}. 8k.`;
-      }
-      
-      updateControlRoom(3, 'active', `Plan ${planNum}/${planCount}`);
-      document.getElementById('termStatus').textContent = 'Génération...';
-      document.getElementById('termPrompt').textContent = prompt;
-      document.getElementById('livePercent').textContent = `${Math.round((i / planCount) * 100)}%`;
-      document.getElementById('liveProgress').style.width = `${(i / planCount) * 100}%`;
-
-      try {
-        const imgUrl = await generateImage(prompt, '9:16');
-        updatePlanSlot(planNum, imgUrl, prompt);
-        document.getElementById('liveImage').src = imgUrl;
-        generatedImages.push(imgUrl);
-        // Cooldown augmenté à 3.5s pour éviter les erreurs de Rate Limit (API gratuite)
-        if (i < planCount - 1) await new Promise(r => setTimeout(r, 3500)); 
-      } catch (err) { 
-        document.getElementById(`slot-${planNum}`).innerHTML = `<div style="color:red; font-size:11px; padding:10px; text-align:center;">Erreur : ${err.message}</div>`; 
-      }
-    }
-
-    document.getElementById('livePercent').textContent = `100%`; document.getElementById('liveProgress').style.width = `100%`;
-    updateControlRoom(3, 'done', `Terminé`);
-    document.getElementById('termStatus').textContent = 'Terminé';
-    saveToHistory({ type: 'STORYLAB', title: idea.substring(0, 50) + '...', style: APP.style, images: generatedImages });
-
-  } catch (err) { alert('Erreur : ' + err.message); } 
-  finally {
-    APP.isProducing = false;
-    launchBtn.disabled = false; launchBtn.innerHTML = '🎬 Lancer la production';
+    $('livePercent').textContent='100%';$('liveProgress').style.width='100%';
+    ctrl(3,'done','Terminé');$('termStatus').textContent='Terminé';setStatus('Terminé','green');
+    await saveToHistory({type:'STORYLAB',title:(idea||'Photo').substring(0,50),style:APP.style,images});
+  }catch(e){
+    if(e.message==='Annulé'){setStatus('Annulé','red');$('termStatus').textContent='Annulé';
+      if(images.length)await saveToHistory({type:'STORYLAB',title:(idea||'Photo').substring(0,50)+' (partiel)',style:APP.style,images})}
+    else{setStatus('Erreur','red');ctrl(2,'error',e.message);alert('Erreur : '+e.message)}
+  }finally{
+    APP.busy=false;$('launchBtn').disabled=false;$('launchBtn').textContent='🎬 Lancer la production';$('cancelBtn').classList.add('hidden');
   }
 }
 
-// --- AVATAR LAB ---
-async function generateAvatar() {
-  let promptInput = document.getElementById('avatarPrompt').value.trim();
-  const hasPhoto = !!APP.uploadedAvatarPhoto;
-  
-  if (!promptInput && !hasPhoto) { alert('Décrivez ou importez un portrait.'); return; }
-  if (APP.keys.length === 0) { openApiModal(); return; }
-
-  const btn = document.getElementById('avatarBtn');
-  btn.disabled = true; btn.innerHTML = '⏳ Génération...';
-
-  const stylePrefix = document.getElementById('avatarStyle').value;
-  const ratio = document.getElementById('avatarRatio').value;
-  let fullPrompt = "";
-
-  document.getElementById('avatarResultCard').style.display = 'block';
-  document.getElementById('av-slot-1').innerHTML = '<div style="font-size:12px; color:var(--text-muted);">⏳</div>';
-  document.getElementById('av-slot-2').innerHTML = '<div style="font-size:12px; color:var(--text-muted);">⏳</div>';
-
-  try {
-    if (hasPhoto) {
-      btn.innerHTML = '⏳ Analyse du visage...';
-      const desc = await analyzeImage(APP.uploadedAvatarPhoto);
-      // On force la description complète
-      fullPrompt = `${stylePrefix}. Exact character description: [${desc}]. Additional details: ${promptInput}. Highly detailed, masterpiece.`;
-      btn.innerHTML = '⏳ Génération...';
-    } else {
-      fullPrompt = `${stylePrefix}. Subject: ${promptInput}. Highly detailed, masterpiece.`;
-    }
-
-    const [url1, url2] = await Promise.all([generateImage(fullPrompt, ratio), generateImage(fullPrompt, ratio)]);
-    
-    // Fonction locale pour injecter les slots avatars
-    const fillAvSlot = (slotId, url) => {
-      const slot = document.getElementById(slotId);
-      slot.innerHTML = '';
-      const actDiv = document.createElement('div');
-      actDiv.className = 'slot-actions';
-      const btnDl = document.createElement('button');
-      btnDl.className = 'action-btn'; btnDl.innerHTML = '⬇️';
-      btnDl.onclick = () => downloadImage(url, 'avatar.jpg');
-      actDiv.appendChild(btnDl);
-      
-      const img = document.createElement('img'); img.src = url;
-      slot.appendChild(actDiv); slot.appendChild(img);
-    };
-
-    fillAvSlot('av-slot-1', url1);
-    fillAvSlot('av-slot-2', url2);
-
-    saveToHistory({ type: 'AVATAR', title: (hasPhoto ? 'Avatar (Photo)' : promptInput.substring(0, 30)), style: 'Avatar', images: [url1, url2] });
-
-  } catch (err) {
-    alert('Erreur : ' + err.message);
-    document.getElementById('av-slot-1').innerHTML = `<div style="color:red; font-size:11px; text-align:center;">Erreur : ${err.message}</div>`; 
-    document.getElementById('av-slot-2').innerHTML = '';
-  } finally {
-    btn.disabled = false; btn.innerHTML = '👤 Générer l\'avatar (x2)';
+/* ---------- Export zip / vidéo ---------- */
+function exportNote(t){const m=$('exportMsg');m.textContent=t;m.classList.toggle('hidden',!t)}
+async function exportZip(){
+  const done=APP.plans.map((p,i)=>({p,n:i+1})).filter(x=>x.p.blob);
+  if(!done.length){exportNote('Aucune image téléchargeable. Le serveur d’images bloque peut-être la copie : utilise ⬇️ sur chaque plan.');return}
+  if(typeof JSZip==='undefined'){exportNote('Module zip indisponible (hors ligne ?).');return}
+  exportNote('');const z=new JSZip();done.forEach(x=>z.file(`plan_${x.n}.jpg`,x.p.blob));
+  saveBlobAs(await z.generateAsync({type:'blob'}),'storylab_plans.zip');
+}
+async function exportVideo(){
+  const done=APP.plans.filter(p=>p.blob);
+  if(!done.length){exportNote('Aucune image exploitable pour la vidéo (copie bloquée par le serveur d’images).');return}
+  if(!window.MediaRecorder){exportNote('Ce navigateur ne gère pas l’export vidéo.');return}
+  exportNote('Montage en cours, garde cet onglet ouvert…');
+  const W=720,H=1280,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+  const mime=['video/mp4','video/webm;codecs=vp9','video/webm'].find(m=>MediaRecorder.isTypeSupported(m))||'';
+  const rec=new MediaRecorder(c.captureStream(30),mime?{mimeType:mime}:undefined),chunks=[];
+  rec.ondataavailable=e=>e.data.size&&chunks.push(e.data);
+  const fin=new Promise(r=>rec.onstop=r);rec.start();
+  for(const p of done){
+    const img=new Image();img.src=URL.createObjectURL(p.blob);await img.decode();
+    const t0=performance.now();
+    await new Promise(res=>{(function f(){
+      const k=Math.min((performance.now()-t0)/3000,1),z=1+.1*k,s=Math.max(W/img.width,H/img.height)*z,w=img.width*s,h=img.height*s;
+      x.fillStyle='#000';x.fillRect(0,0,W,H);x.drawImage(img,(W-w)/2,(H-h)/2,w,h);
+      k<1?requestAnimationFrame(f):res();
+    })()});
+    URL.revokeObjectURL(img.src);
   }
+  rec.stop();await fin;
+  const ext=(mime||'video/webm').includes('mp4')?'mp4':'webm';
+  saveBlobAs(new Blob(chunks,{type:mime||'video/webm'}),'storylab.'+ext);exportNote('Vidéo prête (sans voix off).');
 }
 
-// --- HISTORIQUE ---
-function saveToHistory(data) {
-  let hist = JSON.parse(localStorage.getItem('storylab_history') || '[]');
-  data.date = new Date().toLocaleString('fr-FR');
-  hist.unshift(data);
-  if (hist.length > 20) hist = hist.slice(0, 20);
-  localStorage.setItem('storylab_history', JSON.stringify(hist));
+/* ---------- Avatar ---------- */
+async function generateAvatar(){
+  const txt=$('avatarPrompt').value.trim(),photo=APP.photos.avatar;
+  if(!txt&&!photo){alert('Décris ou importe un portrait.');return}
+  if(!APP.keys.length){openApiModal();return}
+  const btn=$('avatarBtn');btn.disabled=true;btn.textContent='⏳ Génération…';APP.cancel=false;
+  const style=$('avatarStyle').value,ratio=$('avatarRatio').value;
+  $('avatarResultCard').classList.remove('hidden');
+  msgSlot($('av-slot-1'),'⏳');msgSlot($('av-slot-2'),'⏳');
+  try{
+    let full;
+    if(photo){btn.textContent='⏳ Analyse du visage…';const d=await analyzeImage(photo);full=`${style}. Exact character description: [${d}]. Additional details: ${txt}. Highly detailed, masterpiece.`}
+    else full=`${style}. Subject: ${txt}. Highly detailed, masterpiece.`;
+    btn.textContent='⏳ Génération…';
+    const s=Math.floor(Math.random()*2147483000);
+    const urls=await Promise.all([generateImage(full,ratio,s),generateImage(full,ratio,s+1)]);
+    const blobs=await Promise.all(urls.map(toBlob));
+    urls.forEach((u,i)=>{
+      const slot=$('av-slot-'+(i+1));slot.innerHTML='';
+      const act=document.createElement('div');act.className='slot-actions';
+      const b=document.createElement('button');b.className='action-btn';b.textContent='⬇️';b.onclick=()=>downloadImage(u,`avatar_${i+1}.jpg`,blobs[i]);
+      act.appendChild(b);const im=document.createElement('img');im.src=u;im.alt='Avatar '+(i+1);slot.append(act,im);
+    });
+    await saveToHistory({type:'AVATAR',title:photo?'Avatar (photo)':txt.substring(0,30),style:'Avatar',images:blobs.map((b,i)=>b||urls[i])});
+  }catch(e){alert('Erreur : '+e.message);msgSlot($('av-slot-1'),'Erreur : '+e.message,true);$('av-slot-2').innerHTML=''}
+  finally{btn.disabled=false;btn.textContent="👤 Générer l'avatar (x2)"}
 }
-function loadHistoryUI() {
-  const hist = JSON.parse(localStorage.getItem('storylab_history') || '[]');
-  const list = document.getElementById('historyList');
-  if (hist.length === 0) { list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted);">Aucune création.</div>'; return; }
-  list.innerHTML = hist.map(item => `
-    <div class="history-card">
-      <div class="history-title">${item.title}</div>
-      <div class="history-meta">${item.type} · ${item.style} · ${item.date}</div>
-      <div class="history-thumbs">${item.images.map((img, i) => `<img src="${img}" onclick="window.open('${img}', '_blank')">`).join('')}</div>
-    </div>
-  `).join('');
+
+/* ---------- Historique (IndexedDB : images en blobs) ---------- */
+function idb(){return new Promise((res,rej)=>{const r=indexedDB.open('storylab',1);r.onupgradeneeded=()=>r.result.createObjectStore('h',{keyPath:'id'});r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+async function idbRun(mode,fn){const db=await idb();return new Promise((res,rej)=>{const t=db.transaction('h',mode),q=fn(t.objectStore('h'));t.oncomplete=()=>res(q&&q.result);t.onerror=()=>rej(t.error)})}
+async function saveToHistory(item){
+  try{
+    item.id=Date.now();item.date=new Date().toLocaleString('fr-FR');
+    await idbRun('readwrite',s=>s.put(item));
+    const all=await idbRun('readonly',s=>s.getAll());
+    all.sort((a,b)=>b.id-a.id).slice(20).forEach(o=>idbRun('readwrite',s=>s.delete(o.id)));
+  }catch(e){}
 }
-function clearHistory() {
-  if (confirm('Effacer tout l\'historique ?')) { localStorage.removeItem('storylab_history'); loadHistoryUI(); }
+async function loadHistoryUI(){
+  const list=$('historyList');let all=[];
+  try{all=(await idbRun('readonly',s=>s.getAll())).sort((a,b)=>b.id-a.id)}catch(e){}
+  if(!all.length){list.innerHTML='<div class="slot-msg">Aucune création pour l’instant. Lance une production pour la voir ici.</div>';return}
+  list.innerHTML='';
+  all.forEach(it=>{
+    const card=document.createElement('div');card.className='hist-card';
+    card.innerHTML=`<div class="hist-title">${esc(it.title)}</div><div class="hist-meta">${esc(it.type)} · ${esc(it.style)} · ${esc(it.date)}</div>`;
+    const th=document.createElement('div');th.className='thumbs';
+    it.images.forEach(src=>{
+      const u=typeof src==='string'?src:URL.createObjectURL(src);
+      const im=document.createElement('img');im.src=u;im.alt='';im.onclick=()=>window.open(u,'_blank');th.appendChild(im);
+    });
+    card.appendChild(th);list.appendChild(card);
+  });
+}
+async function clearHistory(){
+  if(!confirm("Effacer tout l'historique ?"))return;
+  try{await idbRun('readwrite',s=>s.clear())}catch(e){}
+  loadHistoryUI();
 }
 </script>
 </body>
