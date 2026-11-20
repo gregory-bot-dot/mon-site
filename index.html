@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>STORYLAB & AVATAR LAB // v9.0</title>
+<title>STORYLAB & AVATAR LAB // v9.1</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -42,13 +42,22 @@
   .step-subtitle { font-size: 12px; color: var(--text-muted); text-transform: uppercase; }
 
   /* Forms */
-  select.select-btn, .idea-textarea, .input-text {
+  select.select-btn, .idea-textarea {
     width: 100%; border: 1px solid var(--border); border-radius: 12px; padding: 12px; font-family: var(--font); font-size: 14px; background: var(--card); outline: none; cursor: pointer;
-    appearance: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14'><path d='M2 5l5 5 5-5' fill='none' stroke='%236b7280' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/></svg>"); background-repeat: no-repeat; background-position: right 12px center;
   }
-  select.select-btn:focus, .idea-textarea:focus, .input-text:focus { border-color: var(--primary); }
-  .idea-textarea { min-height: 100px; resize: none; cursor: text; background-image: none; }
+  select.select-btn { appearance: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14'><path d='M2 5l5 5 5-5' fill='none' stroke='%236b7280' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/></svg>"); background-repeat: no-repeat; background-position: right 12px center; }
+  select.select-btn:focus, .idea-textarea:focus { border-color: var(--primary); }
+  .idea-textarea { min-height: 120px; resize: vertical; cursor: text; }
   .dropdowns { display: flex; gap: 12px; margin-bottom: 16px; }
+
+  /* Upload Photo */
+  .upload-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .upload-btn {
+    display: flex; align-items: center; gap: 8px; background: var(--primary-light); color: var(--primary); 
+    border: 1px dashed var(--primary); padding: 10px 16px; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; width: 100%; justify-content: center;
+  }
+  .upload-btn input { display: none; }
+  .photo-preview { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; border: 2px solid var(--primary); display: none; }
 
   /* UI Elements */
   .grid-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -69,14 +78,13 @@
   .style-info { flex: 1; }
   .style-name { font-weight: 600; font-size: 14px; }
   .style-desc { font-size: 11px; color: var(--text-muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .style-plus { background: #e5e7eb; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
 
   .btn-primary { width: 100%; background: #1a73e8; color: white; border: none; border-radius: 12px; padding: 16px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
   .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
   .btn-secondary { width: 100%; background: #f3f4f6; color: var(--text); border: none; border-radius: 12px; padding: 16px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
   .alert-success { background: #ecfdf5; color: #065f46; padding: 12px; border-radius: 8px; font-size: 13px; margin-top: 12px; text-align: center; }
 
-  /* Live Preview */
+  /* Live Preview & Terminal */
   .live-preview { background: black; border-radius: var(--radius); overflow: hidden; margin-bottom: 16px; position: relative; }
   .live-preview img { width: 100%; height: auto; display: block; max-height: 400px; object-fit: contain; }
   .live-overlay { position: absolute; top: 12px; left: 12px; background: rgba(0,0,0,0.6); color: white; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
@@ -86,7 +94,6 @@
   .progress-bar { width: 100%; height: 6px; background: #e5e7eb; border-radius: 3px; overflow: hidden; }
   .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.3s; }
 
-  /* Control Room & Terminal */
   .control-list { display: flex; flex-direction: column; }
   .control-item { display: flex; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--border); }
   .control-item:last-child { border-bottom: none; }
@@ -96,6 +103,7 @@
   .control-icon.pending { background: #e5e7eb; color: var(--text-muted); }
   .control-title { font-weight: 600; font-size: 14px; }
   .control-desc { font-size: 12px; color: var(--text-muted); }
+  
   .terminal { background: var(--dark-bg); border-radius: 12px; padding: 16px; font-family: var(--mono); font-size: 12px; color: #9ca3af; line-height: 1.6; }
   .term-row { display: flex; justify-content: space-between; }
   .term-val { color: white; }
@@ -103,14 +111,12 @@
   .term-val.green { color: #34d399; }
   .term-prompt { margin-top: 12px; padding-top: 12px; border-top: 1px solid #374151; white-space: pre-wrap; word-break: break-word; color: #d1d5db; }
 
-  /* Image Grids & Actions */
+  /* Grids */
   .plans-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
   .avatar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
   .history-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
 
-  .plan-slot, .avatar-slot {
-    background: #e5e7eb; border-radius: 12px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; color: #9ca3af;
-  }
+  .plan-slot, .avatar-slot { background: #e5e7eb; border-radius: 12px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; color: #9ca3af; }
   .plan-slot { aspect-ratio: 9/16; }
   .avatar-slot { aspect-ratio: 3/4; }
   .plan-slot img, .avatar-slot img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -122,14 +128,12 @@
   .plan-label { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.9); padding: 6px; font-size: 11px; font-weight: 600; color: var(--text); display: flex; flex-direction: column; }
   .plan-status { color: var(--success); font-size: 10px; }
 
-  /* History */
   .history-card { border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
   .history-title { font-weight: 700; font-size: 14px; margin-bottom: 8px; }
   .history-meta { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
   .history-thumbs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; }
   .history-thumbs img { width: 80px; height: 140px; object-fit: cover; border-radius: 8px; cursor: pointer; }
 
-  /* Modal */
   .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; }
   .modal-overlay.open { display: flex; }
   .modal { background: var(--card); border-radius: 16px; width: 100%; max-width: 400px; padding: 20px; }
@@ -139,7 +143,7 @@
 
 <div class="header">
   <div class="header-top">
-    <div class="header-title">AGNES STUDIO <span>// v9.0</span></div>
+    <div class="header-title">AGNES STUDIO <span>// v9.1</span></div>
   </div>
   <div class="status-badges">
     <div class="badge" id="statusBadge"><div class="badge-dot"></div> Requête...</div>
@@ -148,7 +152,6 @@
 </div>
 
 <div class="container">
-  <!-- ONGLETS -->
   <div class="tabs-container">
     <button class="tab-btn active" onclick="switchTab('studio')">🎬 STORYLAB</button>
     <button class="tab-btn" onclick="switchTab('avatar')">👤 AVATAR LAB</button>
@@ -165,17 +168,17 @@
         <div><div class="step-title">FORMAT</div><div class="step-subtitle">TYPE DE VIDÉO</div></div>
       </div>
       <div class="grid-options" id="formatGrid">
-        <div class="option-btn active" data-format="Court-métrage"><div class="option-icon">🎬</div><div class="option-title">Court-métrage</div><div class="option-desc">Fiction en 70s</div></div>
-        <div class="option-btn" data-format="JT / Reportage"><div class="option-icon">📺</div><div class="option-title">JT / Reportage</div><div class="option-desc">Info factuelle</div></div>
-        <div class="option-btn" data-format="Clip musical"><div class="option-icon">🎵</div><div class="option-title">Clip musical</div><div class="option-desc">Visuel et rythme</div></div>
-        <div class="option-btn" data-format="TikTok / Hook"><div class="option-icon">📱</div><div class="option-title">TikTok / Hook</div><div class="option-desc">Vertical, impact</div></div>
+        <div class="option-btn active" data-format="Court-métrage"><div class="option-icon">🎬</div><div class="option-title">Court-métrage</div><div class="option-desc">Fiction</div></div>
+        <div class="option-btn" data-format="JT / Reportage"><div class="option-icon">📺</div><div class="option-title">JT / Reportage</div><div class="option-desc">Info</div></div>
+        <div class="option-btn" data-format="Clip musical"><div class="option-icon">🎵</div><div class="option-title">Clip musical</div><div class="option-desc">Rythme</div></div>
+        <div class="option-btn" data-format="TikTok / Hook"><div class="option-icon">📱</div><div class="option-title">TikTok</div><div class="option-desc">Vertical</div></div>
       </div>
     </div>
 
     <div class="card">
       <div class="card-header">
         <div class="step-num green">✓</div>
-        <div><div class="step-title">UNIVERS VISUEL</div><div class="step-subtitle">GENRE CINÉMATOGRAPHIQUE</div></div>
+        <div><div class="step-title">UNIVERS VISUEL</div></div>
       </div>
       <div class="pills" id="genrePills">
         <div class="pill active" data-genre="Tous">Tous</div>
@@ -191,19 +194,30 @@
     <div class="card">
       <div class="card-header">
         <div class="step-num green">✓</div>
-        <div><div class="step-title">ACTUALITÉ</div><div class="step-subtitle">GOOGLE NEWS RÉEL</div></div>
+        <div><div class="step-title">ACTUALITÉ</div><div class="step-subtitle">GOOGLE NEWS</div></div>
       </div>
-      <button class="btn-primary" style="background:#f3f4f6; color:var(--text); margin-bottom:12px;" onclick="loadRealNews()">📰 Charger les actualités du jour</button>
+      <button class="btn-primary" style="background:#f3f4f6; color:var(--text); margin-bottom:12px;" onclick="loadRealNews()">📰 Charger les actus</button>
       <div id="newsList" style="display:flex; flex-direction:column; gap:8px; max-height:200px; overflow-y:auto;"></div>
     </div>
 
     <div class="card">
       <div class="card-header">
         <div class="step-num">5</div>
-        <div><div class="step-title">TON IDÉE</div><div class="step-subtitle">EN UNE OU DEUX PHRASES</div></div>
+        <div><div class="step-title">TON IDÉE / SCÉNARIO</div><div class="step-subtitle">SOIS PRÉCIS</div></div>
       </div>
-      <textarea class="idea-textarea" id="ideaInput" placeholder="Un maître de kung-fu extraterrestre vient sauver les étudiants pendant le blocus..."></textarea>
-      <div class="dropdowns">
+      
+      <!-- UPLOAD PHOTO (Storylab) -->
+      <div class="upload-row">
+        <label class="upload-btn">
+          📷 Importer une photo (visage) - Optionnel
+          <input type="file" accept="image/*" onchange="handlePhotoUpload(this, 'idea')">
+        </label>
+        <img id="ideaPhotoPreview" class="photo-preview">
+      </div>
+
+      <textarea class="idea-textarea" id="ideaInput" placeholder="Décris ta scène en détail : un homme en costume se réveille sur la lune, éclairage cinématographique, plan large..."></textarea>
+      
+      <div class="dropdowns" style="margin-top:12px;">
         <select class="select-btn" id="planCountSelect">
           <option value="4">4 plans</option>
           <option value="10" selected>10 plans</option>
@@ -225,27 +239,22 @@
     <div class="card" id="controlRoom" style="display:none;">
       <div class="card-header"><div><div class="step-title">CONTROL ROOM</div></div></div>
       <div class="control-list">
-        <div class="control-item" data-step="1"><div class="control-icon pending">1</div><div class="control-text"><div class="control-title">Conception</div></div></div>
-        <div class="control-item" data-step="2"><div class="control-icon pending">2</div><div class="control-text"><div class="control-title">Analyse & Script</div></div></div>
-        <div class="control-item" data-step="3"><div class="control-icon pending">3</div><div class="control-text"><div class="control-title">Production</div><div class="control-desc" id="prodDesc">Plan 0/10</div></div></div>
+        <div class="control-item" data-step="1"><div class="control-icon pending">1</div><div class="control-text"><div class="control-title">Analyse Photo (si fournie)</div></div></div>
+        <div class="control-item" data-step="2"><div class="control-icon pending">2</div><div class="control-text"><div class="control-title">Création du Scénario</div></div></div>
+        <div class="control-item" data-step="3"><div class="control-icon pending">3</div><div class="control-text"><div class="control-title">Production Visuelle</div><div class="control-desc" id="prodDesc">Plan 0/10</div></div></div>
       </div>
     </div>
 
     <div class="card" id="aiActivity" style="display:none;">
-      <div class="card-header" style="justify-content:space-between;">
-        <div class="step-title">AI ACTIVITY</div>
-      </div>
+      <div class="card-header"><div class="step-title">AI ACTIVITY</div></div>
       <div class="terminal">
         <div class="term-row"><span>Statut</span> <span class="term-val blue" id="termStatus">Requête...</span></div>
-        <div class="term-row"><span>Requête</span> <span class="term-val" id="termReq">Image 1</span></div>
         <div class="term-prompt" id="termPrompt">Setting...</div>
       </div>
     </div>
 
     <div class="card" id="plansCard" style="display:none;">
-      <div class="card-header" style="justify-content:space-between;">
-        <div class="step-title">PLANS</div>
-      </div>
+      <div class="card-header"><div class="step-title">PLANS</div></div>
       <div class="plans-grid" id="plansGrid"></div>
     </div>
   </div>
@@ -259,8 +268,18 @@
         <div class="step-num" style="background:var(--primary);">1</div>
         <div><div class="step-title">AVATAR ULTRA-RÉALISTE</div></div>
       </div>
-      <textarea class="idea-textarea" id="avatarPrompt" placeholder="Ex: Femme de 30 ans, cheveux roux, yeux verts, veste en cuir..."></textarea>
-      <div class="dropdowns">
+      
+      <!-- UPLOAD PHOTO (Avatar) -->
+      <div class="upload-row">
+        <label class="upload-btn">
+          📷 Importer un portrait (Référence)
+          <input type="file" accept="image/*" onchange="handlePhotoUpload(this, 'avatar')">
+        </label>
+        <img id="avatarPhotoPreview" class="photo-preview">
+      </div>
+
+      <textarea class="idea-textarea" id="avatarPrompt" placeholder="Ex: (Si tu importes une photo, décris juste le style ou la tenue. Sinon, décris le physique : Femme 30 ans, cheveux roux...)"></textarea>
+      <div class="dropdowns" style="margin-top:12px;">
         <select class="select-btn" id="avatarStyle">
           <option value="ultra-realistic photograph, 8k, highly detailed skin texture, cinematic lighting, shot on 85mm lens">📸 Ultra Réaliste</option>
           <option value="3d character design, unreal engine 5, ray tracing, 8k resolution">🧊 3D Engine (UE5)</option>
@@ -286,9 +305,7 @@
   <!-- ========================================== -->
   <div id="tab-history" class="hidden">
     <div class="card">
-      <div class="card-header">
-        <div class="step-title">MES CRÉATIONS SAUVEGARDÉES</div>
-      </div>
+      <div class="card-header"><div class="step-title">MES CRÉATIONS</div></div>
       <button class="btn-secondary" onclick="clearHistory()" style="margin-bottom:16px;">🗑️ Effacer l'historique</button>
       <div id="historyList" class="history-grid"></div>
     </div>
@@ -296,7 +313,6 @@
 
 </div>
 
-<!-- MODAL API KEY -->
 <div class="modal-overlay" id="apiModal">
   <div class="modal">
     <h2 style="margin-bottom:16px;">🔑 Clés API Agnes</h2>
@@ -310,7 +326,7 @@
 
 <script>
 /* ============================================================
-   LOGIQUE GLOBALE v9.0
+   LOGIQUE GLOBALE v9.1 (Avec Vision API)
 ============================================================ */
 const AGNES_BASE = 'https://apihub.agnes-ai.com/v1';
 const AGNES_TEXT_MODEL = 'agnes-3.0-flash';
@@ -318,7 +334,7 @@ const AGNES_IMG_MODEL = 'agnes-image-2.5-flash';
 
 const APP = {
   format: 'Court-métrage', genre: 'Tous', style: 'Kung-fu classique',
-  keys: [], isProducing: false, history: []
+  keys: [], isProducing: false, uploadedIdeaPhoto: null, uploadedAvatarPhoto: null
 };
 
 const STYLES = [
@@ -328,14 +344,13 @@ const STYLES = [
   { genre: 'sf', name: 'Cyberpunk 2077', icon: '🌆', desc: 'Pluie, chrome, néons...', prompt: 'Cyberpunk 2077 style, neon lights, rainy night, high tech low life' },
   { genre: 'animation', name: 'Simpson', icon: '🟡', desc: 'Jaune poussin...', prompt: 'The Simpsons cartoon style, yellow skin' },
   { genre: 'animation', name: 'Studio Ghibli', icon: '🌿', desc: 'Nature luxuriante...', prompt: 'Studio Ghibli anime style, lush nature, hand-painted skies' },
-  { genre: 'horreur', name: 'Horreur Psychologique', icon: '👻', desc: 'Ambiance sombre, peur...', prompt: 'psychological horror movie, dark atmosphere, fog, shadows' },
-  { genre: 'romance', name: 'Romance Cinématographique', icon: '❤️', desc: 'Lumière douce, émotion...', prompt: 'cinematic romance, soft warm lighting, golden hour' }
+  { genre: 'horreur', name: 'Horreur Psychologique', icon: '👻', desc: 'Ambiance sombre...', prompt: 'psychological horror movie, dark atmosphere, fog' },
+  { genre: 'romance', name: 'Romance Cinématographique', icon: '❤️', desc: 'Lumière douce...', prompt: 'cinematic romance, soft warm lighting, golden hour' }
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
   loadKeys();
   renderStyles();
-  loadHistoryUI();
   
   document.querySelectorAll('#formatGrid .option-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -360,6 +375,24 @@ function switchTab(tabId) {
   if(tabId === 'history') loadHistoryUI();
 }
 
+// --- GESTION UPLOAD PHOTO ---
+function handlePhotoUpload(input, target) {
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const base64 = e.target.result;
+      const previewId = target === 'idea' ? 'ideaPhotoPreview' : 'avatarPhotoPreview';
+      const preview = document.getElementById(previewId);
+      preview.src = base64;
+      preview.style.display = 'block';
+      
+      if (target === 'idea') APP.uploadedIdeaPhoto = base64;
+      else APP.uploadedAvatarPhoto = base64;
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
 // --- API KEYS ---
 function loadKeys() {
   try {
@@ -377,23 +410,6 @@ function saveApiKeys() {
   } else alert('Clé invalide.');
 }
 
-// --- RENDU ET INTERACTIONS ---
-function renderStyles() {
-  const list = document.getElementById('stylesList');
-  const filtered = APP.genre === 'Tous' ? STYLES : STYLES.filter(s => s.genre === APP.genre);
-  list.innerHTML = filtered.map(s => `
-    <div class="style-item ${s.name === APP.style ? 'active' : ''}" data-name="${s.name}">
-      <div class="style-icon">${s.icon}</div>
-      <div class="style-info"><div class="style-name">${s.name}</div><div class="style-desc">${s.desc}</div></div>
-    </div>`).join('');
-  list.querySelectorAll('.style-item').forEach(item => {
-    item.addEventListener('click', () => {
-      list.querySelectorAll('.style-item').forEach(i => i.classList.remove('active'));
-      item.classList.add('active'); APP.style = item.dataset.name;
-    });
-  });
-}
-
 // --- API AGNES ---
 async function agnesCall(path, payload) {
   if (APP.keys.length === 0) throw new Error("Clé API manquante.");
@@ -403,23 +419,37 @@ async function agnesCall(path, payload) {
   if (!res.ok) throw new Error(data.error?.message || 'Erreur API');
   return data;
 }
+
 async function generateText(system, user) {
   const data = await agnesCall('/chat/completions', { model: AGNES_TEXT_MODEL, messages: [{ role: 'system', content: system }, { role: 'user', content: user }], temperature: 0.7 });
   return data.choices[0].message.content.trim();
 }
+
+// FONCTION VISION : Analyse une image et renvoie une description textuelle
+async function analyzeImage(base64Image) {
+  const payload = {
+    model: AGNES_TEXT_MODEL,
+    messages: [
+      { role: "system", content: "Tu es un expert en analyse visuelle. Décris le visage, la coiffure, les traits distinctifs, les vêtements et la morphologie de la personne sur cette image de façon très précise. Si c'est un objet, décris-le. Sois factuel." },
+      { role: "user", content: [ { type: "text", text: "Décris cette image pour que je puisse recréer ce personnage avec une IA." }, { type: "image_url", image_url: { url: base64Image } } ] }
+    ]
+  };
+  const data = await agnesCall('/chat/completions', payload);
+  return data.choices[0].message.content.trim();
+}
+
 async function generateImage(prompt, ratio = '9:16') {
   const data = await agnesCall('/images/generations', { model: AGNES_IMG_MODEL, prompt: prompt, size: '1K', ratio: ratio, extra_body: { response_format: 'url' } });
   return data.data[0].url || 'data:image/png;base64,' + data.data[0].b64_json;
 }
 
-// --- ACTIONS IMAGES (Télécharger / Régénérer) ---
+// --- ACTIONS IMAGES ---
 async function downloadImage(url, filename) {
   try {
     const res = await fetch(url); const blob = await res.blob();
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename; a.click(); URL.revokeObjectURL(a.href);
-  } catch(e) { window.open(url, '_blank'); } // Fallback si CORS
+  } catch(e) { window.open(url, '_blank'); }
 }
-
 window.regeneratePlan = async function(planNum, prompt) {
   const slot = document.getElementById(`slot-${planNum}`);
   slot.innerHTML = '<div style="font-size:12px; color:var(--text-muted);">Régénération...</div>';
@@ -428,7 +458,6 @@ window.regeneratePlan = async function(planNum, prompt) {
     updatePlanSlot(planNum, url, prompt);
   } catch(e) { alert('Erreur: ' + e.message); slot.innerHTML = '❌'; }
 };
-
 function updatePlanSlot(planNum, url, prompt) {
   document.getElementById(`slot-${planNum}`).innerHTML = `
     <div class="slot-actions">
@@ -440,28 +469,22 @@ function updatePlanSlot(planNum, url, prompt) {
   `;
 }
 
-// --- ACTUALITÉS DYNAMIQUES (Google News RSS) ---
+// --- ACTUALITÉS ---
 async function loadRealNews() {
   const list = document.getElementById('newsList');
-  list.innerHTML = '<div style="text-align:center; padding:16px; color:var(--text-muted);">⏳ Chargement depuis Google News...</div>';
+  list.innerHTML = '<div style="text-align:center; padding:16px; color:var(--text-muted);">⏳ Chargement...</div>';
   try {
     const res = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://news.google.com/rss?hl=fr&gl=FR&ceid=FR:fr'));
     const data = await res.json();
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(data.contents, "text/xml");
-    const items = Array.from(xmlDoc.querySelectorAll("item")).slice(0, 8);
-    
+    const xmlDoc = new DOMParser().parseFromString(data.contents, "text/xml");
+    const items = Array.from(xmlDoc.querySelectorAll("item")).slice(0, 5);
     list.innerHTML = items.map(item => {
       const title = item.querySelector("title").textContent;
-      const pubDate = new Date(item.querySelector("pubDate").textContent).toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'});
       return `<div style="border:1px solid var(--border); border-radius:8px; padding:12px; cursor:pointer;" onclick="selectNews('${title.replace(/'/g, "\\'")}')">
-        <div style="font-size:13px; font-weight:600; margin-bottom:4px;">${title}</div>
-        <div style="font-size:11px; color:var(--primary);">Google News <span style="color:var(--text-muted)">${pubDate}</span></div>
+        <div style="font-size:13px; font-weight:600;">${title}</div>
       </div>`;
     }).join('');
-  } catch (e) {
-    list.innerHTML = '<div style="color:red; font-size:12px;">Erreur de chargement des news.</div>';
-  }
+  } catch (e) { list.innerHTML = 'Erreur news.'; }
 }
 function selectNews(title) {
   const textarea = document.getElementById('ideaInput');
@@ -481,8 +504,10 @@ function updateControlRoom(step, status, desc = '') {
 
 async function startProduction() {
   if (APP.isProducing) return;
-  const idea = document.getElementById('ideaInput').value.trim();
-  if (!idea) { alert('Décrivez votre idée.'); return; }
+  let idea = document.getElementById('ideaInput').value.trim();
+  const hasPhoto = !!APP.uploadedIdeaPhoto;
+  
+  if (!idea && !hasPhoto) { alert('Décrivez une idée ou importez une photo.'); return; }
   if (APP.keys.length === 0) { openApiModal(); return; }
 
   APP.isProducing = true;
@@ -502,25 +527,38 @@ async function startProduction() {
   for (let i = 1; i <= planCount; i++) plansGrid.innerHTML += `<div class="plan-slot" id="slot-${i}">${i}</div>`;
 
   const selectedStyle = STYLES.find(s => s.name === APP.style) || STYLES[0];
-  let generatedImages = []; // Pour l'historique
+  let generatedImages = [];
 
   try {
-    updateControlRoom(1, 'done'); updateControlRoom(2, 'active');
+    // Étape 1 : Analyse de l'image si présente
+    if (hasPhoto) {
+      updateControlRoom(1, 'active');
+      document.getElementById('termStatus').textContent = 'Analyse photo...';
+      const desc = await analyzeImage(APP.uploadedIdeaPhoto);
+      idea = `[PERSONNAGE DE RÉFÉRENCE : ${desc}] ` + idea; // On injecte la description
+      updateControlRoom(1, 'done');
+    } else {
+      updateControlRoom(1, 'done', 'Aucune photo');
+    }
+
+    // Étape 2 : Scénario
+    updateControlRoom(2, 'active');
+    document.getElementById('termStatus').textContent = 'Écriture scénario...';
     const sysPrompt = `Tu es un réalisateur. Crée un storyboard de ${planCount} plans pour "${APP.format}" style "${APP.style}". Idée : "${idea}". Génère exactement ${planCount} descriptions en anglais. Format STRICT : 1. Description...`;
     const scriptText = await generateText("Assistant production.", sysPrompt);
     
     const plansPrompts = scriptText.split('\n').map(l => l.trim()).filter(l => /^\d+[\.\)]/.test(l)).map(l => l.replace(/^\d+[\.\)]\s*/, '')).slice(0, planCount);
     while (plansPrompts.length < planCount) plansPrompts.push(`Cinematic shot of ${idea}, ${selectedStyle.prompt}`);
+    updateControlRoom(2, 'done');
 
-    updateControlRoom(2, 'done'); updateControlRoom(3, 'active');
-    
+    // Étape 3 : Images
+    updateControlRoom(3, 'active');
     for (let i = 0; i < planCount; i++) {
       const planNum = i + 1;
-      const prompt = `Cinematic shot, ${APP.format} style. ${plansPrompts[i]}. Style: ${selectedStyle.prompt}. 8k.`;
+      const prompt = `Cinematic shot. ${plansPrompts[i]}. Style: ${selectedStyle.prompt}. 8k.`;
       
       updateControlRoom(3, 'active', `Plan ${planNum}/${planCount}`);
       document.getElementById('termStatus').textContent = 'Génération...';
-      document.getElementById('termReq').textContent = 'Image ' + planNum;
       document.getElementById('termPrompt').textContent = prompt;
       document.getElementById('livePercent').textContent = `${Math.round((i / planCount) * 100)}%`;
       document.getElementById('liveProgress').style.width = `${(i / planCount) * 100}%`;
@@ -530,22 +568,17 @@ async function startProduction() {
         updatePlanSlot(planNum, imgUrl, prompt);
         document.getElementById('liveImage').src = imgUrl;
         generatedImages.push(imgUrl);
-        if (i < planCount - 1) await new Promise(r => setTimeout(r, 2000)); // Cooldown
-      } catch (err) {
-        document.getElementById(`slot-${planNum}`).innerHTML = `<div style="color:red; font-size:12px;">Erreur</div>`;
-      }
+        if (i < planCount - 1) await new Promise(r => setTimeout(r, 2000));
+      } catch (err) { document.getElementById(`slot-${planNum}`).innerHTML = `<div style="color:red; font-size:12px;">Erreur</div>`; }
     }
 
     document.getElementById('livePercent').textContent = `100%`; document.getElementById('liveProgress').style.width = `100%`;
     updateControlRoom(3, 'done', `Terminé`);
     document.getElementById('termStatus').textContent = 'Terminé';
-    
-    // Sauvegarde automatique dans l'historique
-    saveToHistory({ type: 'STORYLAB', title: idea, style: APP.style, images: generatedImages });
+    saveToHistory({ type: 'STORYLAB', title: idea.substring(0, 50) + '...', style: APP.style, images: generatedImages });
 
-  } catch (err) {
-    alert('Erreur : ' + err.message);
-  } finally {
+  } catch (err) { alert('Erreur : ' + err.message); } 
+  finally {
     APP.isProducing = false;
     launchBtn.disabled = false; launchBtn.innerHTML = '🎬 Lancer la production';
   }
@@ -553,8 +586,10 @@ async function startProduction() {
 
 // --- AVATAR LAB ---
 async function generateAvatar() {
-  const promptInput = document.getElementById('avatarPrompt').value.trim();
-  if (!promptInput) { alert('Décrivez l\'avatar.'); return; }
+  let promptInput = document.getElementById('avatarPrompt').value.trim();
+  const hasPhoto = !!APP.uploadedAvatarPhoto;
+  
+  if (!promptInput && !hasPhoto) { alert('Décrivez ou importez un portrait.'); return; }
   if (APP.keys.length === 0) { openApiModal(); return; }
 
   const btn = document.getElementById('avatarBtn');
@@ -562,15 +597,23 @@ async function generateAvatar() {
 
   const stylePrefix = document.getElementById('avatarStyle').value;
   const ratio = document.getElementById('avatarRatio').value;
-  const fullPrompt = `${stylePrefix}. Subject: ${promptInput}. Highly detailed, masterpiece.`;
+  let fullPrompt = "";
 
   document.getElementById('avatarResultCard').style.display = 'block';
   document.getElementById('av-slot-1').innerHTML = '<div style="font-size:12px; color:var(--text-muted);">⏳</div>';
   document.getElementById('av-slot-2').innerHTML = '<div style="font-size:12px; color:var(--text-muted);">⏳</div>';
 
   try {
-    const [url1, url2] = await Promise.all([generateImage(fullPrompt, ratio), generateImage(fullPrompt, ratio)]);
+    if (hasPhoto) {
+      btn.innerHTML = '⏳ Analyse du visage...';
+      const desc = await analyzeImage(APP.uploadedAvatarPhoto);
+      fullPrompt = `${stylePrefix}. Subject: [${desc}]. ${promptInput}. Highly detailed, masterpiece.`;
+      btn.innerHTML = '⏳ Génération...';
+    } else {
+      fullPrompt = `${stylePrefix}. Subject: ${promptInput}. Highly detailed, masterpiece.`;
+    }
 
+    const [url1, url2] = await Promise.all([generateImage(fullPrompt, ratio), generateImage(fullPrompt, ratio)]);
     const slotHTML = (url) => `
       <div class="slot-actions"><button class="action-btn" onclick="downloadImage('${url}', 'avatar.jpg')">⬇️</button></div>
       <img src="${url}">
@@ -578,8 +621,7 @@ async function generateAvatar() {
     document.getElementById('av-slot-1').innerHTML = slotHTML(url1);
     document.getElementById('av-slot-2').innerHTML = slotHTML(url2);
 
-    // Sauvegarde dans l'historique
-    saveToHistory({ type: 'AVATAR', title: promptInput.substring(0, 30) + '...', style: 'Avatar', images: [url1, url2] });
+    saveToHistory({ type: 'AVATAR', title: (hasPhoto ? 'Avatar (Photo)' : promptInput.substring(0, 30)), style: 'Avatar', images: [url1, url2] });
 
   } catch (err) {
     alert('Erreur : ' + err.message);
@@ -589,40 +631,28 @@ async function generateAvatar() {
   }
 }
 
-// --- HISTORIQUE LOCALSTORAGE ---
+// --- HISTORIQUE ---
 function saveToHistory(data) {
   let hist = JSON.parse(localStorage.getItem('storylab_history') || '[]');
   data.date = new Date().toLocaleString('fr-FR');
-  hist.unshift(data); // Ajouter au début
-  if (hist.length > 20) hist = hist.slice(0, 20); // Garder les 20 dernières
+  hist.unshift(data);
+  if (hist.length > 20) hist = hist.slice(0, 20);
   localStorage.setItem('storylab_history', JSON.stringify(hist));
 }
-
 function loadHistoryUI() {
   const hist = JSON.parse(localStorage.getItem('storylab_history') || '[]');
   const list = document.getElementById('historyList');
-  
-  if (hist.length === 0) {
-    list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted);">Aucune création sauvegardée.</div>';
-    return;
-  }
-
+  if (hist.length === 0) { list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted);">Aucune création.</div>'; return; }
   list.innerHTML = hist.map(item => `
     <div class="history-card">
       <div class="history-title">${item.title}</div>
       <div class="history-meta">${item.type} · ${item.style} · ${item.date}</div>
-      <div class="history-thumbs">
-        ${item.images.map((img, i) => `<img src="${img}" onclick="window.open('${img}', '_blank')" title="Ouvrir l'image ${i+1}">`).join('')}
-      </div>
+      <div class="history-thumbs">${item.images.map((img, i) => `<img src="${img}" onclick="window.open('${img}', '_blank')">`).join('')}</div>
     </div>
   `).join('');
 }
-
 function clearHistory() {
-  if (confirm('Effacer tout l\'historique ?')) {
-    localStorage.removeItem('storylab_history');
-    loadHistoryUI();
-  }
+  if (confirm('Effacer tout l\'historique ?')) { localStorage.removeItem('storylab_history'); loadHistoryUI(); }
 }
 </script>
 </body>
