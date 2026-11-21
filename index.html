@@ -230,6 +230,16 @@ textarea{min-height:110px;resize:vertical}
     <div class="card hidden" id="avatarResultCard">
       <div class="avatar-grid"><div class="slot av-slot" id="av-slot-1">1</div><div class="slot av-slot" id="av-slot-2">2</div></div>
     </div>
+
+    <div class="card">
+      <div class="card-header"><div class="step-num">2</div><div><div class="step-title">Fusion de visage</div><div class="step-sub">Test expérimental</div></div></div>
+      <div class="upload-row"><label class="upload-btn">🖼️ Image principale (la scène)<input type="file" accept="image/*" data-target="scene"></label><img id="scenePhotoPreview" class="photo-preview" alt=""></div>
+      <div class="upload-row"><label class="upload-btn">🙂 Photo du visage à mettre<input type="file" accept="image/*" data-target="face"></label><img id="facePhotoPreview" class="photo-preview" alt=""></div>
+      <textarea id="fusPrompt" style="min-height:70px" placeholder="Précision optionnelle, en anglais (ex : keep the smile)"></textarea>
+      <div class="row"><button class="btn primary" id="fusBtn" onclick="fusionRun()">🔀 Lancer le test</button></div>
+      <div id="fusOut" class="avatar-grid" style="margin-top:12px"></div>
+      <div id="fusLog" class="terminal" style="margin-top:12px;white-space:pre-wrap;word-break:break-word;font-size:11px;display:none"></div>
+    </div>
   </div>
 
   <div id="tab-history" class="hidden">
@@ -721,6 +731,46 @@ async function generateAvatar(){
     await saveToHistory({type:'AVATAR',title:photo?'Avatar (photo)':txt.substring(0,30),style:'Avatar',images:blobs.map((b,i)=>b||urls[i])});
   }catch(e){alert('Erreur : '+e.message);msgSlot($('av-slot-1'),'Erreur : '+e.message,true);$('av-slot-2').innerHTML=''}
   finally{btn.disabled=false;btn.textContent="👤 Générer l'avatar (x2)"}
+}
+
+/* ---------- Fusion de visage (test) ---------- */
+async function fusionRun(){
+  const sc=APP.photos.scene,fc=APP.photos.face;
+  if(!sc||!fc){alert('Importe d’abord les deux photos.');return}
+  if(!APP.keys.length){openApiModal();return}
+  const btn=$('fusBtn'),log=$('fusLog'),out=$('fusOut');
+  btn.disabled=true;btn.textContent='⏳ Test en cours…';out.innerHTML='';log.style.display='block';log.textContent='';APP.cancel=false;
+  const extra=$('fusPrompt').value.trim();
+  const prompt='Replace the face of the main person in the first image with the face of the person in the second image. Keep the first image exactly the same: pose, body, clothes, background, lighting. Photorealistic, seamless blend.'+(extra?' '+extra:'');
+  const base={model:IMG_MODEL,prompt,size:'1K',ratio:'3:4',extra_body:{response_format:'url'}};
+  const variants=[
+    ['/images/generations',{image:[sc,fc]}],
+    ['/images/generations',{images:[sc,fc]}],
+    ['/images/generations',{image:sc,reference_image:fc}],
+    ['/images/edits',{image:[sc,fc]}],
+    ['/images/generations',{extra_body:{response_format:'url',image:[sc,fc]}}]
+  ];
+  const add=t=>{log.textContent+=t+'\n'};
+  let ok=false;
+  try{
+    for(let i=0;i<variants.length&&!ok;i++){
+      const [path,extraP]=variants[i];
+      add(`Essai ${i+1} : ${path} avec ${Object.keys(extraP).join(', ')}`);
+      try{
+        const d=await agnesCall(path,Object.assign({},base,extraP),1);
+        const it=d.data[0],url=it.url||('data:image/png;base64,'+it.b64_json);
+        add('✓ Requête acceptée. Regarde si le visage a bien été remplacé.');
+        const blob=await toBlob(url);
+        const slot=document.createElement('div');slot.className='slot av-slot';
+        const act=document.createElement('div');act.className='slot-actions';
+        const b=document.createElement('button');b.className='action-btn';b.textContent='⬇️';b.onclick=()=>downloadImage(url,'fusion.jpg',blob);
+        act.appendChild(b);const im=document.createElement('img');im.src=url;im.alt='Résultat';slot.append(act,im);out.appendChild(slot);
+        await saveToHistory({type:'FUSION',title:'Fusion de visage',style:'Fusion',images:[blob||url]});
+        ok=true;
+      }catch(e){add('✗ '+String(e.message).slice(0,200))}
+    }
+    if(!ok)add('\nAucun format accepté : Agnes ne semble pas gérer l’édition avec deux images. Copie ce message et envoie-le moi, il peut indiquer le bon format.');
+  }finally{btn.disabled=false;btn.textContent='🔀 Lancer le test'}
 }
 
 /* ---------- Historique (IndexedDB : images en blobs) ---------- */
