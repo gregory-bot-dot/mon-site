@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>STORYLAB & AVATAR LAB // v9.6</title>
+<title>STORYLAB & AVATAR LAB // v9.8</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
@@ -32,14 +32,12 @@ textarea{min-height:110px;resize:vertical}
 .upload-btn input{display:none}
 .photo-preview{width:60px;height:60px;border-radius:8px;object-fit:cover;border:2px solid var(--primary);display:none}
 
-/* Format Buttons */
 .grid-options{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .option-btn{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;user-select:none;-webkit-user-select:none}
-.option-btn *{pointer-events:none} /* Empêche les clics sur les enfants de bloquer le parent */
+.option-btn *{pointer-events:none}
 .option-btn.active{border-color:var(--primary);background:var(--pl)}
 .option-icon{font-size:24px}.option-title{font-weight:600;font-size:14px}.option-desc{font-size:12px;color:var(--muted)}
 
-/* Pills & Styles */
 .pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
 .pill{background:#f3f4f6;padding:6px 14px;border-radius:20px;font-size:13px;cursor:pointer;user-select:none;border:1px solid transparent}
 .pill.active{background:var(--text);color:#fff}
@@ -54,7 +52,6 @@ textarea{min-height:110px;resize:vertical}
 .home-btn:active{background:var(--pl);border-color:var(--primary)}
 .home-ic{font-size:36px}.home-t{font-weight:700;font-size:15px}.home-d{font-size:12px;color:var(--muted);text-align:center}
 .back{background:var(--card);border:1px solid var(--border);padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;color:var(--text);font-family:var(--font)}
-.vrow{margin-bottom:14px}.fplan{min-height:64px;margin-bottom:10px}.sform{display:flex;flex-direction:column;gap:8px;margin-top:12px}.sform textarea{min-height:80px}
 
 .btn{width:100%;border:0;border-radius:12px;padding:16px;font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;background:#f3f4f6;color:var(--text)}
 .btn.primary{background:#1a73e8;color:#fff}.btn.danger{background:#fee2e2;color:var(--err)}
@@ -83,7 +80,6 @@ textarea{min-height:110px;resize:vertical}
 .slot{background:var(--border);border-radius:12px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#9ca3af}
 .plan-slot{aspect-ratio:9/16}.av-slot{aspect-ratio:3/4}
 .slot img{width:100%;height:100%;object-fit:cover;display:block}
-.slot video{width:100%;height:100%;object-fit:cover;display:block}
 .slot-actions{position:absolute;top:8px;right:8px;display:flex;gap:4px;z-index:10}
 .action-btn{background:rgba(255,255,255,.9);border:0;border-radius:50%;width:32px;height:32px;font-size:14px;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,.2)}
 .plan-label{position:absolute;bottom:0;left:0;right:0;background:rgba(255,255,255,.9);padding:6px;font-size:11px;font-weight:600}
@@ -99,7 +95,7 @@ textarea{min-height:110px;resize:vertical}
 </head>
 <body>
 <div class="header">
-  <div class="header-title">STORYLAB & AVATAR LAB <span>// v9.6</span></div>
+  <div class="header-title">STORYLAB & AVATAR LAB <span>// v9.8</span></div>
   <div class="badges">
     <button class="back hidden" id="backBtn" onclick="goHome()">← Menu</button>
     <div class="badge" id="statusBadge"><div class="dot"></div><span>Inactif</span></div>
@@ -108,11 +104,13 @@ textarea{min-height:110px;resize:vertical}
 </div>
 
 <div class="container">
+  <!-- MENU PRINCIPAL -->
   <div class="home" id="home">
     <button class="home-btn" onclick="switchTab('studio')"><div class="home-ic">🎬</div><div class="home-t">StoryLab</div><div class="home-d">Une histoire en 4 ou 10 plans</div></button>
-    <button class="home-btn" onclick="switchTab('free')"><div class="home-ic">✨</div><div class="home-t">Libre</div><div class="home-d">Décris, l’IA propose univers et plans</div></button>
+    <button class="home-btn" onclick="switchTab('free')"><div class="home-ic">✨</div><div class="home-t">Libre</div><div class="home-d">Décris, l’IA propose des univers</div></button>
     <button class="home-btn" onclick="switchTab('avatar')"><div class="home-ic">👤</div><div class="home-t">Avatar</div><div class="home-d">Portraits d’une personne</div></button>
     <button class="home-btn" onclick="switchTab('history')"><div class="home-ic">📂</div><div class="home-t">Historique</div><div class="home-d">Tes créations</div></button>
+    <button class="home-btn" style="grid-column:span 2" onclick="switchTab('lib')"><div class="home-ic">📚</div><div class="home-t">Bibliothèque d’effets</div><div class="home-d">Cadrages, lumières, caméras, textures…</div></button>
   </div>
 
   <!-- ================= STORYLAB ================= -->
@@ -143,7 +141,7 @@ textarea{min-height:110px;resize:vertical}
       <div class="row">
         <select id="planCountSelect"><option value="4">4 plans</option><option value="10" selected>10 plans</option></select>
       </div>
-      <label class="chk"><input type="checkbox" id="fuseFace" checked> Reprendre exactement le visage de ma photo (plus fidèle, plus lent)</label>
+      <label class="chk"><input type="checkbox" id="fuseFace" checked> Reprendre exactement le visage de ma photo</label>
       <div class="row">
         <button class="btn primary" id="launchBtn" onclick="startProduction()">🎬 Lancer la production</button>
         <button class="btn danger hidden" id="cancelBtn" style="width:auto" onclick="APP.cancel=true">Annuler</button>
@@ -183,6 +181,39 @@ textarea{min-height:110px;resize:vertical}
     </div>
   </div>
 
+  <!-- ================= LIBRE ================= -->
+  <div id="tab-free" class="hidden">
+    <div class="card">
+      <div class="card-header"><div class="step-num">1</div><div><div class="step-title">Ton idée brute</div><div class="step-sub">L'IA va créer des univers autour de ça</div></div></div>
+      <div class="upload-row">
+        <label class="upload-btn">📷 Importer une photo de visage (optionnel)<input type="file" accept="image/*" data-target="free"></label>
+        <img id="freePhotoPreview" class="photo-preview" alt="">
+      </div>
+      <textarea id="freeIdea" placeholder="Ex: Un samouraï perdu dans une ville futuriste sous la pluie..."></textarea>
+      <div class="row">
+        <button class="btn primary" id="freeAnalyzeBtn" onclick="freeAnalyze()">🔍 Analyser et proposer des univers</button>
+      </div>
+    </div>
+
+    <div class="card hidden" id="freeStep2">
+      <div class="card-header"><div class="step-num">2</div><div><div class="step-title">Choisis un univers</div><div class="step-sub">Proposé par l'IA</div></div></div>
+      <div class="styles-list" id="freeStylesList"></div>
+      <div class="row">
+        <button class="btn primary hidden" id="freeGenScriptBtn" onclick="freeGenerateScript()">✍️ Écrire le scénario</button>
+      </div>
+    </div>
+
+    <div class="card hidden" id="freeStep3">
+      <div class="card-header"><div class="step-num">3</div><div><div class="step-title">Vérifie ton scénario</div><div class="step-sub">Tu peux modifier le texte</div></div></div>
+      <div class="cd" style="margin-bottom:4px">Fiche personnage (si une photo a été importée)</div>
+      <textarea id="freeChar" style="min-height:70px;margin-bottom:12px" placeholder="Description du personnage..."></textarea>
+      <div id="freeScriptContainer"></div>
+      <div class="row">
+        <button class="btn primary" onclick="freeLaunch()">🎬 Lancer la production</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ================= AVATAR ================= -->
   <div id="tab-avatar" class="hidden">
     <div class="card">
@@ -207,6 +238,23 @@ textarea{min-height:110px;resize:vertical}
     </div>
   </div>
 
+  <!-- ================= BIBLIOTHÈQUE ================= -->
+  <div id="tab-lib" class="hidden">
+    <div class="card">
+      <div class="card-header"><div class="step-title">Bibliothèque d’effets</div></div>
+      <p class="cd" style="margin-bottom:12px">Touche un effet pour l’envoyer où tu veux. Les mots sont en anglais, comme l’IA les comprend le mieux.</p>
+      <select id="libTarget">
+        <option value="idea">→ Mon idée (StoryLab)</option>
+        <option value="free">→ Mon descriptif (Libre)</option>
+        <option value="copy">→ Copier seulement</option>
+      </select>
+      <input type="text" id="libSearch" style="margin-top:12px" placeholder="Rechercher (ex : pluie, travelling, VHS)" oninput="libRender()">
+      <div class="pills" id="libPills" style="margin-top:12px"></div>
+      <div class="cd" id="libMsg" style="min-height:18px;margin-bottom:8px"></div>
+      <div id="libList"></div>
+    </div>
+  </div>
+
   <!-- ================= HISTORIQUE ================= -->
   <div id="tab-history" class="hidden">
     <div class="card">
@@ -217,7 +265,7 @@ textarea{min-height:110px;resize:vertical}
   </div>
 </div>
 
-<!-- ================= MODAL API ================= -->
+<!-- MODAL API -->
 <div class="modal-overlay" id="apiModal">
   <div class="modal">
     <h2 style="margin-bottom:8px">🔑 Clés API Agnes</h2>
@@ -229,7 +277,7 @@ textarea{min-height:110px;resize:vertical}
 
 <script>
 const AGNES_BASE='https://apihub.agnes-ai.com/v1', TEXT_MODEL='agnes-3.0-flash', IMG_MODEL='agnes-image-2.5-flash';
-const APP={format:'Court-métrage',genre:'Tous',style:'Kung-fu classique',keys:[],busy:false,cancel:false,photos:{idea:null,avatar:null},plans:[]};
+const APP={format:'Court-métrage',genre:'Tous',style:'Kung-fu classique',keys:[],busy:false,cancel:false,photos:{idea:null,avatar:null,free:null},plans:[]};
 
 const STYLES=[
  {genre:'action',name:'Kung-fu classique',icon:'🥋',desc:'Chorégraphie lisible, cadres larges',prompt:'classic kung-fu movie style, 1970s martial arts film'},
@@ -249,18 +297,39 @@ const STYLES=[
  {genre:'fantasy',name:'Fantasy épique',icon:'🐉',desc:'Châteaux, dragons, lumière épique',prompt:'epic fantasy movie, castles, dragons, volumetric light, painterly cinematic'}
 ];
 
+const LIB=[
+{id:'shots',name:'Cadrages',icon:'🎥',items:[
+['Plan d’ensemble','extreme wide establishing shot'],['Plan large','wide shot'],['Plan américain','medium cowboy shot'],['Plan moyen','medium shot'],['Gros plan','close-up'],['Très gros plan','extreme close-up on the eyes'],['Plongée','high angle shot'],['Contre-plongée','low angle shot, heroic'],['Par-dessus l’épaule','over-the-shoulder shot'],['Vue zénithale','top-down overhead shot'],['Caméra subjective','first-person POV shot'],['Angle hollandais','Dutch angle, tilted frame'],['Plan de profil','profile shot'],['Composition symétrique','centered symmetrical composition'],['À travers un objet','shot through foreground elements, layered depth'],['Reflet','reflection shot in a mirror or window']]},
+{id:'cam',name:'Mouvements de caméra',icon:'🎬',items:[
+['Travelling avant','slow dolly in'],['Travelling arrière','dolly out, revealing the scene'],['Panoramique','smooth pan'],['Tilt vertical','tilt up'],['Travelling latéral','side tracking shot'],['Orbite','camera orbits around the subject'],['Drone','aerial drone shot, flying forward'],['Caméra épaule','handheld camera, subtle shake'],['Steadicam','smooth steadicam follow'],['Zoom lent','slow zoom in'],['Effet Vertigo','dolly zoom, vertigo effect'],['Grue','crane shot rising up'],['Caméra fixe','locked-off static camera'],['Ralenti','slow motion'],['Accéléré','time-lapse'],['Panoramique éclair','whip pan']]},
+{id:'light',name:'Éclairages',icon:'💡',items:[
+['Heure dorée','golden hour warm sunlight'],['Heure bleue','blue hour, deep blue twilight'],['Contre-jour','backlit silhouette'],['Lumière de contour','rim light'],['Lumière dure','hard directional light, strong shadows'],['Lumière douce','soft diffused light'],['Clair-obscur','chiaroscuro lighting'],['Néons','neon lighting, pink and blue glow'],['Éclairage Rembrandt','Rembrandt lighting'],['Rayons de lumière','volumetric god rays'],['Bougie','candlelight, warm flicker'],['Low-key','low-key lighting, deep shadows'],['High-key','high-key bright lighting'],['Clair de lune','moonlight, cold tones'],['Lueur d’écran','face lit by screen glow'],['Stroboscope','strobe flashes']]},
+{id:'optics',name:'Optiques',icon:'🔭',items:[
+['Grand-angle 24mm','24mm wide-angle lens'],['35mm','35mm lens'],['50mm','50mm lens, natural perspective'],['85mm portrait','85mm portrait lens, shallow depth of field'],['Téléobjectif','200mm telephoto, compressed background'],['Macro','macro lens, extreme detail'],['Fisheye','fisheye lens'],['Anamorphique','anamorphic lens, horizontal flares'],['Flou d’arrière-plan','shallow depth of field, creamy bokeh'],['Grande netteté','deep focus, everything sharp'],['Tilt-shift','tilt-shift miniature effect'],['Flou de mouvement','motion blur'],['Mise au point','rack focus']]},
+{id:'mood',name:'Ambiances & palettes',icon:'🎨',items:[
+['Teal & orange','teal and orange color grading'],['Noir et blanc','black and white, high contrast'],['Pastel','soft pastel palette'],['Saturé','vibrant saturated colors'],['Désaturé','desaturated muted colors'],['Sépia','sepia tones'],['Néon rose-bleu','neon pink and blue palette'],['Tons chauds','warm color palette'],['Tons froids','cold blue color palette'],['Mélancolique','melancholic mood'],['Onirique','dreamy ethereal atmosphere'],['Suspense','tense suspenseful atmosphere'],['Épique','epic grand scale'],['Intime','intimate quiet mood'],['Apocalyptique','apocalyptic atmosphere'],['Nostalgique','nostalgic warm memory feel']]},
+{id:'era',name:'Époques & pellicules',icon:'📼',items:[
+['Kodak Portra','Kodak Portra 400 film look'],['Kodachrome 70s','Kodachrome 1970s color'],['Pellicule 16mm','16mm film, heavy grain'],['Pellicule 35mm','35mm film still'],['VHS','VHS tape look, tracking lines'],['Super 8','Super 8 home movie'],['Polaroid','Polaroid instant photo'],['Années 80','1980s aesthetic'],['Années 90','1990s aesthetic'],['Muet années 20','1920s silent film, black and white'],['Film noir 40s','1940s film noir'],['Caméscope DV','mini DV camcorder footage'],['Caméra de surveillance','CCTV surveillance footage'],['Argentique','analog film photography']]},
+{id:'tex',name:'Textures & effets',icon:'✨',items:[
+['Grain de film','visible film grain'],['Vignettage','vignette'],['Aberration chromatique','chromatic aberration'],['Halation','halation glow around highlights'],['Glitch','digital glitch effect'],['Lignes CRT','CRT scanlines'],['Poussière et rayures','dust and scratches'],['Double exposition','double exposure'],['Lens flare','lens flare'],['Bruit numérique','digital noise'],['Peinture à l’huile','oil painting style'],['Aquarelle','watercolor style'],['Encre','ink wash illustration'],['Papier découpé','paper cut-out style'],['Stop motion','stop motion look'],['Low-poly','low-poly 3D style']]},
+{id:'weather',name:'Météo & moment',icon:'🌦️',items:[
+['Pluie','heavy rain, wet reflections'],['Brouillard','dense fog'],['Neige','falling snow'],['Tempête','violent storm'],['Orage','lightning storm'],['Vent et poussière','wind blowing dust'],['Fumée','drifting smoke'],['Lever de soleil','sunrise'],['Nuit','night scene'],['Crépuscule','dusk'],['Soleil de midi','harsh midday sun'],['Ciel étoilé','starry sky'],['Aurore boréale','northern lights'],['Rues mouillées','wet streets reflecting lights']]},
+{id:'motion',name:'Mouvement du sujet',icon:'🏃',items:[
+['Marche lente','walks slowly'],['Course','runs at full speed'],['Saut','jumps in mid-air'],['Se retourne','turns around slowly'],['Regard caméra','looks straight into the camera'],['Cheveux au vent','hair blowing in the wind'],['Tissu qui flotte','fabric flowing in the wind'],['Sourire naissant','a slow smile appears'],['Particules flottantes','floating particles in the air'],['Gouttes','water droplets falling'],['Flammes','flames flickering'],['Explosion','explosion in the background'],['Vagues','waves crashing'],['Foule','crowd moving in the background']]}
+];
+let libCat='all';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
 document.addEventListener('DOMContentLoaded',()=>{
-  loadKeys();renderPills();renderStyles();refreshKeyUI();
+  loadKeys();renderPills();renderStyles();refreshKeyUI();libRender();
   document.querySelectorAll('input[type=file][data-target]').forEach(i=>i.addEventListener('change',()=>handlePhotoUpload(i,i.dataset.target)));
 });
 
 function switchTab(id){
   $('home').classList.add('hidden');$('backBtn').classList.remove('hidden');
-  ['studio','free','avatar','history'].forEach(t=>{
+  ['studio','free','avatar','history','lib'].forEach(t=>{
     const el=$('tab-'+t);
     if(el) el.classList.toggle('hidden',t!==id);
   });
@@ -268,7 +337,7 @@ function switchTab(id){
   window.scrollTo(0,0);
 }
 function goHome(){
-  ['studio','free','avatar','history'].forEach(t=>{const el=$('tab-'+t);if(el)el.classList.add('hidden')});
+  ['studio','free','avatar','history','lib'].forEach(t=>{const el=$('tab-'+t);if(el)el.classList.add('hidden')});
   $('home').classList.remove('hidden');$('backBtn').classList.add('hidden');window.scrollTo(0,0);
 }
 
@@ -319,10 +388,9 @@ function refreshKeyUI(){
   const ok=APP.keys.length>0;
   $('apiBadge').querySelector('.dot').className='dot '+(ok?'green':'red');
   $('apiBadge').querySelector('span').textContent=ok?`Agnes connectée (${APP.keys.length})`:'Clé API manquante';
-  const a=$('readyAlert');a.className='alert'+(ok?'':' warn');a.textContent=ok?'✓ Prêt.':'Ajoute une clé API (badge en haut) pour commencer.';
+  const a=$('readyAlert');if(a){a.className='alert'+(ok?'':' warn');a.textContent=ok?'✓ Prêt.':'Ajoute une clé API (badge en haut) pour commencer.'}
 }
 
-/* API */
 function loadKeys(){try{APP.keys=JSON.parse(localStorage.getItem('storylab_keys')||'[]')}catch(e){APP.keys=[]}}
 function openApiModal(){$('apiModal').classList.add('open');$('apiKeyInput').value=APP.keys.join('\n')}
 function closeApiModal(){$('apiModal').classList.remove('open')}
@@ -355,7 +423,6 @@ async function generateText(system,user){
   return d.choices[0].message.content.trim();
 }
 
-/* Analyse visage ultra-précise */
 async function analyzeImage(b64){
   const d=await agnesCall('/chat/completions',{model:TEXT_MODEL,messages:[
     {role:'system',content:"You are a forensic facial composite expert. Describe ONLY the person's face and physical traits in extreme detail: exact eye color/shape, nose shape, jawline, cheekbones, skin texture, exact hair style and color, facial hair, age, ethnicity, clothing, posture. Do NOT describe the background. Output in English."},
@@ -392,7 +459,6 @@ async function downloadImage(url,name,blob){
   if(blob)saveBlobAs(blob,name);else window.open(url,'_blank');
 }
 
-/* Plans */
 function msgSlot(slot,text,err){slot.innerHTML='';const d=document.createElement('div');d.className='slot-msg'+(err?' err':'');d.textContent=text;slot.appendChild(d)}
 function updatePlanSlot(n){
   const slot=$('slot-'+n),p=APP.plans[n-1];if(!slot||!p)return;
@@ -407,9 +473,8 @@ function updatePlanSlot(n){
 }
 
 function buildPrompt(scene){
-  const st=(STYLES.find(s=>s.name===APP.style)||STYLES[0]).prompt;
+  const st=APP.stylePrompt || (STYLES.find(s=>s.name===APP.style)||STYLES[0]).prompt;
   if(APP.character){
-    // On force la description du visage en tout premier
     return `Cinematic photo. Main character (identical in every shot): [${APP.character}]. Scene/Action: ${scene}. Style: ${st}. 8k.`;
   }
   return `Cinematic photo. Scene/Action: ${scene}. Style: ${st}. 8k.`;
@@ -426,13 +491,13 @@ function blobToDataURL(b){return new Promise(r=>{const f=new FileReader();f.onlo
 
 async function renderPlan(n){
   const p=APP.plans[n-1],prompt=buildPrompt(p.scene);
-  $('termPrompt').textContent=prompt;
+  if($('termPrompt')) $('termPrompt').textContent=prompt;
   p.url=await generateImage(prompt,'9:16',APP.seed,APP.refPhoto);
   p.blob=await toBlob(p.url);
   
-  if(APP.refPhoto&&$('fuseFace').checked&&!APP.noFuse){
+  if(APP.refPhoto&&$('fuseFace')&&$('fuseFace').checked&&!APP.noFuse){
     try{
-      $('termStatus').textContent='Fusion du visage…';
+      if($('termStatus')) $('termStatus').textContent='Fusion du visage…';
       const u=await fuseFace(p.url,p.blob,APP.refPhoto);
       p.url=u;p.blob=await toBlob(u);
     }catch(e){if(e.fatal)APP.noFuse=true; console.warn('Fusion échouée', e)}
@@ -468,7 +533,6 @@ async function retryFailed(){
   }finally{APP.busy=false}
 }
 
-/* Control room */
 function ctrl(step,status,desc){
   const i=$('ci'+step);i.className='ci '+status;i.textContent=status==='done'?'✓':status==='error'?'!':step;
   if(desc!==undefined)$('cd'+step).textContent=desc;
@@ -481,7 +545,6 @@ function parseScenario(txt,count){
   return{character,plans:plans.slice(0,count)};
 }
 
-/* Production principale */
 async function startProduction(preset){
   if(APP.busy)return;
   preset=(preset&&preset.plans)?preset:null;
@@ -504,7 +567,9 @@ async function startProduction(preset){
   
   try{
     if(preset){
-      APP.character=preset.character;preset.plans.forEach((scene,i)=>APP.plans.push({scene,url:null,blob:null}));
+      APP.character=preset.character;
+      APP.stylePrompt=preset.stylePrompt;
+      preset.plans.forEach((scene,i)=>APP.plans.push({scene,url:null,blob:null}));
       ctrl(1,'done','Fiche fournie');ctrl(2,'done',`${count} plans`);
     }else{
       setStatus('Fiche personnage…');
@@ -541,10 +606,14 @@ Réponds UNIQUEMENT avec un JSON valide : {"character":"fiche personnage fixe en
         if(e.message==='Annulé')throw e;
         msgSlot($('slot-'+i),'Erreur : '+e.message,true);
       }
-      if(i<count)await sleep(3500); // Anti rate limit
+      if(i<count)await sleep(3500);
     }
     $('livePercent').textContent='100%';$('liveProgress').style.width='100%';
     ctrl(3,'done','Terminé');$('termStatus').textContent='Terminé';setStatus('Terminé','green');
+    
+    // Save history
+    const imgs = APP.plans.map(p => p.blob || p.url);
+    await saveToHistory({type:'STORYLAB',title:(idea||'Photo').substring(0,50),style:APP.stylePrompt?'Personnalisé':APP.style,images:imgs});
     
   }catch(e){
     if(e.message==='Annulé'){setStatus('Annulé','red');$('termStatus').textContent='Annulé';}
@@ -554,7 +623,6 @@ Réponds UNIQUEMENT avec un JSON valide : {"character":"fiche personnage fixe en
   }
 }
 
-/* Zip */
 async function exportZip(){
   for(const p of APP.plans){if(p.url&&!p.blob)p.blob=await toBlob(p.url)}
   const done=APP.plans.map((p,i)=>({p,n:i+1})).filter(x=>x.p.blob);
@@ -563,7 +631,78 @@ async function exportZip(){
   saveBlobAs(await z.generateAsync({type:'blob'}),'storylab_plans.zip');
 }
 
-/* Avatar */
+/* LIBRE */
+const FREE={idea:'',unis:[],sel:null,narr:[]};
+async function freeAnalyze(){
+  const idea=$('freeIdea').value.trim();
+  if(!idea){alert('Écris d’abord ton descriptif.');return}
+  if(!APP.keys.length){openApiModal();return}
+  FREE.idea=idea;FREE.sel=null;
+  const btn=$('freeAnalyzeBtn');btn.disabled=true;btn.textContent='⏳ Analyse…';setStatus('Analyse…');
+  try{
+    const sys=`Tu es directeur artistique. Analyse la description de l'utilisateur et propose 5 univers visuels différents, adaptés à ce qu'il décrit. Laisse libre cours à ton imagination : mélange des choix évidents et des idées audacieuses.
+Réponds UNIQUEMENT avec un JSON valide : {"summary":"ce que tu as compris, en français","universes":[{"name":"nom court","icon":"emoji","desc":"description courte","prompt":"style visuel détaillé en anglais"}]}`;
+    const txt = await generateText(sys,`Description : ${idea}`);
+    const m = txt.match(/\{[\s\S]*\}/);
+    if(!m) throw new Error('Format invalide');
+    const j = JSON.parse(m[0]);
+    FREE.unis=(j.universes||[]).slice(0,6).map(u=>({genre:'libre',name:String(u.name),icon:String(u.icon||'🎨'),desc:String(u.desc||''),prompt:String(u.prompt)}));
+    if(!FREE.unis.length)throw new Error('Aucune proposition.');
+    
+    $('freeStep2').classList.remove('hidden');$('freeStep3').classList.add('hidden');
+    
+    const list=$('freeStylesList'); list.innerHTML='';
+    FREE.unis.forEach(u=>{
+      const d=document.createElement('div');d.className='style-item';
+      d.innerHTML=`<div class="style-icon">${esc(u.icon)}</div><div style="flex:1"><div class="style-name">${esc(u.name)}</div><div class="style-desc">${esc(u.desc)}</div></div>`;
+      d.onclick=()=>{
+        list.querySelectorAll('.style-item').forEach(x=>x.classList.remove('active'));
+        d.classList.add('active'); FREE.sel=u;
+        $('freeGenScriptBtn').classList.remove('hidden');
+      };
+      list.appendChild(d);
+    });
+    setStatus('Prêt','green');
+  }catch(e){alert('Erreur : '+e.message);setStatus('Erreur','red')}
+  finally{btn.disabled=false;btn.textContent='🔍 Analyser et proposer des univers'}
+}
+
+async function freeGenerateScript(){
+  if(!FREE.sel) return;
+  const count = 10;
+  const btn=$('freeGenScriptBtn');btn.disabled=true;btn.textContent='⏳ Écriture…';setStatus('Écriture…');
+  try{
+    const sys=`Tu es un réalisateur. Crée un storyboard de ${count} plans pour l'univers "${FREE.sel.name}" (${FREE.sel.prompt}). Description de l'utilisateur : "${FREE.idea}".
+Réponds UNIQUEMENT avec un JSON valide : {"character":"fiche du personnage principal en anglais","plans":["plan 1",...],"narration":["phrase 1",...]}.`;
+    const txt = await generateText(sys,`Génère le storyboard.`);
+    const m = txt.match(/\{[\s\S]*\}/); if(!m) throw new Error('Format invalide');
+    const j = JSON.parse(m[0]);
+    $('freeChar').value = j.character || '';
+    FREE.narr = j.narration || [];
+    
+    const list=$('freeScriptContainer'); list.innerHTML='';
+    (j.plans||[]).forEach((p,i)=>{
+      const l=document.createElement('div');l.className='cd';l.textContent='Plan '+(i+1);
+      const t=document.createElement('textarea');t.className='fplan';t.value=p;
+      list.append(l,t);
+    });
+    $('freeStep3').classList.remove('hidden');
+    $('freeStep3').scrollIntoView({behavior:'smooth'});
+    setStatus('Prêt','green');
+  }catch(e){alert('Erreur : '+e.message)}
+  finally{btn.disabled=false;btn.textContent='✍️ Écrire le scénario'}
+}
+
+function freeLaunch(){
+  if(APP.busy){alert('Déjà en cours.');return}
+  const plans=[...document.querySelectorAll('.fplan')].map(t=>t.value.trim()).filter(Boolean);
+  if(!plans.length||!FREE.sel)return;
+  switchTab('studio');
+  startProduction({idea:FREE.idea, photo:APP.photos.free, character:$('freeChar').value.trim(), plans, stylePrompt:FREE.sel.prompt});
+  setTimeout(()=>$('controlRoom').scrollIntoView({behavior:'smooth'}),300);
+}
+
+/* AVATAR */
 async function generateAvatar(){
   const txt=$('avatarPrompt').value.trim(),photo=APP.photos.avatar;
   if(!txt&&!photo){alert('Décris ou importe un portrait.');return}
@@ -591,7 +730,37 @@ async function generateAvatar(){
   finally{btn.disabled=false;btn.textContent="👤 Générer l'avatar (x2)"}
 }
 
-/* Historique */
+/* BIBLIOTHÈQUE */
+function libRender(){
+  const q=($('libSearch').value||'').toLowerCase().trim(),box=$('libList'),pills=$('libPills');
+  pills.innerHTML='';
+  [{id:'all',name:'Tout',icon:''}].concat(LIB).forEach(c=>{
+    const p=document.createElement('div');p.className='pill'+(c.id===libCat?' active':'');p.textContent=(c.icon?c.icon+' ':'')+c.name;
+    p.onclick=()=>{libCat=c.id;libRender()};pills.appendChild(p)
+  });
+  box.innerHTML='';let n=0;
+  LIB.filter(c=>libCat==='all'||c.id===libCat).forEach(c=>{
+    const its=c.items.filter(it=>!q||(it[0]+' '+it[1]).toLowerCase().includes(q));
+    if(!its.length)return;
+    const h=document.createElement('div');h.className='cd';h.style.cssText='margin:14px 0 6px;font-weight:700;text-transform:uppercase';h.textContent=c.icon+' '+c.name;box.appendChild(h);
+    its.forEach(it=>{n++;
+      const d=document.createElement('div');d.className='style-item';d.style.marginBottom='8px';
+      d.innerHTML='<div style="flex:1"><div class="style-name">'+esc(it[0])+'</div><div class="style-desc">'+esc(it[1])+'</div></div>';
+      const b=document.createElement('button');b.className='action-btn';b.textContent='＋';b.style.border='1px solid var(--border)';
+      b.onclick=e=>{e.stopPropagation();libAdd(it)};d.onclick=()=>libAdd(it);d.appendChild(b);box.appendChild(d);
+    });
+  });
+  if(!n)box.innerHTML='<div class="slot-msg">Aucun résultat.</div>';
+}
+function libAdd(it){
+  const t=$('libTarget').value,en=it[1];let m='';
+  if(t==='idea'){const el=$('ideaInput');el.value+=(el.value.trim()?', ':'')+en;m='✓ Ajouté à ton idée'}
+  else if(t==='free'){const el=$('freeIdea');el.value+=(el.value.trim()?', ':'')+en;m='✓ Ajouté à ton descriptif'}
+  else{try{navigator.clipboard.writeText(en);m='✓ Copié : '+en}catch(e){m=en}}
+  $('libMsg').textContent=m;
+}
+
+/* HISTORIQUE */
 function idb(){return new Promise((res,rej)=>{const r=indexedDB.open('storylab',1);r.onupgradeneeded=()=>r.result.createObjectStore('h',{keyPath:'id'});r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
 async function idbRun(mode,fn){const db=await idb();return new Promise((res,rej)=>{const t=db.transaction('h',mode),q=fn(t.objectStore('h'));t.oncomplete=()=>res(q&&q.result);t.onerror=()=>rej(t.error)})}
 async function saveToHistory(item){
