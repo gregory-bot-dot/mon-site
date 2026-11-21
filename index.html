@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>STORYLAB & AVATAR LAB // v9.9</title>
+<title>STORYLAB & AVATAR LAB // v10.0</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
@@ -94,7 +94,7 @@ textarea{min-height:110px;resize:vertical}
 </head>
 <body>
 <div class="header">
-  <div class="header-title">STORYLAB & AVATAR LAB <span>// v9.9</span></div>
+  <div class="header-title">STORYLAB & AVATAR LAB <span>// v10.0</span></div>
   <div class="badges">
     <button class="back hidden" id="backBtn" onclick="goHome()">← Menu</button>
     <div class="badge" id="statusBadge"><div class="dot"></div><span>Inactif</span></div>
@@ -179,7 +179,7 @@ textarea{min-height:110px;resize:vertical}
       </div>
       <div class="row">
         <button class="btn sm" onclick="animateAll()">🎬 Animer tous les plans</button>
-        <button class="btn sm" onclick="exportVideo()">🎞️ Créer la vidéo finale</button>
+        <button class="btn sm" onclick="exportVideo()">🎞 Créer la vidéo finale</button>
       </div>
       <label class="chk"><input type="checkbox" id="subs" checked> Sous-titres (texte de la voix off)</label>
       <div class="alert warn hidden" id="exportMsg"></div>
@@ -209,7 +209,7 @@ textarea{min-height:110px;resize:vertical}
       <div class="styles-list" id="freeStylesList"></div>
       <div class="row">
         <button class="btn sm" onclick="freeAnalyze()">↻ Autres idées</button>
-        <button class="btn primary" id="freeGenScriptBtn" onclick="freeGenerateScript()">✍️ Écrire le scénario</button>
+        <button class="btn primary" id="freeGenScriptBtn" onclick="freeGenerateScript()">✍ Écrire le scénario</button>
       </div>
     </div>
 
@@ -251,17 +251,23 @@ textarea{min-height:110px;resize:vertical}
   <!-- ================= BIBLIOTHÈQUE ================= -->
   <div id="tab-lib" class="hidden">
     <div class="card">
-      <div class="card-header"><div class="step-title">Bibliothèque d’effets</div></div>
-      <p class="cd" style="margin-bottom:12px">Touche un effet pour l’envoyer où tu veux. Les mots sont en anglais, comme l’IA les comprend le mieux.</p>
+      <div class="card-header"><div class="step-num">1</div><div><div class="step-title">Choisis tes effets</div><div class="step-sub">Touche pour sélectionner</div></div></div>
+      <input type="text" id="libSearch" placeholder="Rechercher (ex : pluie, travelling, VHS)" oninput="libRender()">
+      <div class="pills" id="libPills" style="margin-top:12px"></div>
+      <div class="styles-list" id="libList" style="max-height:420px"></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="step-num">2</div><div><div class="step-title">Envoie</div><div class="step-sub" id="libCount">Aucun effet sélectionné</div></div></div>
       <select id="libTarget">
         <option value="idea">→ Mon idée (StoryLab)</option>
         <option value="free">→ Mon descriptif (Libre)</option>
         <option value="copy">→ Copier seulement</option>
       </select>
-      <input type="text" id="libSearch" style="margin-top:12px" placeholder="Rechercher (ex : pluie, travelling, VHS)" oninput="libRender()">
-      <div class="pills" id="libPills" style="margin-top:12px"></div>
-      <div class="cd" id="libMsg" style="min-height:18px;margin-bottom:8px"></div>
-      <div id="libList"></div>
+      <div class="row">
+        <button class="btn sm" onclick="libClear()">↻ Vider</button>
+        <button class="btn primary sm" onclick="libSend()">＋ Ajouter la sélection</button>
+      </div>
+      <div class="cd" id="libMsg" style="margin-top:10px;min-height:18px"></div>
     </div>
   </div>
 
@@ -269,7 +275,7 @@ textarea{min-height:110px;resize:vertical}
   <div id="tab-history" class="hidden">
     <div class="card">
       <div class="card-header"><div class="step-title">Mes créations</div></div>
-      <button class="btn danger sm" onclick="clearHistory()" style="margin-bottom:16px">🗑️ Effacer l'historique</button>
+      <button class="btn danger sm" onclick="clearHistory()" style="margin-bottom:16px">🗑 Effacer l'historique</button>
       <div id="historyList"></div>
     </div>
   </div>
@@ -297,10 +303,10 @@ const STYLES=[
  {genre:'animation',name:'Simpson',icon:'🟡',desc:'Peau jaune, dessin télé',prompt:'The Simpsons cartoon style, yellow skin'},
  {genre:'animation',name:'Studio Ghibli',icon:'🌿',desc:'Nature luxuriante, ciels peints',prompt:'Studio Ghibli anime style, lush nature, hand-painted skies'},
  {genre:'horreur',name:'Horreur psychologique',icon:'👻',desc:'Ambiance sombre, brume',prompt:'psychological horror movie, dark atmosphere, fog'},
- {genre:'romance',name:'Romance cinématographique',icon:'❤️',desc:'Lumière douce, heure dorée',prompt:'cinematic romance, soft warm lighting, golden hour'},
+ {genre:'romance',name:'Romance cinématographique',icon:'❤',desc:'Lumière douce, heure dorée',prompt:'cinematic romance, soft warm lighting, golden hour'},
  {genre:'action',name:'Western spaghetti',icon:'🤠',desc:'Soleil écrasant, gros plans, poussière',prompt:'spaghetti western, Sergio Leone style, dusty desert, extreme close-ups, anamorphic lens'},
- {genre:'sf',name:'Post-apocalyptique',icon:'☢️',desc:'Ruines, poussière, lumière orange',prompt:'post-apocalyptic wasteland, ruined city, orange dust haze, gritty'},
- {genre:'noir',name:'Polar noir',icon:'🕵️',desc:'Noir et blanc, ombres dures, fumée',prompt:'film noir, black and white, hard shadows, venetian blind light, cigarette smoke'},
+ {genre:'sf',name:'Post-apocalyptique',icon:'☢',desc:'Ruines, poussière, lumière orange',prompt:'post-apocalyptic wasteland, ruined city, orange dust haze, gritty'},
+ {genre:'noir',name:'Polar noir',icon:'🕵',desc:'Noir et blanc, ombres dures, fumée',prompt:'film noir, black and white, hard shadows, venetian blind light, cigarette smoke'},
  {genre:'animation',name:'Anime années 90',icon:'🎌',desc:'Cel shading, couleurs saturées',prompt:'1990s anime style, cel shading, vibrant colors, retro anime film'},
  {genre:'animation',name:'Comics',icon:'💥',desc:'Encrage épais, trames, poses dynamiques',prompt:'american comic book style, bold ink outlines, halftone dots, dynamic poses'},
  {genre:'documentaire',name:'Documentaire nature',icon:'🌍',desc:'Lumière naturelle, téléobjectif',prompt:'nature documentary, telephoto lens, natural light, ultra sharp'},
@@ -322,12 +328,13 @@ const LIB=[
 ['Kodak Portra','Kodak Portra 400 film look'],['Kodachrome 70s','Kodachrome 1970s color'],['Pellicule 16mm','16mm film, heavy grain'],['Pellicule 35mm','35mm film still'],['VHS','VHS tape look, tracking lines'],['Super 8','Super 8 home movie'],['Polaroid','Polaroid instant photo'],['Années 80','1980s aesthetic'],['Années 90','1990s aesthetic'],['Muet années 20','1920s silent film, black and white'],['Film noir 40s','1940s film noir'],['Caméscope DV','mini DV camcorder footage'],['Caméra de surveillance','CCTV surveillance footage'],['Argentique','analog film photography']]},
 {id:'tex',name:'Textures & effets',icon:'✨',items:[
 ['Grain de film','visible film grain'],['Vignettage','vignette'],['Aberration chromatique','chromatic aberration'],['Halation','halation glow around highlights'],['Glitch','digital glitch effect'],['Lignes CRT','CRT scanlines'],['Poussière et rayures','dust and scratches'],['Double exposition','double exposure'],['Lens flare','lens flare'],['Bruit numérique','digital noise'],['Peinture à l’huile','oil painting style'],['Aquarelle','watercolor style'],['Encre','ink wash illustration'],['Papier découpé','paper cut-out style'],['Stop motion','stop motion look'],['Low-poly','low-poly 3D style']]},
-{id:'weather',name:'Météo & moment',icon:'🌦️',items:[
+{id:'weather',name:'Météo & moment',icon:'🌦',items:[
 ['Pluie','heavy rain, wet reflections'],['Brouillard','dense fog'],['Neige','falling snow'],['Tempête','violent storm'],['Orage','lightning storm'],['Vent et poussière','wind blowing dust'],['Fumée','drifting smoke'],['Lever de soleil','sunrise'],['Nuit','night scene'],['Crépuscule','dusk'],['Soleil de midi','harsh midday sun'],['Ciel étoilé','starry sky'],['Aurore boréale','northern lights'],['Rues mouillées','wet streets reflecting lights']]},
 {id:'motion',name:'Mouvement du sujet',icon:'🏃',items:[
 ['Marche lente','walks slowly'],['Course','runs at full speed'],['Saut','jumps in mid-air'],['Se retourne','turns around slowly'],['Regard caméra','looks straight into the camera'],['Cheveux au vent','hair blowing in the wind'],['Tissu qui flotte','fabric flowing in the wind'],['Sourire naissant','a slow smile appears'],['Particules flottantes','floating particles in the air'],['Gouttes','water droplets falling'],['Flammes','flames flickering'],['Explosion','explosion in the background'],['Vagues','waves crashing'],['Foule','crowd moving in the background']]}
 ];
 let libCat='all';
+const LIBSEL=new Set();
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
@@ -474,7 +481,7 @@ function updatePlanSlot(n){
   const slot=$('slot-'+n),p=APP.plans[n-1];if(!slot||!p)return;
   slot.innerHTML='';
   const act=document.createElement('div');act.className='slot-actions';
-  const dl=document.createElement('button');dl.className='action-btn';dl.textContent='⬇️';dl.title='Télécharger';dl.onclick=()=>downloadImage(p.url,`plan_${n}.jpg`,p.blob);
+  const dl=document.createElement('button');dl.className='action-btn';dl.textContent='⬇';dl.title='Télécharger';dl.onclick=()=>downloadImage(p.url,`plan_${n}.jpg`,p.blob);
   const rg=document.createElement('button');rg.className='action-btn';rg.textContent='↻';rg.title='Régénérer';rg.onclick=()=>regeneratePlan(n);
   const an=document.createElement('button');an.className='action-btn';an.textContent='🎬';an.title='Animer';an.onclick=()=>animatePlan(n);
   act.append(dl,rg,an);
@@ -851,7 +858,7 @@ Réponds UNIQUEMENT avec un JSON valide : {"character":"fiche du personnage prin
     $('freeStep3').scrollIntoView({behavior:'smooth'});
     setStatus('Prêt','green');
   }catch(e){alert('Erreur : '+e.message)}
-  finally{btn.disabled=false;btn.textContent='✍️ Écrire le scénario'}
+  finally{btn.disabled=false;btn.textContent='✍ Écrire le scénario'}
 }
 
 function freeLaunch(){
@@ -883,7 +890,7 @@ async function generateAvatar(){
     urls.forEach((u,i)=>{
       const slot=$('av-slot-'+(i+1));slot.innerHTML='';
       const act=document.createElement('div');act.className='slot-actions';
-      const b=document.createElement('button');b.className='action-btn';b.textContent='⬇️';b.onclick=()=>downloadImage(u,`avatar_${i+1}.jpg`,blobs[i]);
+      const b=document.createElement('button');b.className='action-btn';b.textContent='⬇';b.onclick=()=>downloadImage(u,`avatar_${i+1}.jpg`,blobs[i]);
       act.appendChild(b);const im=document.createElement('img');im.src=u;im.alt='Avatar '+(i+1);slot.append(act,im);
     });
     await saveToHistory({type:'AVATAR',title:photo?'Avatar (photo)':txt.substring(0,30),style:'Avatar',images:blobs.map((b,i)=>b||urls[i])});
@@ -897,28 +904,29 @@ function libRender(){
   pills.innerHTML='';
   [{id:'all',name:'Tout',icon:''}].concat(LIB).forEach(c=>{
     const p=document.createElement('div');p.className='pill'+(c.id===libCat?' active':'');p.textContent=(c.icon?c.icon+' ':'')+c.name;
-    p.onclick=()=>{libCat=c.id;libRender()};pills.appendChild(p)
+    p.onclick=()=>{libCat=c.id;libRender()};pills.appendChild(p);
   });
   box.innerHTML='';let n=0;
   LIB.filter(c=>libCat==='all'||c.id===libCat).forEach(c=>{
-    const its=c.items.filter(it=>!q||(it[0]+' '+it[1]).toLowerCase().includes(q));
-    if(!its.length)return;
-    const h=document.createElement('div');h.className='cd';h.style.cssText='margin:14px 0 6px;font-weight:700;text-transform:uppercase';h.textContent=c.icon+' '+c.name;box.appendChild(h);
-    its.forEach(it=>{n++;
-      const d=document.createElement('div');d.className='style-item';d.style.marginBottom='8px';
-      d.innerHTML='<div style="flex:1"><div class="style-name">'+esc(it[0])+'</div><div class="style-desc">'+esc(it[1])+'</div></div>';
-      const b=document.createElement('button');b.className='action-btn';b.textContent='＋';b.style.border='1px solid var(--border)';
-      b.onclick=e=>{e.stopPropagation();libAdd(it)};d.onclick=()=>libAdd(it);d.appendChild(b);box.appendChild(d);
+    c.items.filter(it=>!q||(it[0]+' '+it[1]).toLowerCase().includes(q)).forEach(it=>{
+      n++;
+      const d=document.createElement('div');d.className='style-item'+(LIBSEL.has(it[1])?' active':'');
+      d.innerHTML=`<div class="style-icon">${esc(c.icon)}</div><div style="flex:1"><div class="style-name">${esc(it[0])}</div><div class="style-desc">${esc(it[1])}</div></div>`;
+      d.onclick=()=>{LIBSEL.has(it[1])?LIBSEL.delete(it[1]):LIBSEL.add(it[1]);d.classList.toggle('active');libCount()};
+      box.appendChild(d);
     });
   });
   if(!n)box.innerHTML='<div class="slot-msg">Aucun résultat.</div>';
+  libCount();
 }
-function libAdd(it){
-  const t=$('libTarget').value,en=it[1];let m='';
-  if(t==='idea'){const el=$('ideaInput');el.value+=(el.value.trim()?', ':'')+en;m='✓ Ajouté à ton idée'}
-  else if(t==='free'){const el=$('freeIdea');el.value+=(el.value.trim()?', ':'')+en;m='✓ Ajouté à ton descriptif'}
-  else{try{navigator.clipboard.writeText(en);m='✓ Copié : '+en}catch(e){m=en}}
-  $('libMsg').textContent=m;
+function libCount(){const k=LIBSEL.size;$('libCount').textContent=k?`${k} effet${k>1?'s':''} sélectionné${k>1?'s':''}`:'Aucun effet sélectionné'}
+function libClear(){LIBSEL.clear();$('libMsg').textContent='';libRender()}
+function libSend(){
+  if(!LIBSEL.size){$('libMsg').textContent='Sélectionne d’abord au moins un effet.';return}
+  const t=$('libTarget').value,txt=[...LIBSEL].join(', ');let m='';
+  if(t==='copy'){try{navigator.clipboard.writeText(txt);m='✓ Copié'}catch(e){m=txt}}
+  else{const el=$(t==='idea'?'ideaInput':'freeIdea');el.value+=(el.value.trim()?', ':'')+txt;m=t==='idea'?'✓ Ajouté à ton idée':'✓ Ajouté à ton descriptif'}
+  LIBSEL.clear();libRender();$('libMsg').textContent=m;
 }
 
 /* HISTORIQUE */
