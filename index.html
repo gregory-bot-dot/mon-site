@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>STORYLAB & AVATAR LAB // v9.3</title>
+<title>STORYLAB & AVATAR LAB // v9.4</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
@@ -29,6 +29,7 @@ select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns=
 select:focus,textarea:focus,input:focus{border-color:var(--primary)}
 textarea{min-height:110px;resize:vertical}
 .row{display:flex;gap:12px;margin-top:12px}
+.chk{display:flex;gap:8px;align-items:center;margin-top:12px;font-size:13px}
 .upload-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .upload-btn{display:flex;align-items:center;gap:8px;background:var(--pl);color:var(--primary);border:1px dashed var(--primary);padding:10px 16px;border-radius:12px;font-weight:600;font-size:14px;cursor:pointer;width:100%;justify-content:center;text-align:center}
 .upload-btn input{display:none}
@@ -88,7 +89,7 @@ textarea{min-height:110px;resize:vertical}
 </head>
 <body>
 <div class="header">
-  <div class="header-title">STORYLAB & AVATAR LAB <span>// v9.3</span></div>
+  <div class="header-title">STORYLAB & AVATAR LAB <span>// v9.4</span></div>
   <div class="badges">
     <button class="back hidden" id="backBtn" onclick="goHome()">← Menu</button>
     <div class="badge" id="statusBadge"><div class="dot"></div><span>Inactif</span></div>
@@ -140,6 +141,7 @@ textarea{min-height:110px;resize:vertical}
       <div class="row">
         <select id="planCountSelect"><option value="4">4 plans</option><option value="10" selected>10 plans</option></select>
       </div>
+      <label class="chk"><input type="checkbox" id="fuseFace" checked> Reprendre exactement le visage de ma photo (plus fidèle, plus lent)</label>
       <div class="row">
         <button class="btn primary" id="launchBtn" onclick="startProduction()">🎬 Lancer la production</button>
         <button class="btn danger hidden" id="cancelBtn" style="width:auto" onclick="APP.cancel=true">Annuler</button>
@@ -175,6 +177,11 @@ textarea{min-height:110px;resize:vertical}
         <button class="btn sm" onclick="exportZip()">📦 Zip des plans</button>
         <button class="btn sm" onclick="exportVideo()">🎞️ Vidéo</button>
       </div>
+      <div class="row">
+        <button class="btn sm" onclick="animateAll()">🎬 Animer tous les plans</button>
+        <button class="btn sm" onclick="retryFailed()">↻ Relancer les erreurs</button>
+      </div>
+      <label class="chk"><input type="checkbox" id="subs" checked> Sous-titres (texte de la voix off)</label>
       <div class="alert warn hidden" id="exportMsg"></div>
       <div id="animLog" class="terminal" style="margin-top:12px;white-space:pre-wrap;word-break:break-word;font-size:11px;display:none"></div>
     </div>
@@ -263,7 +270,7 @@ textarea{min-height:110px;resize:vertical}
 </div>
 
 <script>
-const AGNES_BASE='https://apihub.agnes-ai.com/v1', TEXT_MODEL='agnes-3.0-flash', IMG_MODEL='agnes-image-2.5-flash';
+const AGNES_BASE='https://apihub.agnes-ai.com/v1', TEXT_MODEL='agnes-3.0-flash', IMG_MODEL='agnes-image-2.5-flash', VIDEO_MODEL='agnes-video-2.5';
 const APP={format:'Court-métrage',genre:'Tous',style:'Kung-fu classique',keys:[],busy:false,cancel:false,photos:{idea:null,avatar:null},plans:[]};
 const STYLES=[
  {genre:'action',name:'Kung-fu classique',icon:'🥋',desc:'Chorégraphie lisible, cadres larges',prompt:'classic kung-fu movie style, 1970s martial arts film'},
@@ -436,6 +443,13 @@ async function toBlob(url){
   }
   return null;
 }
+async function fetchBlob(url){
+  for(const u of [url,'https://corsproxy.io/?'+encodeURIComponent(url)]){
+    try{const r=await fetch(u);if(!r.ok)continue;const b=await r.blob();if(b.size>1000)return b}catch(e){}
+  }
+  return null;
+}
+function blobToDataURL(b){return new Promise(r=>{const f=new FileReader();f.onload=()=>r(f.result);f.onerror=()=>r(null);f.readAsDataURL(b)})}
 
 /* ---------- Téléchargement ---------- */
 function saveBlobAs(blob,name){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000)}
@@ -464,11 +478,24 @@ function buildPrompt(scene){
   const st=APP.stylePrompt||(allStyles().find(s=>s.name===APP.style)||STYLES[0]).prompt;
   return `Cinematic photo. ${APP.character?`Main character (identical in every shot): [${APP.character}]. `:''}Scene: ${scene}. Style: ${st}. 8k.`;
 }
+async function fuseFace(sceneUrl,sceneBlob,face){
+  const sc=(sceneBlob&&await blobToDataURL(sceneBlob))||sceneUrl;
+  const prompt='Replace the face of the main person in the first image with the face of the person in the second image. Keep the first image exactly the same: pose, body, clothes, background, lighting. Photorealistic, seamless blend. If the face is not visible or too small, return the first image unchanged.';
+  const d=await agnesCall('/images/generations',{model:IMG_MODEL,prompt,size:'1K',ratio:'9:16',image:[sc,face],extra_body:{response_format:'url'}},2);
+  const it=d.data[0];return it.url||('data:image/png;base64,'+it.b64_json);
+}
 async function renderPlan(n){
   const p=APP.plans[n-1],prompt=buildPrompt(p.scene);
   $('termPrompt').textContent=prompt;
   p.url=await generateImage(prompt,'9:16',APP.seed,APP.refPhoto);
-  p.blob=await toBlob(p.url);p.clipUrl=null;
+  p.blob=await toBlob(p.url);p.clipUrl=null;p.clipBlob=null;
+  if(APP.refPhoto&&$('fuseFace').checked&&!APP.noFuse){
+    try{
+      $('termStatus').textContent='Fusion du visage…';
+      const u=await fuseFace(p.url,p.blob,APP.refPhoto);
+      p.url=u;p.blob=await toBlob(u);
+    }catch(e){if(e.fatal)APP.noFuse=true}
+  }
   updatePlanSlot(n);
 }
 async function regeneratePlan(n){
@@ -482,6 +509,20 @@ async function regeneratePlan(n){
   try{await renderPlan(n);setStatus('Terminé','green')}
   catch(e){msgSlot($('slot-'+n),'Erreur : '+e.message,true);setStatus('Erreur','red')}
   finally{APP.busy=false}
+}
+async function retryFailed(){
+  if(APP.busy||APP.animBusy)return;
+  const todo=APP.plans.map((p,i)=>i+1).filter(n=>!APP.plans[n-1].url);
+  if(!todo.length){exportNote('Aucun plan en erreur.');return}
+  APP.busy=true;APP.cancel=false;exportNote('');
+  try{
+    for(const n of todo){
+      setStatus('Plan '+n+'…');msgSlot($('slot-'+n),'…');
+      try{await renderPlan(n)}catch(e){msgSlot($('slot-'+n),'Erreur : '+e.message,true)}
+      await sleep(1500);
+    }
+    setStatus('Terminé','green');
+  }finally{APP.busy=false}
 }
 
 /* ---------- Control room ---------- */
@@ -511,7 +552,7 @@ async function startProduction(preset){
   for(let s=1;s<=3;s++)ctrl(s,'',''); 
   $('liveProgress').style.width='0%';$('livePercent').textContent='0%';
   $('plansGrid').innerHTML='';
-  APP.plans=[];APP.character='';APP.seed=Math.floor(Math.random()*1000);APP.stylePrompt=preset?preset.stylePrompt:null;APP.styleLabel=preset?preset.name:null;APP.refPhoto=photo;APP.noRef=false;
+  APP.plans=[];APP.character='';APP.seed=Math.floor(Math.random()*1000);APP.stylePrompt=preset?preset.stylePrompt:null;APP.styleLabel=preset?preset.name:null;APP.refPhoto=photo;APP.noRef=false;APP.noFuse=false;
   for(let i=1;i<=count;i++){const d=document.createElement('div');d.className='slot plan-slot';d.id='slot-'+i;d.textContent=i;$('plansGrid').appendChild(d)}
   const images=[];
   try{
@@ -550,6 +591,7 @@ Réponds UNIQUEMENT avec un JSON valide, sans markdown : {"character":"fiche per
     $('livePercent').textContent='100%';$('liveProgress').style.width='100%';
     ctrl(3,'done','Terminé');$('termStatus').textContent='Terminé';setStatus('Terminé','green');
     if(photo&&APP.noRef)exportNote('Agnes n’accepte pas la photo comme référence : le visage est décrit en texte seulement.');
+    if(photo&&APP.noFuse)exportNote('Agnes a refusé la fusion du visage : plans gardés tels quels.');
     await saveToHistory({type:'STORYLAB',title:(idea||'Photo').substring(0,50),style:APP.styleLabel||APP.style,images});
   }catch(e){
     if(e.message==='Annulé'){setStatus('Annulé','red');$('termStatus').textContent='Annulé';
@@ -605,15 +647,25 @@ async function toggleRec(i){
     mr.start();REC={i,mr};renderVoice();
   }catch(e){alert('Micro indisponible : autorise le micro pour ce site dans les réglages du navigateur.')}
 }
+function wrapText(x,t,w){
+  const out=[];let l='';
+  for(const word of String(t).split(' ')){const m=l?l+' '+word:word;if(x.measureText(m).width>w&&l){out.push(l);l=word}else l=m}
+  if(l)out.push(l);return out;
+}
 async function exportVideo(){
   if(!window.MediaRecorder){exportNote('Ce navigateur ne gère pas l’export vidéo.');return}
   const hasVoice=APP.plans.some(p=>p.voice);
   let ac=null,dest=null;
   if(hasVoice){try{ac=new (window.AudioContext||window.webkitAudioContext)();await ac.resume();dest=ac.createMediaStreamDestination()}catch(e){ac=null}}
-  await ensureBlobs();
-  const done=APP.plans.filter(p=>p.blob);
-  if(!done.length){exportNote('Aucune image exploitable pour la vidéo (copie bloquée par le serveur d’images).');return}
-  exportNote('Montage en cours, garde cet onglet ouvert…');
+  exportNote('Récupération des médias…');
+  for(const p of APP.plans){
+    if(p.url&&!p.blob)p.blob=await toBlob(p.url);
+    if(p.clipUrl&&!p.clipBlob)p.clipBlob=await fetchBlob(p.clipUrl);
+  }
+  const done=APP.plans.filter(p=>p.blob||p.clipBlob);
+  if(!done.length){exportNote('Aucun média exploitable pour la vidéo (copie bloquée par le serveur).');return}
+  const subs=$('subs')&&$('subs').checked;
+  exportNote('Montage en cours, garde cet onglet ouvert et allumé…');
   const W=720,H=1280,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
   const stream=c.captureStream(30);
   if(ac)dest.stream.getAudioTracks().forEach(t=>stream.addTrack(t));
@@ -621,22 +673,35 @@ async function exportVideo(){
   const rec=new MediaRecorder(stream,mime?{mimeType:mime}:undefined),chunks=[];
   rec.ondataavailable=e=>e.data.size&&chunks.push(e.data);
   const fin=new Promise(r=>rec.onstop=r);rec.start();
+  let nClips=0;
   for(const p of done){
-    const img=new Image();img.src=URL.createObjectURL(p.blob);await img.decode();
-    let dur=3000;
-    if(ac&&p.voice){try{const buf=await ac.decodeAudioData(await p.voice.arrayBuffer());const src=ac.createBufferSource();src.buffer=buf;src.connect(dest);src.start();dur=Math.max(3000,buf.duration*1000+500)}catch(e){}}
+    let v=null,img=null,dur=3000;
+    if(p.clipBlob){
+      v=document.createElement('video');v.muted=true;v.playsInline=true;v.src=URL.createObjectURL(p.clipBlob);
+      await new Promise(r=>{v.onloadeddata=r;v.onerror=r});
+      if(v.videoWidth){dur=(v.duration||5)*1000;nClips++}else{URL.revokeObjectURL(v.src);v=null}
+    }
+    if(!v){if(!p.blob)continue;img=new Image();img.src=URL.createObjectURL(p.blob);await img.decode()}
+    if(ac&&p.voice){try{const buf=await ac.decodeAudioData(await p.voice.arrayBuffer());const src=ac.createBufferSource();src.buffer=buf;src.connect(dest);src.start();dur=Math.max(dur,buf.duration*1000+500)}catch(e){}}
+    if(v){try{await v.play()}catch(e){}}
     const t0=performance.now();
     await new Promise(res=>{(function f(){
-      const k=Math.min((performance.now()-t0)/dur,1),z=1+.1*k,s=Math.max(W/img.width,H/img.height)*z,w=img.width*s,h=img.height*s;
-      x.fillStyle='#000';x.fillRect(0,0,W,H);x.drawImage(img,(W-w)/2,(H-h)/2,w,h);
+      const k=Math.min((performance.now()-t0)/dur,1),src=v||img,sw=v?v.videoWidth:img.width,sh=v?v.videoHeight:img.height;
+      const z=v?1:1+.1*k,s=Math.max(W/sw,H/sh)*z,w=sw*s,h=sh*s;
+      x.fillStyle='#000';x.fillRect(0,0,W,H);x.drawImage(src,(W-w)/2,(H-h)/2,w,h);
+      if(subs&&p.narr){
+        x.font='bold 34px Inter,sans-serif';x.textAlign='center';x.lineJoin='round';
+        const ls=wrapText(x,p.narr,W-80),y0=H-130-ls.length*44;
+        ls.forEach((l,i)=>{x.lineWidth=8;x.strokeStyle='#000';x.strokeText(l,W/2,y0+i*44);x.fillStyle='#fff';x.fillText(l,W/2,y0+i*44)});
+      }
       k<1?requestAnimationFrame(f):res();
     })()});
-    URL.revokeObjectURL(img.src);
+    if(v){v.pause();URL.revokeObjectURL(v.src)}else URL.revokeObjectURL(img.src);
   }
   rec.stop();await fin;if(ac)ac.close();
   const ext=(mime||'video/webm').includes('mp4')?'mp4':'webm';
   saveBlobAs(new Blob(chunks,{type:mime||'video/webm'}),'storylab.'+ext);
-  exportNote(hasVoice?'Vidéo prête, avec voix off.':'Vidéo prête (sans voix off).');
+  exportNote(`Vidéo prête${nClips?` (${nClips} clip(s) animé(s))`:''}${hasVoice?', avec voix off':', sans voix off'}.`);
 }
 
 /* ---------- Mode libre : descriptif, univers, plans, images ---------- */
@@ -738,61 +803,69 @@ async function generateAvatar(){
   finally{btn.disabled=false;btn.textContent="👤 Générer l'avatar (x2)"}
 }
 
-/* ---------- Animation image vers vidéo (test) ---------- */
-function findVideoUrl(d){
-  const t=JSON.stringify(d||{});
-  const m=t.match(/https?:[^"\\\s]+\.(?:mp4|webm|mov)[^"\\\s]*/i)||t.match(/"(?:video_url|videoUrl|url)":"(https?:[^"]+)"/);
-  const u=m?(m[1]||m[0]):null;
-  return u&&!/\.(png|jpe?g|webp)(\?|$)/i.test(u)?u:null;
+/* ---------- Animation image vers vidéo (Agnes Video 2.5, mode keyframe) ---------- */
+const ANIM_DEFAULT='The subject moves naturally, slow cinematic camera push-in. ';
+async function animateCore(n,mp,add){
+  const p=APP.plans[n-1];
+  if(!p||!p.url||p.url.startsWith('data:'))throw new Error('image sans adresse publique (régénère le plan)');
+  const key=APP.keys[Math.floor(Math.random()*APP.keys.length)],auth={Authorization:'Bearer '+key};
+  add('Plan '+n+' : création…');
+  const r=await fetch(AGNES_BASE+'/videos',{method:'POST',headers:{...auth,'Content-Type':'application/json'},
+    body:JSON.stringify({model:VIDEO_MODEL,prompt:mp,mode:'keyframe',first_frame:p.url,seconds:'5',size:'720P',aspect_ratio:'9:16'})});
+  const t=await r.json().catch(()=>({}));
+  if(!r.ok)throw new Error((t.error&&(t.error.message||t.error))||t.message||('HTTP '+r.status));
+  if(!t.video_id)throw new Error('Pas de video_id : '+JSON.stringify(t).slice(0,150));
+  let url=null,last='';
+  for(let i=0;i<150&&!url;i++){
+    if(APP.cancel)throw new Error('Annulé');
+    await sleep(2000);
+    let d;
+    try{
+      const g=await fetch('https://apihub.agnes-ai.com/agnesapi?video_id='+encodeURIComponent(t.video_id)+'&model_name='+VIDEO_MODEL,{headers:auth});
+      if(g.status===429){await sleep(4000);continue}
+      if(!g.ok)continue;
+      d=await g.json();
+    }catch(e){continue}
+    const st=d.status||'?';
+    if(st!==last){add(`Plan ${n} : ${st}${d.progress!=null?' '+d.progress+'%':''}`);last=st}
+    if(st==='failed')throw new Error((d.error&&d.error.message)||'Génération échouée');
+    if(st==='completed'&&d.url)url=d.url;
+  }
+  if(!url)throw new Error('Délai dépassé (5 min)');
+  p.clipUrl=url;p.clipBlob=null;updatePlanSlot(n);
 }
 async function animatePlan(n){
   const p=APP.plans[n-1];if(!p||!p.url)return;
   if(APP.animBusy){alert('Une animation est déjà en cours.');return}
   if(!APP.keys.length){openApiModal();return}
-  const mp=prompt('Consigne de mouvement (en anglais) :','Animate this image with natural subtle motion and a slow cinematic camera move. '+p.scene);
+  const mp=prompt('Mouvement et caméra (en anglais) :',ANIM_DEFAULT+p.scene);
   if(mp===null)return;
   APP.animBusy=true;APP.cancel=false;setStatus('Animation plan '+n+'…');
   const log=$('animLog');log.style.display='block';log.textContent='';
-  const add=t=>{log.textContent+=t+'\n'};
-  log.scrollIntoView({behavior:'smooth',block:'center'});
-  try{
-    const base={model:'agnes-video-v2.0',prompt:mp,width:576,height:1024,num_frames:81,frame_rate:24};
-    const variants=[{image:p.url},{images:[p.url]},{image_url:p.url}];
-    let task=null;
-    for(let i=0;i<variants.length&&!task;i++){
-      add(`Essai ${i+1} : /videos avec ${Object.keys(variants[i])[0]}`);
-      try{task=await agnesCall('/videos',Object.assign({},base,variants[i]),1);add('Réponse : '+JSON.stringify(task).slice(0,300))}
-      catch(e){add('✗ '+String(e.message).slice(0,200))}
-    }
-    if(!task)throw new Error('Aucun format accepté.');
-    let url=findVideoUrl(task);
-    if(!url){
-      const id=task.task_id||task.id||task.video_id||(task.data&&(task.data.task_id||task.data.id||task.data.video_id));
-      if(!id)throw new Error('Pas d’identifiant de tâche dans la réponse.');
-      add('Tâche : '+id+' (patiente, c’est long)');
-      const paths=['/videos/'+encodeURIComponent(id),'/agnesapi?video_id='+encodeURIComponent(id)];
-      let pi=0,last='';
-      for(let t=0;t<72&&!url;t++){
-        await sleep(5000);
-        let d=null;
-        for(let k=pi;k<paths.length&&!d;k++){
-          try{
-            const r=await fetch(AGNES_BASE+paths[k],{headers:{Authorization:'Bearer '+APP.keys[0]}});
-            if(r.ok){d=await r.json();pi=k}else if(t===0)add(`  ${paths[k]} → HTTP ${r.status}`);
-          }catch(e){}
-        }
-        if(!d)continue;
-        const st=String(d.status||(d.data&&d.data.status)||'').toLowerCase();
-        if(st!==last){add(`[${(t+1)*5}s] statut : ${st||'?'}`);last=st}
-        url=findVideoUrl(d);
-        if(!url&&/fail|error|cancel/.test(st))throw new Error('Échec : '+JSON.stringify(d).slice(0,200));
-      }
-      if(!url)throw new Error('Délai dépassé (6 min).');
-    }
-    p.clipUrl=url;updatePlanSlot(n);
-    add('✓ Vidéo prête : visible dans le plan '+n);setStatus('Terminé','green');
-  }catch(e){add('✗ '+e.message+'\nCopie ce journal et envoie-le moi.');setStatus('Erreur','red')}
+  const add=t=>{log.textContent+=t+'\n'};log.scrollIntoView({behavior:'smooth',block:'center'});
+  try{await animateCore(n,mp,add);add('✓ Plan '+n+' animé');setStatus('Terminé','green')}
+  catch(e){add('✗ '+e.message);setStatus('Erreur','red')}
   finally{APP.animBusy=false}
+}
+async function animateAll(){
+  if(APP.animBusy||APP.busy){alert('Une opération est déjà en cours.');return}
+  if(!APP.keys.length){openApiModal();return}
+  const todo=APP.plans.map((p,i)=>i+1).filter(n=>APP.plans[n-1].url&&!APP.plans[n-1].clipUrl);
+  if(!todo.length){exportNote('Rien à animer.');return}
+  if(!confirm(`Animer ${todo.length} plan(s) ? Environ ${(todo.length*0.125).toFixed(2)} $ et 1 à 3 min par plan.`))return;
+  APP.animBusy=true;APP.cancel=false;$('cancelBtn').classList.remove('hidden');
+  const log=$('animLog');log.style.display='block';log.textContent='';
+  const add=t=>{log.textContent+=t+'\n';log.scrollTop=log.scrollHeight};
+  let ok=0;
+  try{
+    for(const n of todo){
+      if(APP.cancel)break;
+      setStatus(`Animation ${ok+1}/${todo.length}…`);
+      try{await animateCore(n,ANIM_DEFAULT+APP.plans[n-1].scene,add);ok++;add('✓ Plan '+n)}
+      catch(e){if(e.message==='Annulé')break;add('✗ Plan '+n+' : '+e.message)}
+    }
+    setStatus(APP.cancel?'Annulé':'Terminé',APP.cancel?'red':'green');add(`${ok}/${todo.length} plans animés.`);
+  }finally{APP.animBusy=false;$('cancelBtn').classList.add('hidden')}
 }
 
 /* ---------- Fusion de visage (test) ---------- */
