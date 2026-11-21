@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>STORYLAB & AVATAR LAB // v9.5</title>
+<title>STORYLAB & AVATAR LAB // v9.6</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
@@ -16,9 +16,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:
 .badges{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
 .badge{background:var(--card);border:1px solid var(--border);padding:6px 12px;border-radius:20px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:6px;cursor:pointer}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}.dot.green{background:var(--ok)}.dot.blue{background:var(--primary)}.dot.red{background:var(--err)}
-.tabs{display:flex;background:var(--border);border-radius:12px;padding:4px;margin-bottom:20px;overflow-x:auto}
-.tab-btn{flex:1;padding:10px 8px;border-radius:8px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;border:0;background:transparent;white-space:nowrap}
-.tab-btn.active{background:var(--card);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.1)}
 .container{padding:16px 20px;max-width:600px;margin:0 auto}
 .card{background:var(--card);border-radius:var(--r);padding:20px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
 .card-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px}
@@ -34,42 +31,54 @@ textarea{min-height:110px;resize:vertical}
 .upload-btn{display:flex;align-items:center;gap:8px;background:var(--pl);color:var(--primary);border:1px dashed var(--primary);padding:10px 16px;border-radius:12px;font-weight:600;font-size:14px;cursor:pointer;width:100%;justify-content:center;text-align:center}
 .upload-btn input{display:none}
 .photo-preview{width:60px;height:60px;border-radius:8px;object-fit:cover;border:2px solid var(--primary);display:none}
+
+/* Format Buttons */
 .grid-options{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.option-btn{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px}
+.option-btn{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;user-select:none;-webkit-user-select:none}
+.option-btn *{pointer-events:none} /* Empêche les clics sur les enfants de bloquer le parent */
 .option-btn.active{border-color:var(--primary);background:var(--pl)}
 .option-icon{font-size:24px}.option-title{font-weight:600;font-size:14px}.option-desc{font-size:12px;color:var(--muted)}
+
+/* Pills & Styles */
 .pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
-.pill{background:#f3f4f6;padding:6px 14px;border-radius:20px;font-size:13px;cursor:pointer}.pill.active{background:var(--text);color:#fff}
+.pill{background:#f3f4f6;padding:6px 14px;border-radius:20px;font-size:13px;cursor:pointer;user-select:none;border:1px solid transparent}
+.pill.active{background:var(--text);color:#fff}
 .styles-list{display:flex;flex-direction:column;gap:8px;max-height:380px;overflow-y:auto}
-.style-actions{display:flex;gap:4px}.style-item .action-btn{border:1px solid var(--border)}
+.style-item{border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;display:flex;align-items:center;gap:12px;user-select:none}
+.style-item *{pointer-events:none}
+.style-item.active{border-color:var(--primary);background:var(--pl)}
+.style-icon{font-size:24px}.style-name{font-weight:600;font-size:14px}.style-desc{font-size:11px;color:var(--muted)}
+
 .home{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
 .home-btn{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:26px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;font-family:var(--font);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.05)}
 .home-btn:active{background:var(--pl);border-color:var(--primary)}
 .home-ic{font-size:36px}.home-t{font-weight:700;font-size:15px}.home-d{font-size:12px;color:var(--muted);text-align:center}
 .back{background:var(--card);border:1px solid var(--border);padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;color:var(--text);font-family:var(--font)}
 .vrow{margin-bottom:14px}.fplan{min-height:64px;margin-bottom:10px}.sform{display:flex;flex-direction:column;gap:8px;margin-top:12px}.sform textarea{min-height:80px}
-.style-item{border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;display:flex;align-items:center;gap:12px}
-.style-item.active{border-color:var(--primary);background:var(--pl)}
-.style-icon{font-size:24px}.style-name{font-weight:600;font-size:14px}.style-desc{font-size:11px;color:var(--muted)}
+
 .btn{width:100%;border:0;border-radius:12px;padding:16px;font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;background:#f3f4f6;color:var(--text)}
 .btn.primary{background:#1a73e8;color:#fff}.btn.danger{background:#fee2e2;color:var(--err)}
 .btn:disabled{opacity:.6;cursor:not-allowed}
 .btn.sm{padding:10px;font-size:14px}
 .alert{padding:12px;border-radius:8px;font-size:13px;margin-top:12px;text-align:center;background:#ecfdf5;color:#065f46}
 .alert.warn{background:#fef3c7;color:#92400e}
+
 .live{background:#000;border-radius:var(--r);overflow:hidden;margin-bottom:16px;position:relative}
 .live img{width:100%;max-height:400px;object-fit:contain;display:block}
 .live-tag{position:absolute;top:12px;left:12px;background:rgba(0,0,0,.6);color:#fff;padding:4px 10px;border-radius:12px;font-size:12px;font-weight:600}
 .prog{padding:16px;background:var(--card)}
 .prog-l{display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:8px}
 .bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden}.fill{height:100%;background:var(--primary);width:0;transition:width .3s}
+
 .ctrl{display:flex;gap:16px;padding:14px 0;border-bottom:1px solid var(--border)}.ctrl:last-child{border:0}
 .ci{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;flex-shrink:0;background:var(--border)}
 .ci.done{background:var(--ok)}.ci.active{background:var(--primary)}.ci.error{background:var(--err)}
 .ct{font-weight:600;font-size:14px}.cd{font-size:12px;color:var(--muted)}
+
 .terminal{background:var(--dark);border-radius:12px;padding:16px;font-family:var(--mono);font-size:12px;color:#9ca3af}
 .term-row{display:flex;justify-content:space-between}.term-val{color:#60a5fa}
 .term-prompt{margin-top:12px;padding-top:12px;border-top:1px solid #374151;white-space:pre-wrap;word-break:break-word;color:#d1d5db;font-size:11px}
+
 .plans-grid,.avatar-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.avatar-grid{margin-top:4px}
 .slot{background:var(--border);border-radius:12px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#9ca3af}
 .plan-slot{aspect-ratio:9/16}.av-slot{aspect-ratio:3/4}
@@ -79,17 +88,18 @@ textarea{min-height:110px;resize:vertical}
 .action-btn{background:rgba(255,255,255,.9);border:0;border-radius:50%;width:32px;height:32px;font-size:14px;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,.2)}
 .plan-label{position:absolute;bottom:0;left:0;right:0;background:rgba(255,255,255,.9);padding:6px;font-size:11px;font-weight:600}
 .slot-msg{font-size:12px;color:var(--muted);padding:10px;text-align:center;font-weight:400}.slot-msg.err{color:var(--err)}
+
 .hist-card{border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px}
 .hist-title{font-weight:700;font-size:14px;margin-bottom:4px}.hist-meta{font-size:12px;color:var(--muted);margin-bottom:12px}
 .thumbs{display:flex;gap:8px;overflow-x:auto}.thumbs img{width:80px;height:140px;object-fit:cover;border-radius:8px;cursor:pointer}
-.news-item{border:1px solid var(--border);border-radius:8px;padding:12px;cursor:pointer;font-size:13px;font-weight:600}
+
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px}
 .modal-overlay.open{display:flex}.modal{background:var(--card);border-radius:16px;width:100%;max-width:400px;padding:20px}
 </style>
 </head>
 <body>
 <div class="header">
-  <div class="header-title">STORYLAB & AVATAR LAB <span>// v9.5</span></div>
+  <div class="header-title">STORYLAB & AVATAR LAB <span>// v9.6</span></div>
   <div class="badges">
     <button class="back hidden" id="backBtn" onclick="goHome()">← Menu</button>
     <div class="badge" id="statusBadge"><div class="dot"></div><span>Inactif</span></div>
@@ -99,21 +109,21 @@ textarea{min-height:110px;resize:vertical}
 
 <div class="container">
   <div class="home" id="home">
-    <button class="home-btn" data-tab="studio"><div class="home-ic">🎬</div><div class="home-t">StoryLab</div><div class="home-d">Une histoire en 4 ou 10 plans</div></button>
-    <button class="home-btn" data-tab="free"><div class="home-ic">✨</div><div class="home-t">Libre</div><div class="home-d">Décris, l’IA propose univers et plans</div></button>
-    <button class="home-btn" data-tab="avatar"><div class="home-ic">👤</div><div class="home-t">Avatar</div><div class="home-d">Portraits d’une personne</div></button>
-    <button class="home-btn" data-tab="history"><div class="home-ic">📂</div><div class="home-t">Historique</div><div class="home-d">Tes créations</div></button>
-    <button class="home-btn" data-tab="lib" style="grid-column:span 2"><div class="home-ic">📚</div><div class="home-t">Bibliothèque d’effets</div><div class="home-d">Cadrages, lumières, caméras, textures… à explorer</div></button>
+    <button class="home-btn" onclick="switchTab('studio')"><div class="home-ic">🎬</div><div class="home-t">StoryLab</div><div class="home-d">Une histoire en 4 ou 10 plans</div></button>
+    <button class="home-btn" onclick="switchTab('free')"><div class="home-ic">✨</div><div class="home-t">Libre</div><div class="home-d">Décris, l’IA propose univers et plans</div></button>
+    <button class="home-btn" onclick="switchTab('avatar')"><div class="home-ic">👤</div><div class="home-t">Avatar</div><div class="home-d">Portraits d’une personne</div></button>
+    <button class="home-btn" onclick="switchTab('history')"><div class="home-ic">📂</div><div class="home-t">Historique</div><div class="home-d">Tes créations</div></button>
   </div>
 
+  <!-- ================= STORYLAB ================= -->
   <div id="tab-studio" class="hidden">
     <div class="card">
       <div class="card-header"><div class="step-num">1</div><div><div class="step-title">Format</div><div class="step-sub">Type de vidéo</div></div></div>
       <div class="grid-options" id="formatGrid">
-        <div class="option-btn active" data-format="Court-métrage"><div class="option-icon">🎬</div><div class="option-title">Court-métrage</div><div class="option-desc">Fiction</div></div>
-        <div class="option-btn" data-format="JT / Reportage"><div class="option-icon">📺</div><div class="option-title">JT / Reportage</div><div class="option-desc">Info</div></div>
-        <div class="option-btn" data-format="Clip musical"><div class="option-icon">🎵</div><div class="option-title">Clip musical</div><div class="option-desc">Rythme</div></div>
-        <div class="option-btn" data-format="TikTok / Hook"><div class="option-icon">📱</div><div class="option-title">TikTok</div><div class="option-desc">Vertical</div></div>
+        <div class="option-btn active" onclick="setFormat(this,'Court-métrage')"><div class="option-icon">🎬</div><div class="option-title">Court-métrage</div><div class="option-desc">Fiction</div></div>
+        <div class="option-btn" onclick="setFormat(this,'JT / Reportage')"><div class="option-icon">📺</div><div class="option-title">JT / Reportage</div><div class="option-desc">Info</div></div>
+        <div class="option-btn" onclick="setFormat(this,'Clip musical')"><div class="option-icon">🎵</div><div class="option-title">Clip musical</div><div class="option-desc">Rythme</div></div>
+        <div class="option-btn" onclick="setFormat(this,'TikTok / Hook')"><div class="option-icon">📱</div><div class="option-title">TikTok</div><div class="option-desc">Vertical</div></div>
       </div>
     </div>
 
@@ -121,15 +131,6 @@ textarea{min-height:110px;resize:vertical}
       <div class="card-header"><div class="step-num">2</div><div><div class="step-title">Univers visuel</div></div></div>
       <div class="pills" id="genrePills"></div>
       <div class="styles-list" id="stylesList"></div>
-      <button class="btn sm" style="margin-top:12px" onclick="newStyle()">＋ Créer mon univers</button>
-      <div class="sform hidden" id="styleForm">
-        <input type="text" id="sfName" placeholder="Nom (ex : Blade Runner)">
-        <input type="text" id="sfIcon" placeholder="Icône (un emoji, ex : 🌃)">
-        <input type="text" id="sfGenre" placeholder="Genre (ex : sf, fantasy, perso)">
-        <input type="text" id="sfDesc" placeholder="Courte description affichée">
-        <textarea id="sfPrompt" placeholder="Le style visuel, de préférence en anglais. Ex : 1990s anime, cel shading, vibrant colors"></textarea>
-        <div class="row" style="margin-top:0"><button class="btn sm" onclick="toggleStyleForm(false)">Annuler</button><button class="btn primary sm" onclick="submitStyle()">Enregistrer</button></div>
-      </div>
     </div>
 
     <div class="card">
@@ -143,7 +144,6 @@ textarea{min-height:110px;resize:vertical}
         <select id="planCountSelect"><option value="4">4 plans</option><option value="10" selected>10 plans</option></select>
       </div>
       <label class="chk"><input type="checkbox" id="fuseFace" checked> Reprendre exactement le visage de ma photo (plus fidèle, plus lent)</label>
-      <input type="text" id="fuseTarget" style="margin-top:8px" placeholder="Sur quel personnage ? (en anglais, ex : the man on the left)">
       <div class="row">
         <button class="btn primary" id="launchBtn" onclick="startProduction()">🎬 Lancer la production</button>
         <button class="btn danger hidden" id="cancelBtn" style="width:auto" onclick="APP.cancel=true">Annuler</button>
@@ -177,49 +177,13 @@ textarea{min-height:110px;resize:vertical}
       <div class="plans-grid" id="plansGrid"></div>
       <div class="row" id="exportRow">
         <button class="btn sm" onclick="exportZip()">📦 Zip des plans</button>
-        <button class="btn sm" onclick="exportVideo()">🎞️ Vidéo</button>
-      </div>
-      <div class="row">
-        <button class="btn sm" onclick="animateAll()">🎬 Animer tous les plans</button>
         <button class="btn sm" onclick="retryFailed()">↻ Relancer les erreurs</button>
       </div>
-      <label class="chk"><input type="checkbox" id="subs" checked> Sous-titres (texte de la voix off)</label>
       <div class="alert warn hidden" id="exportMsg"></div>
-      <div id="animLog" class="terminal" style="margin-top:12px;white-space:pre-wrap;word-break:break-word;font-size:11px;display:none"></div>
-    </div>
-
-    <div class="card hidden" id="voiceCard">
-      <div class="card-header"><div class="step-title">Voix off</div></div>
-      <p class="cd" style="margin-bottom:12px">Modifie le texte, puis enregistre ta voix plan par plan. Elle est mixée dans la vidéo.</p>
-      <div id="voiceList"></div>
-      <div class="row"><button class="btn sm" onclick="exportVideo()">🎞️ Vidéo avec voix off</button></div>
     </div>
   </div>
 
-  <div id="tab-free" class="hidden">
-    <div class="card">
-      <div class="card-header"><div class="step-num">1</div><div><div class="step-title">Ton descriptif</div><div class="step-sub">Libre cours à ton imagination</div></div></div>
-      <div class="upload-row"><label class="upload-btn">📷 Photo de visage (optionnel)<input type="file" accept="image/*" data-target="free"></label><img id="freePhotoPreview" class="photo-preview" alt=""></div>
-      <textarea id="freeIdea" placeholder="Décris ce que tu veux voir : une ambiance, une histoire, un personnage, un lieu… Plus tu es libre, plus les idées seront originales."></textarea>
-      <div class="row"><select id="fCount"><option value="4">4 plans</option><option value="10" selected>10 plans</option></select></div>
-      <div class="row"><button class="btn primary" id="fAnalyzeBtn" onclick="freeAnalyze()">🔍 Analyser et proposer des univers</button></div>
-    </div>
-    <div class="card hidden" id="fStep2">
-      <div class="card-header"><div class="step-num">2</div><div><div class="step-title">Choisis un univers</div></div></div>
-      <p id="fSummary" style="font-size:13px;color:var(--muted);margin-bottom:12px"></p>
-      <div class="styles-list" id="fUnis" style="max-height:none"></div>
-      <div class="row"><button class="btn sm" onclick="freeAnalyze()">↻ Autres idées</button><button class="btn sm" id="fKeepBtn" onclick="freeKeep()" disabled>＋ Garder</button></div>
-      <div class="row"><button class="btn primary" id="fPlansBtn" onclick="freePlans()" disabled>✍️ Écrire les plans</button></div>
-    </div>
-    <div class="card hidden" id="fStep3">
-      <div class="card-header"><div class="step-num">3</div><div><div class="step-title">Vérifie les plans</div><div class="step-sub">Modifie ce que tu veux</div></div></div>
-      <div class="cd" style="margin-bottom:4px">Fiche personnage (vide s’il n’y en a pas)</div>
-      <textarea id="fChar" style="min-height:70px;margin-bottom:12px"></textarea>
-      <div id="fPlansList"></div>
-      <div class="row"><button class="btn primary" onclick="freeGenerate()">🎬 Générer les images</button></div>
-    </div>
-  </div>
-
+  <!-- ================= AVATAR ================= -->
   <div id="tab-avatar" class="hidden">
     <div class="card">
       <div class="card-header"><div class="step-num">1</div><div><div class="step-title">Avatar ultra-réaliste</div></div></div>
@@ -241,38 +205,9 @@ textarea{min-height:110px;resize:vertical}
     <div class="card hidden" id="avatarResultCard">
       <div class="avatar-grid"><div class="slot av-slot" id="av-slot-1">1</div><div class="slot av-slot" id="av-slot-2">2</div></div>
     </div>
-
-    <div class="card">
-      <div class="card-header"><div class="step-num">2</div><div><div class="step-title">Fusion de visage</div><div class="step-sub">Test expérimental</div></div></div>
-      <div class="upload-row"><label class="upload-btn">🖼️ Image principale (la scène)<input type="file" accept="image/*" data-target="scene"></label><img id="scenePhotoPreview" class="photo-preview" alt=""></div>
-      <div class="upload-row"><label class="upload-btn">🙂 Photo du visage à mettre<input type="file" accept="image/*" data-target="face"></label><img id="facePhotoPreview" class="photo-preview" alt=""></div>
-      <textarea id="fusPrompt" style="min-height:70px" placeholder="Précision optionnelle, en anglais (ex : keep the smile)"></textarea>
-      <div class="row"><button class="btn primary" id="fusBtn" onclick="fusionRun()">🔀 Lancer le test</button></div>
-      <div id="fusOut" class="avatar-grid" style="margin-top:12px"></div>
-      <div id="fusLog" class="terminal" style="margin-top:12px;white-space:pre-wrap;word-break:break-word;font-size:11px;display:none"></div>
-    </div>
   </div>
 
-
-  <div id="tab-lib" class="hidden">
-    <div class="card">
-      <div class="card-header"><div class="step-title">Bibliothèque d’effets</div></div>
-      <p class="cd" style="margin-bottom:12px">Touche un effet pour l’envoyer où tu veux. Les mots sont en anglais, comme l’IA les comprend le mieux.</p>
-      <select id="libTarget">
-        <option value="idea">→ Mon idée (StoryLab)</option>
-        <option value="free">→ Mon descriptif (Libre)</option>
-        <option value="anim">→ Consigne d’animation des plans</option>
-        <option value="style">→ Créer un univers perso</option>
-        <option value="copy">→ Copier seulement</option>
-      </select>
-      <input type="text" id="libSearch" style="margin-top:12px" placeholder="Rechercher (ex : pluie, travelling, VHS)" oninput="libRender()">
-      <div class="pills" id="libPills" style="margin-top:12px"></div>
-      <div class="cd" id="libMsg" style="min-height:18px;margin-bottom:8px"></div>
-      <div id="libBasket"></div>
-      <div id="libList"></div>
-    </div>
-  </div>
-
+  <!-- ================= HISTORIQUE ================= -->
   <div id="tab-history" class="hidden">
     <div class="card">
       <div class="card-header"><div class="step-title">Mes créations</div></div>
@@ -282,6 +217,7 @@ textarea{min-height:110px;resize:vertical}
   </div>
 </div>
 
+<!-- ================= MODAL API ================= -->
 <div class="modal-overlay" id="apiModal">
   <div class="modal">
     <h2 style="margin-bottom:8px">🔑 Clés API Agnes</h2>
@@ -292,8 +228,9 @@ textarea{min-height:110px;resize:vertical}
 </div>
 
 <script>
-const AGNES_BASE='https://apihub.agnes-ai.com/v1', TEXT_MODEL='agnes-3.0-flash', IMG_MODEL='agnes-image-2.5-flash', VIDEO_MODEL='agnes-video-2.5';
+const AGNES_BASE='https://apihub.agnes-ai.com/v1', TEXT_MODEL='agnes-3.0-flash', IMG_MODEL='agnes-image-2.5-flash';
 const APP={format:'Court-métrage',genre:'Tous',style:'Kung-fu classique',keys:[],busy:false,cancel:false,photos:{idea:null,avatar:null},plans:[]};
+
 const STYLES=[
  {genre:'action',name:'Kung-fu classique',icon:'🥋',desc:'Chorégraphie lisible, cadres larges',prompt:'classic kung-fu movie style, 1970s martial arts film'},
  {genre:'action',name:'Shaolin 70s',icon:'🏯',desc:'Grain 16mm lourd, couleurs chaudes',prompt:'1970s Shaw Brothers kung fu movie, 16mm film grain'},
@@ -309,18 +246,74 @@ const STYLES=[
  {genre:'animation',name:'Anime années 90',icon:'🎌',desc:'Cel shading, couleurs saturées',prompt:'1990s anime style, cel shading, vibrant colors, retro anime film'},
  {genre:'animation',name:'Comics',icon:'💥',desc:'Encrage épais, trames, poses dynamiques',prompt:'american comic book style, bold ink outlines, halftone dots, dynamic poses'},
  {genre:'documentaire',name:'Documentaire nature',icon:'🌍',desc:'Lumière naturelle, téléobjectif',prompt:'nature documentary, telephoto lens, natural light, ultra sharp'},
- {genre:'documentaire',name:'Reportage JT',icon:'📰',desc:'Style journalistique, lumière plate',prompt:'television news report, photojournalism, natural flat light, handheld camera'},
- {genre:'fantasy',name:'Fantasy épique',icon:'🐉',desc:'Châteaux, dragons, lumière épique',prompt:'epic fantasy movie, castles, dragons, volumetric light, painterly cinematic'},
- {genre:'horreur',name:'Found footage VHS',icon:'📼',desc:'Grain VHS, caméra à l’épaule',prompt:'found footage horror, VHS grain, handheld camera, night vision, low quality'}
+ {genre:'fantasy',name:'Fantasy épique',icon:'🐉',desc:'Châteaux, dragons, lumière épique',prompt:'epic fantasy movie, castles, dragons, volumetric light, painterly cinematic'}
 ];
-let CUSTOM=[];try{CUSTOM=JSON.parse(localStorage.getItem('storylab_styles')||'[]')}catch(e){}
-const allStyles=()=>STYLES.concat(CUSTOM);
-function saveCustom(){try{localStorage.setItem('storylab_styles',JSON.stringify(CUSTOM))}catch(e){}}
+
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
-/* ---------- Statut ---------- */
+document.addEventListener('DOMContentLoaded',()=>{
+  loadKeys();renderPills();renderStyles();refreshKeyUI();
+  document.querySelectorAll('input[type=file][data-target]').forEach(i=>i.addEventListener('change',()=>handlePhotoUpload(i,i.dataset.target)));
+});
+
+function switchTab(id){
+  $('home').classList.add('hidden');$('backBtn').classList.remove('hidden');
+  ['studio','free','avatar','history'].forEach(t=>{
+    const el=$('tab-'+t);
+    if(el) el.classList.toggle('hidden',t!==id);
+  });
+  if(id==='history')loadHistoryUI();
+  window.scrollTo(0,0);
+}
+function goHome(){
+  ['studio','free','avatar','history'].forEach(t=>{const el=$('tab-'+t);if(el)el.classList.add('hidden')});
+  $('home').classList.remove('hidden');$('backBtn').classList.add('hidden');window.scrollTo(0,0);
+}
+
+function setFormat(el, format) {
+  document.querySelectorAll('#formatGrid .option-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  APP.format = format;
+}
+
+function renderPills(){
+  const box=$('genrePills');box.innerHTML='';
+  const genres=['Tous',...new Set(STYLES.map(s=>s.genre))];
+  genres.forEach(g=>{
+    const p=document.createElement('div');
+    p.className='pill'+(g===APP.genre?' active':'');
+    p.textContent=g;
+    p.onclick=()=>{APP.genre=g;renderPills();renderStyles()};
+    box.appendChild(p);
+  });
+}
+function renderStyles(){
+  const list=$('stylesList');list.innerHTML='';
+  STYLES.filter(s=>APP.genre==='Tous'||s.genre===APP.genre).forEach(s=>{
+    const d=document.createElement('div');
+    d.className='style-item'+(s.name===APP.style?' active':'');
+    d.innerHTML=`<div class="style-icon">${esc(s.icon)}</div><div style="flex:1"><div class="style-name">${esc(s.name)}</div><div class="style-desc">${esc(s.desc)}</div></div>`;
+    d.onclick=()=>{APP.style=s.name;renderStyles()};
+    list.appendChild(d);
+  });
+}
+
+function handlePhotoUpload(input,target){
+  const f=input.files&&input.files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=e=>{
+    const img=new Image();img.onload=()=>{
+      const k=Math.min(1,1024/Math.max(img.width,img.height)),c=document.createElement('canvas');
+      c.width=img.width*k;c.height=img.height*k;c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+      const data=c.toDataURL('image/jpeg',.85);APP.photos[target]=data;
+      const p=$(target+'PhotoPreview');p.src=data;p.style.display='block';
+    };img.src=e.target.result;
+  };
+  rd.readAsDataURL(f);
+}
+
 function setStatus(text,color='blue'){const b=$('statusBadge');b.querySelector('.dot').className='dot '+color;b.querySelector('span').textContent=text}
 function refreshKeyUI(){
   const ok=APP.keys.length>0;
@@ -329,80 +322,7 @@ function refreshKeyUI(){
   const a=$('readyAlert');a.className='alert'+(ok?'':' warn');a.textContent=ok?'✓ Prêt.':'Ajoute une clé API (badge en haut) pour commencer.';
 }
 
-/* ---------- Init ---------- */
-document.addEventListener('DOMContentLoaded',()=>{
-  loadKeys();renderPills();renderStyles();refreshKeyUI();libRender();
-  document.querySelectorAll('.home-btn').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
-  document.querySelectorAll('#formatGrid .option-btn').forEach(btn=>btn.addEventListener('click',()=>{
-    document.querySelectorAll('#formatGrid .option-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');APP.format=btn.dataset.format;
-  }));
-  document.querySelectorAll('input[type=file][data-target]').forEach(i=>i.addEventListener('change',()=>handlePhotoUpload(i,i.dataset.target)));
-});
-
-function renderPills(){
-  const box=$('genrePills');box.innerHTML='';
-  const genres=['Tous',...new Set(allStyles().map(s=>s.genre))];
-  if(!genres.includes(APP.genre))APP.genre='Tous';
-  genres.forEach(g=>{const p=document.createElement('div');p.className='pill'+(g===APP.genre?' active':'');p.textContent=g;p.onclick=()=>{APP.genre=g;renderPills();renderStyles()};box.appendChild(p)});
-}
-function renderStyles(){
-  const list=$('stylesList');list.innerHTML='';
-  allStyles().filter(s=>APP.genre==='Tous'||s.genre===APP.genre).forEach(s=>{
-    const d=document.createElement('div');d.className='style-item'+(s.name===APP.style?' active':'');
-    d.innerHTML=`<div class="style-icon">${esc(s.icon)}</div><div style="flex:1"><div class="style-name">${esc(s.name)}</div><div class="style-desc">${esc(s.desc)}</div></div>`;
-    d.addEventListener('click',()=>{APP.style=s.name;renderStyles()});
-    if(CUSTOM.includes(s)){
-      const a=document.createElement('div');a.className='style-actions';
-      const e=document.createElement('button');e.className='action-btn';e.textContent='✏️';e.onclick=ev=>{ev.stopPropagation();editStyle(s)};
-      const x=document.createElement('button');x.className='action-btn';x.textContent='🗑️';x.onclick=ev=>{ev.stopPropagation();deleteStyle(s)};
-      a.append(e,x);d.appendChild(a);
-    }
-    list.appendChild(d);
-  });
-}
-let editingStyle=null;
-function toggleStyleForm(show){$('styleForm').classList.toggle('hidden',!show)}
-function newStyle(){editingStyle=null;['sfName','sfIcon','sfDesc','sfPrompt'].forEach(i=>$(i).value='');$('sfGenre').value=APP.genre!=='Tous'?APP.genre:'perso';toggleStyleForm(true);$('sfName').focus()}
-function editStyle(s){editingStyle=s;$('sfName').value=s.name;$('sfIcon').value=s.icon;$('sfGenre').value=s.genre;$('sfDesc').value=s.desc;$('sfPrompt').value=s.prompt;toggleStyleForm(true)}
-function submitStyle(){
-  const name=$('sfName').value.trim(),pr=$('sfPrompt').value.trim();
-  if(!name||!pr){alert('Le nom et le style visuel sont obligatoires.');return}
-  if(allStyles().some(x=>x.name===name&&x!==editingStyle)){alert('Ce nom existe déjà.');return}
-  const o={genre:$('sfGenre').value.trim().toLowerCase()||'perso',name,icon:$('sfIcon').value.trim()||'🎨',desc:$('sfDesc').value.trim()||'Univers perso',prompt:pr};
-  if(editingStyle)Object.assign(editingStyle,o);else CUSTOM.push(o);
-  saveCustom();APP.style=name;toggleStyleForm(false);renderPills();renderStyles();
-}
-function deleteStyle(s){
-  if(!confirm('Supprimer « '+s.name+' » ?'))return;
-  CUSTOM.splice(CUSTOM.indexOf(s),1);saveCustom();
-  if(APP.style===s.name)APP.style=STYLES[0].name;
-  renderPills();renderStyles();
-}
-const SECTIONS=['studio','free','avatar','history','lib'];
-function switchTab(id){
-  $('home').classList.add('hidden');$('backBtn').classList.remove('hidden');
-  SECTIONS.forEach(t=>$('tab-'+t).classList.toggle('hidden',t!==id));
-  if(id==='history')loadHistoryUI();
-  window.scrollTo(0,0);
-}
-function goHome(){SECTIONS.forEach(t=>$('tab-'+t).classList.add('hidden'));$('home').classList.remove('hidden');$('backBtn').classList.add('hidden');window.scrollTo(0,0)}
-function handlePhotoUpload(input,target){
-  const f=input.files&&input.files[0];if(!f)return;
-  const rd=new FileReader();
-  rd.onload=e=>{
-    // Réduit la photo pour alléger la requête d'analyse
-    const img=new Image();img.onload=()=>{
-      const k=Math.min(1,1024/Math.max(img.width,img.height)),c=document.createElement('canvas');
-      c.width=img.width*k;c.height=img.height*k;c.getContext('2d').drawImage(img,0,0,c.width,c.height);
-      const data=c.toDataURL('image/jpeg',.85);APP.photos[target]=data;APP.dims=APP.dims||{};APP.dims[target]=[c.width,c.height];
-      const p=$(target+'PhotoPreview');p.src=data;p.style.display='block';
-    };img.src=e.target.result;
-  };
-  rd.readAsDataURL(f);
-}
-
-/* ---------- Clés ---------- */
+/* API */
 function loadKeys(){try{APP.keys=JSON.parse(localStorage.getItem('storylab_keys')||'[]')}catch(e){APP.keys=[]}}
 function openApiModal(){$('apiModal').classList.add('open');$('apiKeyInput').value=APP.keys.join('\n')}
 function closeApiModal(){$('apiModal').classList.remove('open')}
@@ -413,7 +333,6 @@ function saveApiKeys(){
   refreshKeyUI();closeApiModal();
 }
 
-/* ---------- API avec retry / backoff ---------- */
 async function agnesCall(path,payload,tries=4){
   if(!APP.keys.length)throw new Error('Clé API manquante.');
   let last;
@@ -435,12 +354,15 @@ async function generateText(system,user){
   const d=await agnesCall('/chat/completions',{model:TEXT_MODEL,messages:[{role:'system',content:system},{role:'user',content:user}],temperature:.7});
   return d.choices[0].message.content.trim();
 }
+
+/* Analyse visage ultra-précise */
 async function analyzeImage(b64){
   const d=await agnesCall('/chat/completions',{model:TEXT_MODEL,messages:[
-    {role:'system',content:"Tu es un expert en biométrie. Décris UNIQUEMENT le visage et les traits physiques de la personne : couleur des yeux, coiffure exacte, couleur des cheveux, forme du visage, âge apparent, sexe, tenue. Sois précis et descriptif, en anglais, sans décor."},
-    {role:'user',content:[{type:'text',text:'Describe this face.'},{type:'image_url',image_url:{url:b64}}]}]});
+    {role:'system',content:"You are a forensic facial composite expert. Describe ONLY the person's face and physical traits in extreme detail: exact eye color/shape, nose shape, jawline, cheekbones, skin texture, exact hair style and color, facial hair, age, ethnicity, clothing, posture. Do NOT describe the background. Output in English."},
+    {role:'user',content:[{type:'text',text:'Describe this person in extreme detail.'},{type:'image_url',image_url:{url:b64}}]}]});
   return d.choices[0].message.content.trim();
 }
+
 async function generateImage(prompt,ratio='9:16',seed,ref){
   const p={model:IMG_MODEL,prompt,size:'1K',ratio,extra_body:{response_format:'url'}};
   if(seed!=null)p.seed=seed;
@@ -459,69 +381,65 @@ async function generateImage(prompt,ratio='9:16',seed,ref){
 }
 async function toBlob(url){
   if(url.startsWith('data:')){try{return await (await fetch(url)).blob()}catch(e){return null}}
-  const tries=[url,'https://corsproxy.io/?'+encodeURIComponent(url),'https://api.allorigins.win/raw?url='+encodeURIComponent(url)];
-  for(const u of tries){
-    try{const r=await fetch(u);if(!r.ok)continue;const b=await r.blob();if(b.size>1000&&/^image\//.test(b.type||'image/'))return b}catch(e){}
-  }
-  return null;
-}
-async function fetchBlob(url){
   for(const u of [url,'https://corsproxy.io/?'+encodeURIComponent(url)]){
     try{const r=await fetch(u);if(!r.ok)continue;const b=await r.blob();if(b.size>1000)return b}catch(e){}
   }
   return null;
 }
-function nearestRatio(w,h){const r=w/h;return [['9:16',9/16],['2:3',2/3],['3:4',3/4],['1:1',1],['4:3',4/3],['3:2',3/2],['16:9',16/9],['21:9',21/9]].sort((a,b)=>Math.abs(a[1]-r)-Math.abs(b[1]-r))[0][0]}
-function blobToDataURL(b){return new Promise(r=>{const f=new FileReader();f.onload=()=>r(f.result);f.onerror=()=>r(null);f.readAsDataURL(b)})}
-
-/* ---------- Téléchargement ---------- */
 function saveBlobAs(blob,name){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000)}
 async function downloadImage(url,name,blob){
   if(!blob)blob=await toBlob(url);
   if(blob)saveBlobAs(blob,name);else window.open(url,'_blank');
 }
 
-/* ---------- Plans ---------- */
+/* Plans */
 function msgSlot(slot,text,err){slot.innerHTML='';const d=document.createElement('div');d.className='slot-msg'+(err?' err':'');d.textContent=text;slot.appendChild(d)}
 function updatePlanSlot(n){
   const slot=$('slot-'+n),p=APP.plans[n-1];if(!slot||!p)return;
   slot.innerHTML='';
   const act=document.createElement('div');act.className='slot-actions';
   const dl=document.createElement('button');dl.className='action-btn';dl.textContent='⬇️';dl.title='Télécharger';dl.onclick=()=>downloadImage(p.url,`plan_${n}.jpg`,p.blob);
-  const rg=document.createElement('button');rg.className='action-btn';rg.textContent='↻';rg.title='Modifier et régénérer';rg.onclick=()=>regeneratePlan(n);
-  const an=document.createElement('button');an.className='action-btn';an.textContent='🎬';an.title='Animer';an.onclick=()=>animatePlan(n);
-  act.append(dl,rg,an);
-  let img;
-  if(p.clipUrl){img=document.createElement('video');img.src=p.clipUrl;img.autoplay=true;img.loop=true;img.muted=true;img.playsInline=true;img.controls=true}
-  else{img=document.createElement('img');img.src=p.url;img.alt='Plan '+n}
+  const rg=document.createElement('button');rg.className='action-btn';rg.textContent='↻';rg.title='Régénérer';rg.onclick=()=>regeneratePlan(n);
+  act.append(dl,rg);
+  const img=document.createElement('img');img.src=p.url;img.alt='Plan '+n;
   const lb=document.createElement('div');lb.className='plan-label';lb.textContent='PLAN '+n;
   slot.append(act,img,lb);
 }
+
 function buildPrompt(scene){
-  const st=APP.stylePrompt||(allStyles().find(s=>s.name===APP.style)||STYLES[0]).prompt;
-  return `Cinematic photo. ${APP.character?`Main character (identical in every shot): [${APP.character}]. `:''}Scene: ${scene}. Style: ${st}. 8k.`;
+  const st=(STYLES.find(s=>s.name===APP.style)||STYLES[0]).prompt;
+  if(APP.character){
+    // On force la description du visage en tout premier
+    return `Cinematic photo. Main character (identical in every shot): [${APP.character}]. Scene/Action: ${scene}. Style: ${st}. 8k.`;
+  }
+  return `Cinematic photo. Scene/Action: ${scene}. Style: ${st}. 8k.`;
 }
+
 async function fuseFace(sceneUrl,sceneBlob,face){
   const sc=(sceneBlob&&await blobToDataURL(sceneBlob))||sceneUrl;
-  const tg=($('fuseTarget').value.trim())||'the main person';
-  const prompt='Replace the face of '+tg+' in the first image with the face of the person in the second image. Do not change any other face or person. Keep the first image exactly the same: pose, body, clothes, background, lighting. Photorealistic, seamless blend. If that face is not visible or too small, return the first image unchanged.';
+  const tg='the main person';
+  const prompt='Replace the face of '+tg+' in the first image with the face of the person in the second image. Keep the first image exactly the same: pose, body, clothes, background, lighting. Maintain the exact facial structure, eye color, nose, and hair of the second image. Photorealistic, seamless blend.';
   const d=await agnesCall('/images/generations',{model:IMG_MODEL,prompt,size:'1K',ratio:'9:16',image:[sc,face],extra_body:{response_format:'url'}},2);
   const it=d.data[0];return it.url||('data:image/png;base64,'+it.b64_json);
 }
+function blobToDataURL(b){return new Promise(r=>{const f=new FileReader();f.onload=()=>r(f.result);f.onerror=()=>r(null);f.readAsDataURL(b)})}
+
 async function renderPlan(n){
   const p=APP.plans[n-1],prompt=buildPrompt(p.scene);
   $('termPrompt').textContent=prompt;
   p.url=await generateImage(prompt,'9:16',APP.seed,APP.refPhoto);
-  p.blob=await toBlob(p.url);p.clipUrl=null;p.clipBlob=null;
+  p.blob=await toBlob(p.url);
+  
   if(APP.refPhoto&&$('fuseFace').checked&&!APP.noFuse){
     try{
       $('termStatus').textContent='Fusion du visage…';
       const u=await fuseFace(p.url,p.blob,APP.refPhoto);
       p.url=u;p.blob=await toBlob(u);
-    }catch(e){if(e.fatal)APP.noFuse=true}
+    }catch(e){if(e.fatal)APP.noFuse=true; console.warn('Fusion échouée', e)}
   }
   updatePlanSlot(n);
 }
+
 async function regeneratePlan(n){
   if(APP.busy)return;
   const p=APP.plans[n-1];
@@ -534,11 +452,12 @@ async function regeneratePlan(n){
   catch(e){msgSlot($('slot-'+n),'Erreur : '+e.message,true);setStatus('Erreur','red')}
   finally{APP.busy=false}
 }
+
 async function retryFailed(){
-  if(APP.busy||APP.animBusy)return;
+  if(APP.busy)return;
   const todo=APP.plans.map((p,i)=>i+1).filter(n=>!APP.plans[n-1].url);
-  if(!todo.length){exportNote('Aucun plan en erreur.');return}
-  APP.busy=true;APP.cancel=false;exportNote('');
+  if(!todo.length){$('exportMsg').textContent='Aucun plan en erreur.';$('exportMsg').classList.remove('hidden');return}
+  APP.busy=true;APP.cancel=false;
   try{
     for(const n of todo){
       setStatus('Plan '+n+'…');msgSlot($('slot-'+n),'…');
@@ -549,58 +468,65 @@ async function retryFailed(){
   }finally{APP.busy=false}
 }
 
-/* ---------- Control room ---------- */
+/* Control room */
 function ctrl(step,status,desc){
   const i=$('ci'+step);i.className='ci '+status;i.textContent=status==='done'?'✓':status==='error'?'!':step;
   if(desc!==undefined)$('cd'+step).textContent=desc;
 }
 function parseScenario(txt,count){
-  let plans=[],character='',narr=[];
+  let plans=[],character='';
   const m=txt.match(/\{[\s\S]*\}/);
-  if(m){try{const j=JSON.parse(m[0]);character=String(j.character||'');plans=(j.plans||[]).map(String);narr=(j.narration||[]).map(String)}catch(e){}}
+  if(m){try{const j=JSON.parse(m[0]);character=String(j.character||'');plans=(j.plans||[]).map(String)}catch(e){}}
   if(!plans.length)plans=txt.split('\n').map(l=>l.trim()).filter(l=>/^\d+[.)]/.test(l)).map(l=>l.replace(/^\d+[.)]\s*/,''));
-  return{character,narr,plans:plans.slice(0,count)};
+  return{character,plans:plans.slice(0,count)};
 }
 
-/* ---------- Production ---------- */
+/* Production principale */
 async function startProduction(preset){
   if(APP.busy)return;
   preset=(preset&&preset.plans)?preset:null;
   const idea=preset?preset.idea:$('ideaInput').value.trim(),photo=preset?(preset.photo||null):APP.photos.idea;
   if(!idea&&!photo){alert('Décris une idée ou importe une photo.');return}
   if(!APP.keys.length){openApiModal();return}
+  
   APP.busy=true;APP.cancel=false;
   const count=preset?preset.plans.length:(parseInt($('planCountSelect').value)||10);
+  
   $('launchBtn').disabled=true;$('launchBtn').textContent='⏳ Production…';$('cancelBtn').classList.remove('hidden');
   ['controlRoom','aiActivity','plansCard','livePreview'].forEach(id=>$(id).classList.remove('hidden'));
   for(let s=1;s<=3;s++)ctrl(s,'',''); 
   $('liveProgress').style.width='0%';$('livePercent').textContent='0%';
   $('plansGrid').innerHTML='';
-  APP.plans=[];APP.character='';APP.seed=Math.floor(Math.random()*1000);APP.stylePrompt=preset?preset.stylePrompt:null;APP.styleLabel=preset?preset.name:null;APP.refPhoto=photo;APP.noRef=false;APP.noFuse=false;
+  APP.plans=[];APP.character='';APP.seed=Math.floor(Math.random()*1000);
+  APP.refPhoto=photo;APP.noRef=false;APP.noFuse=false;
+  
   for(let i=1;i<=count;i++){const d=document.createElement('div');d.className='slot plan-slot';d.id='slot-'+i;d.textContent=i;$('plansGrid').appendChild(d)}
-  const images=[];
+  
   try{
     if(preset){
-      APP.character=preset.character;preset.plans.forEach((scene,i)=>APP.plans.push({scene,narr:(preset.narr||[])[i]||'',voice:null,url:null,blob:null}));
+      APP.character=preset.character;preset.plans.forEach((scene,i)=>APP.plans.push({scene,url:null,blob:null}));
       ctrl(1,'done','Fiche fournie');ctrl(2,'done',`${count} plans`);
     }else{
-    setStatus('Fiche personnage…');
-    ctrl(1,'active');$('termStatus').textContent='Analyse du visage…';
-    if(photo){APP.character=await analyzeImage(photo);ctrl(1,'done','Basée sur ta photo')}
-    else ctrl(1,'active','Créée avec le scénario');
+      setStatus('Fiche personnage…');
+      ctrl(1,'active');$('termStatus').textContent='Analyse du visage…';
+      if(photo){
+        APP.character=await analyzeImage(photo);
+        ctrl(1,'done','Basée sur ta photo');
+      }else{
+        ctrl(1,'active','Créée avec le scénario');
+      }
 
-    ctrl(2,'active');setStatus('Scénario…');$('termStatus').textContent='Écriture du scénario…';
-    const sys=`Tu es un réalisateur. Crée un storyboard de ${count} plans pour le format "${APP.format}", style "${APP.style}". Idée : "${idea||'à partir du personnage de la photo'}".
-Réponds UNIQUEMENT avec un JSON valide, sans markdown : {"character":"fiche personnage fixe en anglais (visage, cheveux, âge, tenue)","plans":["plan 1","plan 2",...],"narration":["une phrase courte de voix off en français par plan"]}.
+      ctrl(2,'active');setStatus('Scénario…');$('termStatus').textContent='Écriture du scénario…';
+      const sys=`Tu es un réalisateur. Crée un storyboard de ${count} plans pour le format "${APP.format}", style "${APP.style}". Idée : "${idea||'à partir du personnage de la photo'}".
+Réponds UNIQUEMENT avec un JSON valide : {"character":"fiche personnage fixe en anglais","plans":["plan 1","plan 2",...]}.
 "plans" contient exactement ${count} descriptions en anglais : uniquement ACTIONS et CADRAGES (ex: "Wide shot, the man runs across the roof"), sans redécrire le physique.`;
-    const raw=await generateText('Assistant de production. Tu réponds en JSON strict.',sys);
-    const sc=parseScenario(raw,count);
-    if(!photo)APP.character=sc.character;
-    while(sc.plans.length<count)sc.plans.push(`Cinematic shot of ${idea||'the character'}`);
-    sc.plans.forEach((scene,i)=>APP.plans.push({scene,narr:(sc.narr||[])[i]||'',voice:null,url:null,blob:null}));
-    ctrl(1,'done');ctrl(2,'done',`${count} plans`);
+      const raw=await generateText('Assistant de production. Tu réponds en JSON strict.',sys);
+      const sc=parseScenario(raw,count);
+      if(!photo)APP.character=sc.character;
+      while(sc.plans.length<count)sc.plans.push(`Cinematic shot of ${idea||'the character'}`);
+      sc.plans.forEach((scene,i)=>APP.plans.push({scene,url:null,blob:null}));
+      ctrl(1,'done');ctrl(2,'done',`${count} plans`);
     }
-    renderVoice();$('voiceCard').classList.remove('hidden');
 
     ctrl(3,'active');
     for(let i=1;i<=count;i++){
@@ -608,203 +534,41 @@ Réponds UNIQUEMENT avec un JSON valide, sans markdown : {"character":"fiche per
       ctrl(3,'active',`Plan ${i}/${count}`);setStatus(`Plan ${i}/${count}`);$('termStatus').textContent='Génération…';
       $('liveLabel').textContent='Plan '+i;
       $('livePercent').textContent=Math.round((i-1)/count*100)+'%';$('liveProgress').style.width=((i-1)/count*100)+'%';
-      try{await renderPlan(i);$('liveImage').src=APP.plans[i-1].url;images.push(APP.plans[i-1].blob||APP.plans[i-1].url)}
-      catch(e){if(e.message==='Annulé')throw e;msgSlot($('slot-'+i),'Erreur : '+e.message,true)}
-      if(i<count)await sleep(1500);
+      try{
+        await renderPlan(i);
+        $('liveImage').src=APP.plans[i-1].url;
+      }catch(e){
+        if(e.message==='Annulé')throw e;
+        msgSlot($('slot-'+i),'Erreur : '+e.message,true);
+      }
+      if(i<count)await sleep(3500); // Anti rate limit
     }
     $('livePercent').textContent='100%';$('liveProgress').style.width='100%';
     ctrl(3,'done','Terminé');$('termStatus').textContent='Terminé';setStatus('Terminé','green');
-    if(photo&&APP.noRef)exportNote('Agnes n’accepte pas la photo comme référence : le visage est décrit en texte seulement.');
-    if(photo&&APP.noFuse)exportNote('Agnes a refusé la fusion du visage : plans gardés tels quels.');
-    await saveToHistory({type:'STORYLAB',title:(idea||'Photo').substring(0,50),style:APP.styleLabel||APP.style,images});
+    
   }catch(e){
-    if(e.message==='Annulé'){setStatus('Annulé','red');$('termStatus').textContent='Annulé';
-      if(images.length)await saveToHistory({type:'STORYLAB',title:(idea||'Photo').substring(0,50)+' (partiel)',style:APP.styleLabel||APP.style,images})}
+    if(e.message==='Annulé'){setStatus('Annulé','red');$('termStatus').textContent='Annulé';}
     else{setStatus('Erreur','red');ctrl(2,'error',e.message);alert('Erreur : '+e.message)}
   }finally{
     APP.busy=false;$('launchBtn').disabled=false;$('launchBtn').textContent='🎬 Lancer la production';$('cancelBtn').classList.add('hidden');
   }
 }
 
-/* ---------- Export zip / vidéo ---------- */
-function exportNote(t){const m=$('exportMsg');m.textContent=t;m.classList.toggle('hidden',!t)}
-async function ensureBlobs(){
-  exportNote('Récupération des images…');
-  for(const p of APP.plans){if(p.url&&!p.blob)p.blob=await toBlob(p.url)}
-  exportNote('');
-}
+/* Zip */
 async function exportZip(){
-  await ensureBlobs();
+  for(const p of APP.plans){if(p.url&&!p.blob)p.blob=await toBlob(p.url)}
   const done=APP.plans.map((p,i)=>({p,n:i+1})).filter(x=>x.p.blob);
-  if(!done.length){exportNote('Aucune image téléchargeable. Le serveur d’images bloque peut-être la copie : utilise ⬇️ sur chaque plan.');return}
-  if(typeof JSZip==='undefined'){exportNote('Module zip indisponible (hors ligne ?).');return}
-  exportNote('');const z=new JSZip();done.forEach(x=>z.file(`plan_${x.n}.jpg`,x.p.blob));
+  if(!done.length){$('exportMsg').textContent='Aucune image téléchargeable.';$('exportMsg').classList.remove('hidden');return}
+  const z=new JSZip();done.forEach(x=>z.file(`plan_${x.n}.jpg`,x.p.blob));
   saveBlobAs(await z.generateAsync({type:'blob'}),'storylab_plans.zip');
 }
-let REC=null;
-function renderVoice(){
-  const box=$('voiceList');box.innerHTML='';
-  APP.plans.forEach((p,i)=>{
-    const w=document.createElement('div');w.className='vrow';
-    const l=document.createElement('div');l.className='cd';l.textContent='Plan '+(i+1)+(p.voice?' ✓ voix enregistrée':'');
-    const t=document.createElement('textarea');t.className='fplan';t.value=p.narr||'';t.oninput=()=>{p.narr=t.value};
-    const r=document.createElement('div');r.className='row';r.style.marginTop='0';
-    const rec=REC&&REC.i===i;
-    const b=document.createElement('button');b.className='btn sm'+(rec?' danger':'');b.textContent=rec?'⏹ Arrêter':'🎙️ Enregistrer';b.onclick=()=>toggleRec(i);
-    r.appendChild(b);
-    if(p.voice){
-      const pl=document.createElement('button');pl.className='btn sm';pl.textContent='▶ Écouter';pl.onclick=()=>{new Audio(URL.createObjectURL(p.voice)).play()};
-      const d=document.createElement('button');d.className='btn sm';d.textContent='🗑️';d.style.width='auto';d.onclick=()=>{p.voice=null;renderVoice()};
-      r.append(pl,d);
-    }
-    w.append(l,t,r);box.appendChild(w);
-  });
-}
-async function toggleRec(i){
-  if(REC&&REC.i===i){REC.mr.stop();return}
-  if(REC){alert('Un enregistrement est déjà en cours.');return}
-  try{
-    const st=await navigator.mediaDevices.getUserMedia({audio:true});
-    const mr=new MediaRecorder(st),ch=[];
-    mr.ondataavailable=e=>{if(e.data.size)ch.push(e.data)};
-    mr.onstop=()=>{st.getTracks().forEach(t=>t.stop());APP.plans[i].voice=new Blob(ch,{type:mr.mimeType||'audio/mp4'});REC=null;renderVoice()};
-    mr.start();REC={i,mr};renderVoice();
-  }catch(e){alert('Micro indisponible : autorise le micro pour ce site dans les réglages du navigateur.')}
-}
-function wrapText(x,t,w){
-  const out=[];let l='';
-  for(const word of String(t).split(' ')){const m=l?l+' '+word:word;if(x.measureText(m).width>w&&l){out.push(l);l=word}else l=m}
-  if(l)out.push(l);return out;
-}
-async function exportVideo(){
-  if(!window.MediaRecorder){exportNote('Ce navigateur ne gère pas l’export vidéo.');return}
-  const hasVoice=APP.plans.some(p=>p.voice);
-  let ac=null,dest=null;
-  if(hasVoice){try{ac=new (window.AudioContext||window.webkitAudioContext)();await ac.resume();dest=ac.createMediaStreamDestination()}catch(e){ac=null}}
-  exportNote('Récupération des médias…');
-  for(const p of APP.plans){
-    if(p.url&&!p.blob)p.blob=await toBlob(p.url);
-    if(p.clipUrl&&!p.clipBlob)p.clipBlob=await fetchBlob(p.clipUrl);
-  }
-  const done=APP.plans.filter(p=>p.blob||p.clipBlob);
-  if(!done.length){exportNote('Aucun média exploitable pour la vidéo (copie bloquée par le serveur).');return}
-  const subs=$('subs')&&$('subs').checked;
-  exportNote('Montage en cours, garde cet onglet ouvert et allumé…');
-  const W=720,H=1280,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
-  const stream=c.captureStream(30);
-  if(ac)dest.stream.getAudioTracks().forEach(t=>stream.addTrack(t));
-  const mime=['video/mp4','video/webm;codecs=vp9','video/webm'].find(m=>MediaRecorder.isTypeSupported(m))||'';
-  const rec=new MediaRecorder(stream,mime?{mimeType:mime}:undefined),chunks=[];
-  rec.ondataavailable=e=>e.data.size&&chunks.push(e.data);
-  const fin=new Promise(r=>rec.onstop=r);rec.start();
-  let nClips=0;
-  for(const p of done){
-    let v=null,img=null,dur=3000;
-    if(p.clipBlob){
-      v=document.createElement('video');v.muted=true;v.playsInline=true;v.src=URL.createObjectURL(p.clipBlob);
-      await new Promise(r=>{v.onloadeddata=r;v.onerror=r});
-      if(v.videoWidth){dur=(v.duration||5)*1000;nClips++}else{URL.revokeObjectURL(v.src);v=null}
-    }
-    if(!v){if(!p.blob)continue;img=new Image();img.src=URL.createObjectURL(p.blob);await img.decode()}
-    if(ac&&p.voice){try{const buf=await ac.decodeAudioData(await p.voice.arrayBuffer());const src=ac.createBufferSource();src.buffer=buf;src.connect(dest);src.start();dur=Math.max(dur,buf.duration*1000+500)}catch(e){}}
-    if(v){try{await v.play()}catch(e){}}
-    const t0=performance.now();
-    await new Promise(res=>{(function f(){
-      const k=Math.min((performance.now()-t0)/dur,1),src=v||img,sw=v?v.videoWidth:img.width,sh=v?v.videoHeight:img.height;
-      const z=v?1:1+.1*k,s=Math.max(W/sw,H/sh)*z,w=sw*s,h=sh*s;
-      x.fillStyle='#000';x.fillRect(0,0,W,H);x.drawImage(src,(W-w)/2,(H-h)/2,w,h);
-      if(subs&&p.narr){
-        x.font='bold 34px Inter,sans-serif';x.textAlign='center';x.lineJoin='round';
-        const ls=wrapText(x,p.narr,W-80),y0=H-130-ls.length*44;
-        ls.forEach((l,i)=>{x.lineWidth=8;x.strokeStyle='#000';x.strokeText(l,W/2,y0+i*44);x.fillStyle='#fff';x.fillText(l,W/2,y0+i*44)});
-      }
-      k<1?requestAnimationFrame(f):res();
-    })()});
-    if(v){v.pause();URL.revokeObjectURL(v.src)}else URL.revokeObjectURL(img.src);
-  }
-  rec.stop();await fin;if(ac)ac.close();
-  const ext=(mime||'video/webm').includes('mp4')?'mp4':'webm';
-  saveBlobAs(new Blob(chunks,{type:mime||'video/webm'}),'storylab.'+ext);
-  exportNote(`Vidéo prête${nClips?` (${nClips} clip(s) animé(s))`:''}${hasVoice?', avec voix off':', sans voix off'}.`);
-}
 
-/* ---------- Mode libre : descriptif, univers, plans, images ---------- */
-const FREE={idea:'',unis:[],sel:null};
-function jsonFrom(txt){const m=txt.match(/\{[\s\S]*\}/);if(!m)throw new Error('Réponse illisible, réessaie.');try{return JSON.parse(m[0])}catch(e){throw new Error('Réponse illisible, réessaie.')}}
-async function freeAnalyze(){
-  const idea=$('freeIdea').value.trim();
-  if(!idea){alert('Écris d’abord ton descriptif.');return}
-  if(!APP.keys.length){openApiModal();return}
-  if(idea!==FREE.idea)FREE.unis=[];
-  const avoid=FREE.unis.map(u=>u.name).join(', ');
-  FREE.idea=idea;FREE.sel=null;
-  const btn=$('fAnalyzeBtn');btn.disabled=true;btn.textContent='⏳ Analyse…';setStatus('Analyse…');
-  try{
-    const sys=`Tu es directeur artistique. Analyse la description de l'utilisateur et propose 5 univers visuels différents, adaptés à ce qu'il décrit. Laisse libre cours à ton imagination : mélange des choix évidents et des idées audacieuses.
-Réponds UNIQUEMENT avec un JSON valide, sans markdown : {"summary":"ce que tu as compris, en français, une phrase","universes":[{"name":"nom court en français","icon":"un emoji","desc":"description courte en français, 10 mots max","prompt":"style visuel détaillé en anglais : lumière, palette, texture, ambiance, genre"}]}`;
-    const j=jsonFrom(await generateText(sys,`Description : ${idea}`+(avoid?`\nPropose des univers DIFFÉRENTS de : ${avoid}`:'')));
-    FREE.unis=(j.universes||[]).filter(u=>u&&u.name&&u.prompt).slice(0,6).map(u=>({genre:'libre',name:String(u.name),icon:String(u.icon||'🎨'),desc:String(u.desc||''),prompt:String(u.prompt)}));
-    if(!FREE.unis.length)throw new Error('Aucune proposition, réessaie.');
-    $('fSummary').textContent=j.summary||'';
-    $('fStep2').classList.remove('hidden');$('fStep3').classList.add('hidden');
-    freeRenderUnis();setStatus('Prêt','green');
-  }catch(e){alert('Erreur : '+e.message);setStatus('Erreur','red')}
-  finally{btn.disabled=false;btn.textContent='🔍 Analyser et proposer des univers'}
-}
-function freeRenderUnis(){
-  const box=$('fUnis');box.innerHTML='';
-  FREE.unis.forEach(u=>{
-    const d=document.createElement('div');d.className='style-item'+(u===FREE.sel?' active':'');
-    d.innerHTML=`<div class="style-icon">${esc(u.icon)}</div><div style="flex:1"><div class="style-name">${esc(u.name)}</div><div class="style-desc">${esc(u.desc)}</div></div>`;
-    d.onclick=()=>{FREE.sel=u;$('fStep3').classList.add('hidden');freeRenderUnis()};
-    box.appendChild(d);
-  });
-  $('fPlansBtn').disabled=!FREE.sel;$('fKeepBtn').disabled=!FREE.sel;$('fKeepBtn').textContent='＋ Garder';
-}
-function freeKeep(){
-  const u=FREE.sel;if(!u)return;
-  if(!allStyles().some(x=>x.name===u.name)){CUSTOM.push({...u});saveCustom();renderPills();renderStyles()}
-  $('fKeepBtn').textContent='✓ Gardé';
-}
-async function freePlans(){
-  const u=FREE.sel;if(!u)return;
-  const count=parseInt($('fCount').value)||10;
-  const btn=$('fPlansBtn');btn.disabled=true;btn.textContent='⏳ Écriture…';setStatus('Écriture des plans…');
-  try{
-    const sys=`Tu es un réalisateur. Crée un storyboard de ${count} plans pour l'univers "${u.name}" (${u.prompt}). Description de l'utilisateur : "${FREE.idea}". Laisse libre cours à ton imagination : une vraie progression, avec une ouverture, de la tension et une chute marquante.
-Réponds UNIQUEMENT avec un JSON valide, sans markdown : {"character":"fiche du personnage principal en anglais (visage, cheveux, âge, tenue), ou chaîne vide s'il n'y en a pas","plans":["plan 1","plan 2",...],"narration":["une phrase courte de voix off en français par plan"]}.
-"plans" contient exactement ${count} descriptions en anglais : uniquement ACTIONS et CADRAGES, sans redécrire le physique du personnage.`;
-    const sc=parseScenario(await generateText('Assistant de production. Tu réponds en JSON strict.',sys),count);
-    FREE.narr=sc.narr||[];
-    let ch=sc.character||'';
-    if(APP.photos.free){try{ch=await analyzeImage(APP.photos.free)}catch(e){}}
-    $('fChar').value=ch;
-    while(sc.plans.length<count)sc.plans.push(`Cinematic shot, ${FREE.idea}`);
-    const list=$('fPlansList');list.innerHTML='';
-    sc.plans.forEach((p,i)=>{
-      const l=document.createElement('div');l.className='cd';l.textContent='Plan '+(i+1);
-      const t=document.createElement('textarea');t.className='fplan';t.value=p;
-      list.append(l,t);
-    });
-    $('fStep3').classList.remove('hidden');$('fStep3').scrollIntoView({behavior:'smooth'});setStatus('Prêt','green');
-  }catch(e){alert('Erreur : '+e.message);setStatus('Erreur','red')}
-  finally{btn.disabled=!FREE.sel;btn.textContent='✍️ Écrire les plans'}
-}
-function freeGenerate(){
-  if(APP.busy){alert('Une production est déjà en cours.');return}
-  const plans=[...document.querySelectorAll('.fplan')].map(t=>t.value.trim()).filter(Boolean);
-  if(!plans.length||!FREE.sel)return;
-  switchTab('studio');
-  startProduction({idea:FREE.idea,photo:APP.photos.free,narr:FREE.narr||[],character:$('fChar').value.trim(),plans,stylePrompt:FREE.sel.prompt,name:FREE.sel.name});
-  setTimeout(()=>$('controlRoom').scrollIntoView({behavior:'smooth'}),300);
-}
-
-/* ---------- Avatar ---------- */
+/* Avatar */
 async function generateAvatar(){
   const txt=$('avatarPrompt').value.trim(),photo=APP.photos.avatar;
   if(!txt&&!photo){alert('Décris ou importe un portrait.');return}
   if(!APP.keys.length){openApiModal();return}
-  const btn=$('avatarBtn');btn.disabled=true;btn.textContent='⏳ Génération…';APP.cancel=false;
+  const btn=$('avatarBtn');btn.disabled=true;btn.textContent='⏳ Génération…';
   const style=$('avatarStyle').value,ratio=$('avatarRatio').value;
   $('avatarResultCard').classList.remove('hidden');
   msgSlot($('av-slot-1'),'⏳');msgSlot($('av-slot-2'),'⏳');
@@ -827,178 +591,7 @@ async function generateAvatar(){
   finally{btn.disabled=false;btn.textContent="👤 Générer l'avatar (x2)"}
 }
 
-/* ---------- Animation image vers vidéo (Agnes Video 2.5, mode keyframe) ---------- */
-const ANIM_DEFAULT='The subject moves naturally, slow cinematic camera push-in. ';
-async function animateCore(n,mp,add){
-  const p=APP.plans[n-1];
-  if(!p||!p.url||p.url.startsWith('data:'))throw new Error('image sans adresse publique (régénère le plan)');
-  const key=APP.keys[Math.floor(Math.random()*APP.keys.length)],auth={Authorization:'Bearer '+key};
-  add('Plan '+n+' : création…');
-  const r=await fetch(AGNES_BASE+'/videos',{method:'POST',headers:{...auth,'Content-Type':'application/json'},
-    body:JSON.stringify({model:VIDEO_MODEL,prompt:mp,mode:'keyframe',first_frame:p.url,seconds:'5',size:'720P',aspect_ratio:'9:16'})});
-  const t=await r.json().catch(()=>({}));
-  if(!r.ok)throw new Error((t.error&&(t.error.message||t.error))||t.message||('HTTP '+r.status));
-  if(!t.video_id)throw new Error('Pas de video_id : '+JSON.stringify(t).slice(0,150));
-  let url=null,last='';
-  for(let i=0;i<150&&!url;i++){
-    if(APP.cancel)throw new Error('Annulé');
-    await sleep(2000);
-    let d;
-    try{
-      const g=await fetch('https://apihub.agnes-ai.com/agnesapi?video_id='+encodeURIComponent(t.video_id)+'&model_name='+VIDEO_MODEL,{headers:auth});
-      if(g.status===429){await sleep(4000);continue}
-      if(!g.ok)continue;
-      d=await g.json();
-    }catch(e){continue}
-    const st=d.status||'?';
-    if(st!==last){add(`Plan ${n} : ${st}${d.progress!=null?' '+d.progress+'%':''}`);last=st}
-    if(st==='failed')throw new Error((d.error&&d.error.message)||'Génération échouée');
-    if(st==='completed'&&d.url)url=d.url;
-  }
-  if(!url)throw new Error('Délai dépassé (5 min)');
-  p.clipUrl=url;p.clipBlob=null;updatePlanSlot(n);
-}
-async function animatePlan(n){
-  const p=APP.plans[n-1];if(!p||!p.url)return;
-  if(APP.animBusy){alert('Une animation est déjà en cours.');return}
-  if(!APP.keys.length){openApiModal();return}
-  const mp=prompt('Mouvement et caméra (en anglais) :',animBase()+p.scene);
-  if(mp===null)return;
-  APP.animBusy=true;APP.cancel=false;setStatus('Animation plan '+n+'…');
-  const log=$('animLog');log.style.display='block';log.textContent='';
-  const add=t=>{log.textContent+=t+'\n'};log.scrollIntoView({behavior:'smooth',block:'center'});
-  try{await animateCore(n,mp,add);add('✓ Plan '+n+' animé');setStatus('Terminé','green')}
-  catch(e){add('✗ '+e.message);setStatus('Erreur','red')}
-  finally{APP.animBusy=false}
-}
-async function animateAll(){
-  if(APP.animBusy||APP.busy){alert('Une opération est déjà en cours.');return}
-  if(!APP.keys.length){openApiModal();return}
-  const todo=APP.plans.map((p,i)=>i+1).filter(n=>APP.plans[n-1].url&&!APP.plans[n-1].clipUrl);
-  if(!todo.length){exportNote('Rien à animer.');return}
-  if(!confirm(`Animer ${todo.length} plan(s) ? Environ ${(todo.length*0.125).toFixed(2)} $ et 1 à 3 min par plan.`))return;
-  APP.animBusy=true;APP.cancel=false;$('cancelBtn').classList.remove('hidden');
-  const log=$('animLog');log.style.display='block';log.textContent='';
-  const add=t=>{log.textContent+=t+'\n';log.scrollTop=log.scrollHeight};
-  let ok=0;
-  try{
-    for(const n of todo){
-      if(APP.cancel)break;
-      setStatus(`Animation ${ok+1}/${todo.length}…`);
-      try{await animateCore(n,animBase()+APP.plans[n-1].scene,add);ok++;add('✓ Plan '+n)}
-      catch(e){if(e.message==='Annulé')break;add('✗ Plan '+n+' : '+e.message)}
-    }
-    setStatus(APP.cancel?'Annulé':'Terminé',APP.cancel?'red':'green');add(`${ok}/${todo.length} plans animés.`);
-  }finally{APP.animBusy=false;$('cancelBtn').classList.add('hidden')}
-}
-
-/* ---------- Fusion de visage (test) ---------- */
-async function fusionRun(){
-  const sc=APP.photos.scene,fc=APP.photos.face;
-  if(!sc||!fc){alert('Importe d’abord les deux photos.');return}
-  if(!APP.keys.length){openApiModal();return}
-  const btn=$('fusBtn'),log=$('fusLog'),out=$('fusOut');
-  btn.disabled=true;btn.textContent='⏳ Test en cours…';out.innerHTML='';log.style.display='block';log.textContent='';APP.cancel=false;
-  const extra=$('fusPrompt').value.trim();
-  const prompt='Replace the face of the main person in the first image with the face of the person in the second image. Keep the first image exactly the same: pose, body, clothes, background, lighting. Photorealistic, seamless blend.'+(extra?' '+extra:'');
-  const base={model:IMG_MODEL,prompt,size:'1K',ratio:nearestRatio(...((APP.dims&&APP.dims.scene)||[3,4])),extra_body:{response_format:'url'}};
-  const variants=[
-    ['/images/generations',{image:[sc,fc]}],
-    ['/images/generations',{images:[sc,fc]}],
-    ['/images/generations',{image:sc,reference_image:fc}],
-    ['/images/edits',{image:[sc,fc]}],
-    ['/images/generations',{extra_body:{response_format:'url',image:[sc,fc]}}]
-  ];
-  const add=t=>{log.textContent+=t+'\n'};
-  let ok=false;
-  try{
-    for(let i=0;i<variants.length&&!ok;i++){
-      const [path,extraP]=variants[i];
-      add(`Essai ${i+1} : ${path} avec ${Object.keys(extraP).join(', ')}`);
-      try{
-        const d=await agnesCall(path,Object.assign({},base,extraP),1);
-        const it=d.data[0],url=it.url||('data:image/png;base64,'+it.b64_json);
-        add('✓ Requête acceptée. Regarde si le visage a bien été remplacé.');
-        const blob=await toBlob(url);
-        const slot=document.createElement('div');slot.className='slot av-slot';
-        const act=document.createElement('div');act.className='slot-actions';
-        const b=document.createElement('button');b.className='action-btn';b.textContent='⬇️';b.onclick=()=>downloadImage(url,'fusion.jpg',blob);
-        act.appendChild(b);const im=document.createElement('img');im.src=url;im.alt='Résultat';slot.append(act,im);out.appendChild(slot);
-        await saveToHistory({type:'FUSION',title:'Fusion de visage',style:'Fusion',images:[blob||url]});
-        ok=true;
-      }catch(e){add('✗ '+String(e.message).slice(0,200))}
-    }
-    if(!ok)add('\nAucun format accepté : Agnes ne semble pas gérer l’édition avec deux images. Copie ce message et envoie-le moi, il peut indiquer le bon format.');
-  }finally{btn.disabled=false;btn.textContent='🔀 Lancer le test'}
-}
-
-/* ---------- Bibliothèque d’effets ---------- */
-const LIB=[
-{id:'shots',name:'Cadrages',icon:'🎥',items:[
-['Plan d’ensemble','extreme wide establishing shot'],['Plan large','wide shot'],['Plan américain','medium cowboy shot'],['Plan moyen','medium shot'],['Gros plan','close-up'],['Très gros plan','extreme close-up on the eyes'],['Plongée','high angle shot'],['Contre-plongée','low angle shot, heroic'],['Par-dessus l’épaule','over-the-shoulder shot'],['Vue zénithale','top-down overhead shot'],['Caméra subjective','first-person POV shot'],['Angle hollandais','Dutch angle, tilted frame'],['Plan de profil','profile shot'],['Composition symétrique','centered symmetrical composition'],['À travers un objet','shot through foreground elements, layered depth'],['Reflet','reflection shot in a mirror or window']]},
-{id:'cam',name:'Mouvements de caméra',icon:'🎬',items:[
-['Travelling avant','slow dolly in'],['Travelling arrière','dolly out, revealing the scene'],['Panoramique','smooth pan'],['Tilt vertical','tilt up'],['Travelling latéral','side tracking shot'],['Orbite','camera orbits around the subject'],['Drone','aerial drone shot, flying forward'],['Caméra épaule','handheld camera, subtle shake'],['Steadicam','smooth steadicam follow'],['Zoom lent','slow zoom in'],['Effet Vertigo','dolly zoom, vertigo effect'],['Grue','crane shot rising up'],['Caméra fixe','locked-off static camera'],['Ralenti','slow motion'],['Accéléré','time-lapse'],['Panoramique éclair','whip pan']]},
-{id:'light',name:'Éclairages',icon:'💡',items:[
-['Heure dorée','golden hour warm sunlight'],['Heure bleue','blue hour, deep blue twilight'],['Contre-jour','backlit silhouette'],['Lumière de contour','rim light'],['Lumière dure','hard directional light, strong shadows'],['Lumière douce','soft diffused light'],['Clair-obscur','chiaroscuro lighting'],['Néons','neon lighting, pink and blue glow'],['Éclairage Rembrandt','Rembrandt lighting'],['Rayons de lumière','volumetric god rays'],['Bougie','candlelight, warm flicker'],['Low-key','low-key lighting, deep shadows'],['High-key','high-key bright lighting'],['Clair de lune','moonlight, cold tones'],['Lueur d’écran','face lit by screen glow'],['Stroboscope','strobe flashes']]},
-{id:'optics',name:'Optiques',icon:'🔭',items:[
-['Grand-angle 24mm','24mm wide-angle lens'],['35mm','35mm lens'],['50mm','50mm lens, natural perspective'],['85mm portrait','85mm portrait lens, shallow depth of field'],['Téléobjectif','200mm telephoto, compressed background'],['Macro','macro lens, extreme detail'],['Fisheye','fisheye lens'],['Anamorphique','anamorphic lens, horizontal flares'],['Flou d’arrière-plan','shallow depth of field, creamy bokeh'],['Grande netteté','deep focus, everything sharp'],['Tilt-shift','tilt-shift miniature effect'],['Flou de mouvement','motion blur'],['Mise au point','rack focus']]},
-{id:'mood',name:'Ambiances & palettes',icon:'🎨',items:[
-['Teal & orange','teal and orange color grading'],['Noir et blanc','black and white, high contrast'],['Pastel','soft pastel palette'],['Saturé','vibrant saturated colors'],['Désaturé','desaturated muted colors'],['Sépia','sepia tones'],['Néon rose-bleu','neon pink and blue palette'],['Tons chauds','warm color palette'],['Tons froids','cold blue color palette'],['Mélancolique','melancholic mood'],['Onirique','dreamy ethereal atmosphere'],['Suspense','tense suspenseful atmosphere'],['Épique','epic grand scale'],['Intime','intimate quiet mood'],['Apocalyptique','apocalyptic atmosphere'],['Nostalgique','nostalgic warm memory feel']]},
-{id:'era',name:'Époques & pellicules',icon:'📼',items:[
-['Kodak Portra','Kodak Portra 400 film look'],['Kodachrome 70s','Kodachrome 1970s color'],['Pellicule 16mm','16mm film, heavy grain'],['Pellicule 35mm','35mm film still'],['VHS','VHS tape look, tracking lines'],['Super 8','Super 8 home movie'],['Polaroid','Polaroid instant photo'],['Années 80','1980s aesthetic'],['Années 90','1990s aesthetic'],['Muet années 20','1920s silent film, black and white'],['Film noir 40s','1940s film noir'],['Caméscope DV','mini DV camcorder footage'],['Caméra de surveillance','CCTV surveillance footage'],['Argentique','analog film photography']]},
-{id:'tex',name:'Textures & effets',icon:'✨',items:[
-['Grain de film','visible film grain'],['Vignettage','vignette'],['Aberration chromatique','chromatic aberration'],['Halation','halation glow around highlights'],['Glitch','digital glitch effect'],['Lignes CRT','CRT scanlines'],['Poussière et rayures','dust and scratches'],['Double exposition','double exposure'],['Lens flare','lens flare'],['Bruit numérique','digital noise'],['Peinture à l’huile','oil painting style'],['Aquarelle','watercolor style'],['Encre','ink wash illustration'],['Papier découpé','paper cut-out style'],['Stop motion','stop motion look'],['Low-poly','low-poly 3D style']]},
-{id:'weather',name:'Météo & moment',icon:'🌦️',items:[
-['Pluie','heavy rain, wet reflections'],['Brouillard','dense fog'],['Neige','falling snow'],['Tempête','violent storm'],['Orage','lightning storm'],['Vent et poussière','wind blowing dust'],['Fumée','drifting smoke'],['Lever de soleil','sunrise'],['Nuit','night scene'],['Crépuscule','dusk'],['Soleil de midi','harsh midday sun'],['Ciel étoilé','starry sky'],['Aurore boréale','northern lights'],['Rues mouillées','wet streets reflecting lights']]},
-{id:'motion',name:'Mouvement du sujet',icon:'🏃',items:[
-['Marche lente','walks slowly'],['Course','runs at full speed'],['Saut','jumps in mid-air'],['Se retourne','turns around slowly'],['Regard caméra','looks straight into the camera'],['Cheveux au vent','hair blowing in the wind'],['Tissu qui flotte','fabric flowing in the wind'],['Sourire naissant','a slow smile appears'],['Particules flottantes','floating particles in the air'],['Gouttes','water droplets falling'],['Flammes','flames flickering'],['Explosion','explosion in the background'],['Vagues','waves crashing'],['Foule','crowd moving in the background']]}
-];
-APP.animFx=[];const LIBSEL=[];let libCat='all';
-const animBase=()=>ANIM_DEFAULT+(APP.animFx.length?APP.animFx.join(', ')+'. ':'');
-function libRender(){
-  const q=($('libSearch').value||'').toLowerCase().trim(),box=$('libList'),pills=$('libPills');
-  pills.innerHTML='';
-  [{id:'all',name:'Tout',icon:''}].concat(LIB).forEach(c=>{const p=document.createElement('div');p.className='pill'+(c.id===libCat?' active':'');p.textContent=(c.icon?c.icon+' ':'')+c.name;p.onclick=()=>{libCat=c.id;libRender()};pills.appendChild(p)});
-  box.innerHTML='';let n=0;
-  LIB.filter(c=>libCat==='all'||c.id===libCat).forEach(c=>{
-    const its=c.items.filter(it=>!q||(it[0]+' '+it[1]).toLowerCase().includes(q));
-    if(!its.length)return;
-    const h=document.createElement('div');h.className='cd';h.style.cssText='margin:14px 0 6px;font-weight:700;text-transform:uppercase';h.textContent=c.icon+' '+c.name;box.appendChild(h);
-    its.forEach(it=>{n++;
-      const d=document.createElement('div');d.className='style-item';d.style.marginBottom='8px';
-      d.innerHTML='<div style="flex:1"><div class="style-name">'+esc(it[0])+'</div><div class="style-desc">'+esc(it[1])+'</div></div>';
-      const b=document.createElement('button');b.className='action-btn';b.textContent='＋';b.style.border='1px solid var(--border)';
-      b.onclick=e=>{e.stopPropagation();libAdd(it)};d.onclick=()=>libAdd(it);d.appendChild(b);box.appendChild(d);
-    });
-  });
-  if(!n)box.innerHTML='<div class="slot-msg">Aucun résultat.</div>';
-  libBasket();
-}
-function libAdd(it){
-  const t=$('libTarget').value,en=it[1];let m='';
-  if(t==='idea'||t==='free'){const el=$(t==='idea'?'ideaInput':'freeIdea');el.value+=(el.value.trim()?', ':'')+en;m='✓ Ajouté à '+(t==='idea'?'ton idée':'ton descriptif')}
-  else if(t==='anim'){if(!APP.animFx.includes(en))APP.animFx.push(en);m='✓ Sera utilisé à la prochaine animation'}
-  else if(t==='style'){if(!LIBSEL.includes(en))LIBSEL.push(en);m='✓ Ajouté à ton univers en préparation'}
-  else{try{navigator.clipboard.writeText(en);m='✓ Copié : '+en}catch(e){m=en}}
-  $('libMsg').textContent=m;libBasket();
-}
-function libBasket(){
-  const b=$('libBasket');b.innerHTML='';
-  const mk=(title,arr,btnTxt,fn)=>{
-    if(!arr.length)return;
-    const w=document.createElement('div');w.style.marginBottom='12px';
-    w.innerHTML='<div class="cd" style="font-weight:700">'+title+'</div>';
-    const r=document.createElement('div');r.className='pills';r.style.margin='6px 0';
-    arr.forEach((v,i)=>{const p=document.createElement('div');p.className='pill active';p.textContent=v+' ✕';p.onclick=()=>{arr.splice(i,1);libBasket()};r.appendChild(p)});
-    w.appendChild(r);
-    if(btnTxt){const bt=document.createElement('button');bt.className='btn primary sm';bt.textContent=btnTxt;bt.onclick=fn;w.appendChild(bt)}
-    b.appendChild(w);
-  };
-  mk('Effets d’animation actifs',APP.animFx,null);
-  mk('Univers en préparation',LIBSEL,'🎨 Créer l’univers avec ces effets',()=>{switchTab('studio');newStyle();$('sfPrompt').value=LIBSEL.join(', ');LIBSEL.length=0;libBasket()});
-}
-
-/* ---------- Historique (IndexedDB : images en blobs) ---------- */
+/* Historique */
 function idb(){return new Promise((res,rej)=>{const r=indexedDB.open('storylab',1);r.onupgradeneeded=()=>r.result.createObjectStore('h',{keyPath:'id'});r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
 async function idbRun(mode,fn){const db=await idb();return new Promise((res,rej)=>{const t=db.transaction('h',mode),q=fn(t.objectStore('h'));t.oncomplete=()=>res(q&&q.result);t.onerror=()=>rej(t.error)})}
 async function saveToHistory(item){
@@ -1012,7 +605,7 @@ async function saveToHistory(item){
 async function loadHistoryUI(){
   const list=$('historyList');let all=[];
   try{all=(await idbRun('readonly',s=>s.getAll())).sort((a,b)=>b.id-a.id)}catch(e){}
-  if(!all.length){list.innerHTML='<div class="slot-msg">Aucune création pour l’instant. Lance une production pour la voir ici.</div>';return}
+  if(!all.length){list.innerHTML='<div class="slot-msg">Aucune création pour l’instant.</div>';return}
   list.innerHTML='';
   all.forEach(it=>{
     const card=document.createElement('div');card.className='hist-card';
