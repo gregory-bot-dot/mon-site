@@ -73,6 +73,7 @@ textarea{min-height:110px;resize:vertical}
 .slot{background:var(--border);border-radius:12px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#9ca3af}
 .plan-slot{aspect-ratio:9/16}.av-slot{aspect-ratio:3/4}
 .slot img{width:100%;height:100%;object-fit:cover;display:block}
+.slot video{width:100%;height:100%;object-fit:cover;display:block}
 .slot-actions{position:absolute;top:8px;right:8px;display:flex;gap:4px;z-index:10}
 .action-btn{background:rgba(255,255,255,.9);border:0;border-radius:50%;width:32px;height:32px;font-size:14px;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,.2)}
 .plan-label{position:absolute;bottom:0;left:0;right:0;background:rgba(255,255,255,.9);padding:6px;font-size:11px;font-weight:600}
@@ -175,6 +176,7 @@ textarea{min-height:110px;resize:vertical}
         <button class="btn sm" onclick="exportVideo()">🎞️ Vidéo</button>
       </div>
       <div class="alert warn hidden" id="exportMsg"></div>
+      <div id="animLog" class="terminal" style="margin-top:12px;white-space:pre-wrap;word-break:break-word;font-size:11px;display:none"></div>
     </div>
 
     <div class="card hidden" id="voiceCard">
@@ -450,8 +452,11 @@ function updatePlanSlot(n){
   const act=document.createElement('div');act.className='slot-actions';
   const dl=document.createElement('button');dl.className='action-btn';dl.textContent='⬇️';dl.title='Télécharger';dl.onclick=()=>downloadImage(p.url,`plan_${n}.jpg`,p.blob);
   const rg=document.createElement('button');rg.className='action-btn';rg.textContent='↻';rg.title='Modifier et régénérer';rg.onclick=()=>regeneratePlan(n);
-  act.append(dl,rg);
-  const img=document.createElement('img');img.src=p.url;img.alt='Plan '+n;
+  const an=document.createElement('button');an.className='action-btn';an.textContent='🎬';an.title='Animer';an.onclick=()=>animatePlan(n);
+  act.append(dl,rg,an);
+  let img;
+  if(p.clipUrl){img=document.createElement('video');img.src=p.clipUrl;img.autoplay=true;img.loop=true;img.muted=true;img.playsInline=true;img.controls=true}
+  else{img=document.createElement('img');img.src=p.url;img.alt='Plan '+n}
   const lb=document.createElement('div');lb.className='plan-label';lb.textContent='PLAN '+n;
   slot.append(act,img,lb);
 }
@@ -463,7 +468,7 @@ async function renderPlan(n){
   const p=APP.plans[n-1],prompt=buildPrompt(p.scene);
   $('termPrompt').textContent=prompt;
   p.url=await generateImage(prompt,'9:16',APP.seed,APP.refPhoto);
-  p.blob=await toBlob(p.url);
+  p.blob=await toBlob(p.url);p.clipUrl=null;
   updatePlanSlot(n);
 }
 async function regeneratePlan(n){
@@ -731,6 +736,63 @@ async function generateAvatar(){
     await saveToHistory({type:'AVATAR',title:photo?'Avatar (photo)':txt.substring(0,30),style:'Avatar',images:blobs.map((b,i)=>b||urls[i])});
   }catch(e){alert('Erreur : '+e.message);msgSlot($('av-slot-1'),'Erreur : '+e.message,true);$('av-slot-2').innerHTML=''}
   finally{btn.disabled=false;btn.textContent="👤 Générer l'avatar (x2)"}
+}
+
+/* ---------- Animation image vers vidéo (test) ---------- */
+function findVideoUrl(d){
+  const t=JSON.stringify(d||{});
+  const m=t.match(/https?:[^"\\\s]+\.(?:mp4|webm|mov)[^"\\\s]*/i)||t.match(/"(?:video_url|videoUrl|url)":"(https?:[^"]+)"/);
+  const u=m?(m[1]||m[0]):null;
+  return u&&!/\.(png|jpe?g|webp)(\?|$)/i.test(u)?u:null;
+}
+async function animatePlan(n){
+  const p=APP.plans[n-1];if(!p||!p.url)return;
+  if(APP.animBusy){alert('Une animation est déjà en cours.');return}
+  if(!APP.keys.length){openApiModal();return}
+  const mp=prompt('Consigne de mouvement (en anglais) :','Animate this image with natural subtle motion and a slow cinematic camera move. '+p.scene);
+  if(mp===null)return;
+  APP.animBusy=true;APP.cancel=false;setStatus('Animation plan '+n+'…');
+  const log=$('animLog');log.style.display='block';log.textContent='';
+  const add=t=>{log.textContent+=t+'\n'};
+  log.scrollIntoView({behavior:'smooth',block:'center'});
+  try{
+    const base={model:'agnes-video-v2.0',prompt:mp,width:576,height:1024,num_frames:81,frame_rate:24};
+    const variants=[{image:p.url},{images:[p.url]},{image_url:p.url}];
+    let task=null;
+    for(let i=0;i<variants.length&&!task;i++){
+      add(`Essai ${i+1} : /videos avec ${Object.keys(variants[i])[0]}`);
+      try{task=await agnesCall('/videos',Object.assign({},base,variants[i]),1);add('Réponse : '+JSON.stringify(task).slice(0,300))}
+      catch(e){add('✗ '+String(e.message).slice(0,200))}
+    }
+    if(!task)throw new Error('Aucun format accepté.');
+    let url=findVideoUrl(task);
+    if(!url){
+      const id=task.task_id||task.id||task.video_id||(task.data&&(task.data.task_id||task.data.id||task.data.video_id));
+      if(!id)throw new Error('Pas d’identifiant de tâche dans la réponse.');
+      add('Tâche : '+id+' (patiente, c’est long)');
+      const paths=['/videos/'+encodeURIComponent(id),'/agnesapi?video_id='+encodeURIComponent(id)];
+      let pi=0,last='';
+      for(let t=0;t<72&&!url;t++){
+        await sleep(5000);
+        let d=null;
+        for(let k=pi;k<paths.length&&!d;k++){
+          try{
+            const r=await fetch(AGNES_BASE+paths[k],{headers:{Authorization:'Bearer '+APP.keys[0]}});
+            if(r.ok){d=await r.json();pi=k}else if(t===0)add(`  ${paths[k]} → HTTP ${r.status}`);
+          }catch(e){}
+        }
+        if(!d)continue;
+        const st=String(d.status||(d.data&&d.data.status)||'').toLowerCase();
+        if(st!==last){add(`[${(t+1)*5}s] statut : ${st||'?'}`);last=st}
+        url=findVideoUrl(d);
+        if(!url&&/fail|error|cancel/.test(st))throw new Error('Échec : '+JSON.stringify(d).slice(0,200));
+      }
+      if(!url)throw new Error('Délai dépassé (6 min).');
+    }
+    p.clipUrl=url;updatePlanSlot(n);
+    add('✓ Vidéo prête : visible dans le plan '+n);setStatus('Terminé','green');
+  }catch(e){add('✗ '+e.message+'\nCopie ce journal et envoie-le moi.');setStatus('Erreur','red')}
+  finally{APP.animBusy=false}
 }
 
 /* ---------- Fusion de visage (test) ---------- */
