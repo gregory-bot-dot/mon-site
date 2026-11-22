@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>STORYLAB & AVATAR LAB // v10.1</title>
+<title>STORYLAB & AVATAR LAB // v10.2</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
@@ -102,7 +102,7 @@ textarea{min-height:110px;resize:vertical}
 </head>
 <body>
 <div class="header">
-  <div class="header-title">STORYLAB & AVATAR LAB <span>// v10.1</span></div>
+  <div class="header-title">STORYLAB & AVATAR LAB <span>// v10.2</span></div>
   <div class="badges">
     <button class="back hidden" id="backBtn" onclick="goHome()">← Menu</button>
     <div class="badge" id="statusBadge"><div class="dot"></div><span>Inactif</span></div>
@@ -152,6 +152,7 @@ textarea{min-height:110px;resize:vertical}
         <select id="planCountSelect"><option value="4">4 plans</option><option value="6">6 plans</option><option value="10" selected>10 plans</option></select>
       </div>
       <label class="chk"><input type="checkbox" id="fuseFace" checked> Reprendre exactement le visage de ma photo</label>
+      <label class="chk"><input type="checkbox" id="keepLocal" checked> Garder les images sur mon téléphone (export vidéo fiable, mais sans animation Agnes)</label>
       <div class="row">
         <button class="btn primary" id="launchBtn" onclick="startProduction()">🎬 Lancer la production</button>
         <button class="btn danger hidden" id="cancelBtn" style="width:auto" onclick="APP.cancel=true">Annuler</button>
@@ -476,14 +477,16 @@ async function analyzeImage(b64){
   return d.choices[0].message.content.trim();
 }
 
+const rf=()=>($('keepLocal')&&$('keepLocal').checked)?'b64_json':'url';
 async function generateImage(prompt,ratio='9:16',seed,ref){
-  const p={model:IMG_MODEL,prompt,size:'1K',ratio,extra_body:{response_format:'url'}};
+  const p={model:IMG_MODEL,prompt,size:'1K',ratio,extra_body:{response_format:rf()}};
   if(seed!=null)p.seed=seed;
   if(ref&&!APP.noRef)p.image=ref;
   let d;
   for(let k=0;k<3&&!d;k++){
     try{d=await agnesCall('/images/generations',p)}
     catch(e){
+      if(p.extra_body.response_format==='b64_json'&&/format|b64|base64/i.test(e.message)){p.extra_body.response_format='url';continue}
       if(p.seed!=null&&/seed/i.test(e.message)){delete p.seed;continue}
       if(p.image&&e.fatal){delete p.image;APP.noRef=true;continue}
       throw e;
@@ -494,8 +497,8 @@ async function generateImage(prompt,ratio='9:16',seed,ref){
 }
 async function toBlob(url){
   if(url.startsWith('data:')){try{return await (await fetch(url)).blob()}catch(e){return null}}
-  for(const u of [url,'https://corsproxy.io/?'+encodeURIComponent(url)]){
-    try{const r=await fetch(u);if(!r.ok)continue;const b=await r.blob();if(b.size>1000)return b}catch(e){}
+  for(const u of [url,'https://images.weserv.nl/?url='+encodeURIComponent(url),'https://api.allorigins.win/raw?url='+encodeURIComponent(url),'https://corsproxy.io/?'+encodeURIComponent(url)]){
+    try{const r=await fetch(u);if(!r.ok)continue;const b=await r.blob();if(b.size>1000&&/^image\//.test(b.type))return b}catch(e){}
   }
   return null;
 }
@@ -533,7 +536,7 @@ async function fuseFace(sceneUrl,sceneBlob,face){
   const sc=(sceneBlob&&await blobToDataURL(sceneBlob))||sceneUrl;
   const tg='the main person';
   const prompt='Replace the face of '+tg+' in the first image with the face of the person in the second image. Keep the first image exactly the same: pose, body, clothes, background, lighting. Maintain the exact facial structure, eye color, nose, and hair of the second image. Photorealistic, seamless blend.';
-  const d=await agnesCall('/images/generations',{model:IMG_MODEL,prompt,size:'1K',ratio:'9:16',image:[sc,face],extra_body:{response_format:'url'}},2);
+  const d=await agnesCall('/images/generations',{model:IMG_MODEL,prompt,size:'1K',ratio:'9:16',image:[sc,face],extra_body:{response_format:rf()}},2);
   const it=d.data[0];return it.url||('data:image/png;base64,'+it.b64_json);
 }
 function blobToDataURL(b){return new Promise(r=>{const f=new FileReader();f.onload=()=>r(f.result);f.onerror=()=>r(null);f.readAsDataURL(b)})}
@@ -873,7 +876,7 @@ async function exportVideo(){
     if(p.clipUrl&&!p.clipBlob)p.clipBlob=await fetchBlob(p.clipUrl);
   }
   const done=APP.plans.filter(p=>p.blob||p.clipBlob);
-  if(!done.length){$('exportMsg').textContent='Aucun média exploitable pour la vidéo.';return}
+  if(!done.length){$('exportMsg').textContent='Aucune image récupérable (le serveur d’images bloque la copie). Coche « Garder les images sur mon téléphone » et relance la production.';return}
   const subs=$('subs')&&$('subs').checked;
   $('exportMsg').textContent='Montage en cours, garde cet onglet ouvert et allumé…';
   const W=720,H=1280,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
@@ -911,18 +914,20 @@ async function exportVideo(){
 }
 
 async function fetchBlob(url){
-  for(const u of [url,'https://corsproxy.io/?'+encodeURIComponent(url)]){
-    try{const r=await fetch(u);if(!r.ok)continue;const b=await r.blob();if(b.size>1000)return b}catch(e){}
+  for(const u of [url,'https://api.allorigins.win/raw?url='+encodeURIComponent(url),'https://corsproxy.io/?'+encodeURIComponent(url)]){
+    try{const r=await fetch(u);if(!r.ok)continue;const b=await r.blob();if(b.size>1000&&/^video\//.test(b.type))return b}catch(e){}
   }
   return null;
 }
 
 /* ANIMATION DES PLANS */
+const QUOTA_RE=/quota|rate limit|upgrade|insufficient/i;
+const quotaHint=()=>'⛔ Crédits Agnes insuffisants pour la vidéo (solde à 0 $). Recharge sur platform.agnes-ai.com (Billing), ou garde les images fixes : la vidéo finale les anime déjà avec un léger zoom.';
 const ANIM_DEFAULT='The subject moves naturally, slow cinematic camera push-in. ';
 const animText=p=>ANIM_DEFAULT+[p.cam,p.move].filter(Boolean).join(', ')+(p.cam||p.move?'. ':'')+p.scene;
 async function animateCore(n,mp,add){
   const p=APP.plans[n-1];
-  if(!p||!p.url||p.url.startsWith('data:'))throw new Error('image sans adresse publique');
+  if(!p||!p.url||p.url.startsWith('data:'))throw new Error('image gardée sur le téléphone : décoche « Garder les images sur mon téléphone » et relance la production pour pouvoir l’animer');
   const key=APP.keys[Math.floor(Math.random()*APP.keys.length)],auth={Authorization:'Bearer '+key};
   add('Plan '+n+' : création…');
   const r=await fetch(AGNES_BASE+'/videos',{method:'POST',headers:{...auth,'Content-Type':'application/json'},
@@ -961,7 +966,7 @@ async function animatePlan(n){
   const log=$('animLog');log.style.display='block';log.textContent='';
   const add=t=>{log.textContent+=t+'\n'};log.scrollIntoView({behavior:'smooth',block:'center'});
   try{await animateCore(n,mp,add);add('✓ Plan '+n+' animé');setStatus('Terminé','green')}
-  catch(e){add('✗ '+e.message);setStatus('Erreur','red')}
+  catch(e){add('✗ '+e.message+(QUOTA_RE.test(e.message)?'\n'+quotaHint():''));setStatus('Erreur','red')}
   finally{APP.busy=false}
 }
 
@@ -980,7 +985,7 @@ async function animateAll(){
       if(APP.cancel)break;
       setStatus(`Animation ${ok+1}/${todo.length}…`);
       try{await animateCore(n,animText(APP.plans[n-1]),add);ok++;add('✓ Plan '+n)}
-      catch(e){if(e.message==='Annulé')break;add('✗ Plan '+n+' : '+e.message)}
+      catch(e){if(e.message==='Annulé')break;add('✗ Plan '+n+' : '+e.message);if(QUOTA_RE.test(e.message)){add(quotaHint());break}}
     }
     setStatus(APP.cancel?'Annulé':'Terminé',APP.cancel?'red':'green');add(`${ok}/${todo.length} plans animés.`);
   }finally{APP.busy=false;$('cancelBtn').classList.add('hidden')}
