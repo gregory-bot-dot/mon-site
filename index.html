@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>STORYLAB & AVATAR LAB // v10.0</title>
+<title>STORYLAB & AVATAR LAB // v10.1</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
@@ -90,11 +90,19 @@ textarea{min-height:110px;resize:vertical}
 
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px}
 .modal-overlay.open{display:flex}.modal{background:var(--card);border-radius:16px;width:100%;max-width:400px;padding:20px}
+.cast-grid{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.cast-item,.cast-add{position:relative;width:84px;height:84px;border-radius:12px}
+.cast-item img{width:100%;height:100%;object-fit:cover;border-radius:12px;border:2px solid var(--primary)}
+.cast-x{position:absolute;top:-6px;right:-6px;width:24px;height:24px;border-radius:50%;border:0;background:var(--text);color:#fff;font-size:12px;cursor:pointer}
+.cast-add{border:2px dashed var(--primary);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer;background:var(--pl)}
+.bible-plan{border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:10px}
+.bible-plan summary{font-weight:600;font-size:14px;cursor:pointer}
+.bible-f{font-size:12px;margin-top:6px;word-break:break-word}.bible-f b{color:var(--muted)}
 </style>
 </head>
 <body>
 <div class="header">
-  <div class="header-title">STORYLAB & AVATAR LAB <span>// v10.0</span></div>
+  <div class="header-title">STORYLAB & AVATAR LAB <span>// v10.1</span></div>
   <div class="badges">
     <button class="back hidden" id="backBtn" onclick="goHome()">← Menu</button>
     <div class="badge" id="statusBadge"><div class="dot"></div><span>Inactif</span></div>
@@ -114,6 +122,7 @@ textarea{min-height:110px;resize:vertical}
 
   <!-- ================= STORYLAB ================= -->
   <div id="tab-studio" class="hidden">
+    <button class="btn sm hidden" id="resumeBtn" onclick="restoreProject()" style="margin-bottom:16px">↺ Reprendre le dernier projet</button>
     <div class="card">
       <div class="card-header"><div class="step-num">1</div><div><div class="step-title">Format</div><div class="step-sub">Type de vidéo</div></div></div>
       <div class="grid-options" id="formatGrid">
@@ -121,6 +130,8 @@ textarea{min-height:110px;resize:vertical}
         <div class="option-btn" onclick="setFormat(this,'JT / Reportage')"><div class="option-icon">📺</div><div class="option-title">JT / Reportage</div><div class="option-desc">Info</div></div>
         <div class="option-btn" onclick="setFormat(this,'Clip musical')"><div class="option-icon">🎵</div><div class="option-title">Clip musical</div><div class="option-desc">Rythme</div></div>
         <div class="option-btn" onclick="setFormat(this,'TikTok / Hook')"><div class="option-icon">📱</div><div class="option-title">TikTok</div><div class="option-desc">Vertical</div></div>
+        <div class="option-btn" onclick="setFormat(this,'Documentaire')"><div class="option-icon">🎙️</div><div class="option-title">Documentaire</div><div class="option-desc">Observation</div></div>
+        <div class="option-btn" onclick="setFormat(this,'Épisode animé')"><div class="option-icon">📼</div><div class="option-title">Épisode animé</div><div class="option-desc">Série / cartoon</div></div>
       </div>
     </div>
 
@@ -132,13 +143,13 @@ textarea{min-height:110px;resize:vertical}
 
     <div class="card">
       <div class="card-header"><div class="step-num">3</div><div><div class="step-title">Ton idée / scénario</div><div class="step-sub">Sois précis</div></div></div>
-      <div class="upload-row">
-        <label class="upload-btn">📷 Importer une photo (visage), optionnel<input type="file" accept="image/*" data-target="idea"></label>
-        <img id="ideaPhotoPreview" class="photo-preview" alt="">
-      </div>
+      <div class="cd" style="margin-bottom:6px">Casting : jusqu’à 3 photos de référence (optionnel)</div>
+      <div class="cast-grid" id="castGrid"></div>
+      <input type="file" id="castInput" accept="image/*" multiple class="hidden">
       <textarea id="ideaInput" placeholder="Décris ta scène : un homme en costume se réveille sur la lune, plan large…"></textarea>
       <div class="row">
-        <select id="planCountSelect"><option value="4">4 plans</option><option value="10" selected>10 plans</option></select>
+        <select id="totalDur"><option value="30">30 s</option><option value="45">45 s</option><option value="60" selected>60 s</option><option value="70">70 s</option><option value="90">90 s</option></select>
+        <select id="planCountSelect"><option value="4">4 plans</option><option value="6">6 plans</option><option value="10" selected>10 plans</option></select>
       </div>
       <label class="chk"><input type="checkbox" id="fuseFace" checked> Reprendre exactement le visage de ma photo</label>
       <div class="row">
@@ -154,11 +165,23 @@ textarea{min-height:110px;resize:vertical}
       <div class="prog"><div class="prog-l"><span id="liveLabel">Plan 1</span><span id="livePercent">0%</span></div><div class="bar"><div class="fill" id="liveProgress"></div></div></div>
     </div>
 
+    <div class="card hidden" id="masterCard">
+      <div class="card-header"><div class="step-title">Master player</div></div>
+      <canvas id="masterCanvas" width="360" height="640" style="width:100%;max-width:300px;display:block;margin:0 auto;background:#000;border-radius:12px"></canvas>
+      <div style="padding-top:12px"><div class="prog-l"><span id="masterLbl">0:00 / 0:00</span><span id="masterPlan">—</span></div><div class="bar"><div class="fill" id="masterBar"></div></div></div>
+      <label class="chk"><input type="checkbox" id="masterVoice"> 🔊 Lire la voix off avec la synthèse du téléphone (aperçu seulement)</label>
+      <div class="row"><button class="btn primary sm" id="masterBtn" onclick="masterToggle()">▶ Lire le master</button><button class="btn sm" onclick="exportVTT()">VTT</button><button class="btn sm" onclick="exportJSON()">JSON</button></div>
+    </div>
+
+    <div class="card hidden" id="bibleCard">
+      <div class="card-header" style="justify-content:space-between;align-items:center"><div class="step-title">Bible créative &amp; script</div><span class="pill active" id="bibleCount" style="margin:0;cursor:default">0 PLANS</span></div>
+      <div id="bibleBody"></div>
+    </div>
+
     <div class="card hidden" id="controlRoom">
       <div class="card-header"><div class="step-title">Control room</div></div>
-      <div class="ctrl"><div class="ci" id="ci1">1</div><div><div class="ct">Fiche personnage</div><div class="cd" id="cd1"></div></div></div>
-      <div class="ctrl"><div class="ci" id="ci2">2</div><div><div class="ct">Scénario</div><div class="cd" id="cd2"></div></div></div>
-      <div class="ctrl"><div class="ci" id="ci3">3</div><div><div class="ct">Production visuelle</div><div class="cd" id="cd3"></div></div></div>
+      <div id="crList"></div>
+      <div class="cd" id="saveState" style="margin-top:10px"></div>
     </div>
 
     <div class="card hidden" id="aiActivity">
@@ -184,6 +207,11 @@ textarea{min-height:110px;resize:vertical}
       <label class="chk"><input type="checkbox" id="subs" checked> Sous-titres (texte de la voix off)</label>
       <div class="alert warn hidden" id="exportMsg"></div>
       <div id="animLog" class="terminal" style="margin-top:12px;white-space:pre-wrap;word-break:break-word;font-size:11px;display:none"></div>
+    </div>
+
+    <div class="card hidden" id="logCard">
+      <div class="card-header"><div class="step-title">Production log</div></div>
+      <div class="terminal" id="prodLog" style="max-height:240px;overflow:auto;font-size:11px"></div>
     </div>
   </div>
 
@@ -341,7 +369,7 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
 document.addEventListener('DOMContentLoaded',()=>{
-  loadKeys();renderPills();renderStyles();refreshKeyUI();libRender();
+  loadKeys();renderPills();renderStyles();refreshKeyUI();libRender();castInit();crInit();checkResume();
   document.querySelectorAll('input[type=file][data-target]').forEach(i=>i.addEventListener('change',()=>handlePhotoUpload(i,i.dataset.target)));
 });
 
@@ -495,14 +523,12 @@ function updatePlanSlot(n){
   slot.append(act,img,lb);
 }
 
-function buildPrompt(scene){
-  const st=APP.stylePrompt || (STYLES.find(s=>s.name===APP.style)||STYLES[0]).prompt;
-  if(APP.character){
-    return `Cinematic photo. Main character (identical in every shot): [${APP.character}]. Scene/Action: ${scene}. Style: ${st}. 8k.`;
-  }
-  return `Cinematic photo. Scene/Action: ${scene}. Style: ${st}. 8k.`;
+function buildPrompt(p){
+  const st=APP.stylePrompt||(STYLES.find(s=>s.name===APP.style)||STYLES[0]).prompt;
+  const da=APP.bible&&APP.bible.art_direction?` Art direction: ${APP.bible.art_direction}.`:'';
+  const ex=[p.loc&&'Location: '+p.loc,p.outfit&&'Outfits: '+p.outfit,p.cam&&'Camera: '+p.cam].filter(Boolean).join('. ');
+  return `Cinematic photo. ${APP.character?`Main character (identical in every shot): [${APP.character}]. `:''}Scene/Action: ${p.scene}.${ex?' '+ex+'.':''} Style: ${st}.${da} 8k.`;
 }
-
 async function fuseFace(sceneUrl,sceneBlob,face){
   const sc=(sceneBlob&&await blobToDataURL(sceneBlob))||sceneUrl;
   const tg='the main person';
@@ -513,7 +539,7 @@ async function fuseFace(sceneUrl,sceneBlob,face){
 function blobToDataURL(b){return new Promise(r=>{const f=new FileReader();f.onload=()=>r(f.result);f.onerror=()=>r(null);f.readAsDataURL(b)})}
 
 async function renderPlan(n){
-  const p=APP.plans[n-1],prompt=buildPrompt(p.scene);
+  const p=APP.plans[n-1],prompt=buildPrompt(p);
   if($('termPrompt')) $('termPrompt').textContent=prompt;
   p.url=await generateImage(prompt,'9:16',APP.seed,APP.refPhoto);
   p.blob=await toBlob(p.url);
@@ -556,92 +582,268 @@ async function retryFailed(){
   }finally{APP.busy=false}
 }
 
-function ctrl(step,status,desc){
-  const i=$('ci'+step);i.className='ci '+status;i.textContent=status==='done'?'✓':status==='error'?'!':step;
-  if(desc!==undefined)$('cd'+step).textContent=desc;
+/* ---------- Casting (jusqu'à 3 photos) ---------- */
+APP.cast=[];
+function shrink(file,max){return new Promise(res=>{const rd=new FileReader();rd.onload=e=>{const img=new Image();img.onload=()=>{const k=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=img.width*k;c.height=img.height*k;c.getContext('2d').drawImage(img,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',.85))};img.onerror=()=>res(null);img.src=e.target.result};rd.onerror=()=>res(null);rd.readAsDataURL(file)})}
+function castRender(){
+  const g=$('castGrid');g.innerHTML='';
+  APP.cast.forEach((d,i)=>{
+    const w=document.createElement('div');w.className='cast-item';
+    const im=document.createElement('img');im.src=d;im.alt='';
+    const x=document.createElement('button');x.className='cast-x';x.textContent='✕';x.onclick=()=>{APP.cast.splice(i,1);castRender()};
+    w.append(im,x);g.appendChild(w);
+  });
+  if(APP.cast.length<3){const a=document.createElement('div');a.className='cast-add';a.textContent='＋';a.onclick=()=>$('castInput').click();g.appendChild(a)}
 }
-function parseScenario(txt,count){
-  let plans=[],character='';
-  const m=txt.match(/\{[\s\S]*\}/);
-  if(m){try{const j=JSON.parse(m[0]);character=String(j.character||'');plans=(j.plans||[]).map(String)}catch(e){}}
-  if(!plans.length)plans=txt.split('\n').map(l=>l.trim()).filter(l=>/^\d+[.)]/.test(l)).map(l=>l.replace(/^\d+[.)]\s*/,''));
-  return{character,plans:plans.slice(0,count)};
+function castInit(){
+  castRender();
+  $('castInput').addEventListener('change',async e=>{
+    for(const f of [...e.target.files].slice(0,3-APP.cast.length)){const d=await shrink(f,768);if(d)APP.cast.push(d)}
+    e.target.value='';castRender();
+  });
 }
 
+/* ---------- Control room 8 étapes + journal ---------- */
+const CR=[['Conception','Format, univers, idée'],['Compréhension','Analyse idée + casting'],['Bible créative','Personnages, lieux, DA'],['Histoire','Structure HOOK → FIN'],['Plans','Storyboard et continuité'],['Production','Images des plans'],['Contrôle','QA et cohérence'],['Terminé','Master prêt']];
+function crInit(){const b=$('crList');b.innerHTML='';CR.forEach((c,i)=>{const d=document.createElement('div');d.className='ctrl';d.innerHTML=`<div class="ci" id="ci${i+1}">${i+1}</div><div><div class="ct">${c[0]}</div><div class="cd" id="cd${i+1}">${c[1]}</div></div>`;b.appendChild(d)})}
+function ctrl(step,status,desc){const i=$('ci'+step);i.className='ci '+status;i.textContent=status==='done'?'✓':status==='error'?'!':step;if(desc!==undefined)$('cd'+step).textContent=desc}
+function crReset(){CR.forEach((c,i)=>ctrl(i+1,'',c[1]))}
+function log(tag,msg){
+  const b=$('prodLog');if(!b)return;
+  const l=document.createElement('div');l.style.cssText='display:flex;gap:10px;margin-bottom:4px';
+  l.innerHTML=`<span style="color:#6b7280;flex-shrink:0">${new Date().toLocaleTimeString('fr-FR')}</span><span class="term-val" style="flex-shrink:0;min-width:56px">${esc(tag)}</span><span style="word-break:break-word">${esc(msg)}</span>`;
+  b.appendChild(l);b.scrollTop=b.scrollHeight;
+}
+
+/* ---------- Scénario : bible + plans (avec réparation du JSON) ---------- */
+async function askJSON(sys,user,tag){
+  let raw='';
+  for(let t=1;t<=3;t++){
+    raw=await generateText(sys,t===1?user:'Corrige ce JSON invalide ou incomplet et renvoie UNIQUEMENT le JSON valide, rien d’autre :\n'+raw);
+    const m=raw.match(/\{[\s\S]*\}/);
+    if(m){try{return JSON.parse(m[0])}catch(e){}}
+    log(tag,'JSON invalide, réparation '+t+'/3');
+  }
+  throw new Error('Le scénario est illisible, relance la production.');
+}
+function mkPlan(o,defDur,role){
+  const n=v=>(v==null?'':String(v)),d=Math.round(Number(o.dur));
+  return {scene:n(o.visual||o.scene),role:n(o.role||role),dur:(d>=4&&d<=12)?d:Math.min(12,Math.max(4,Math.round(defDur))),loc:n(o.location),chars:n(o.characters),outfit:n(o.outfit),cam:n(o.camera),move:n(o.movement),cont:n(o.continuity),dialogue:n(o.dialogue),narr:n(o.voice),sub:n(o.subtitle),voice:null,url:null,blob:null};
+}
+function renderGrid(count){const g=$('plansGrid');g.innerHTML='';for(let i=1;i<=count;i++){const d=document.createElement('div');d.className='slot plan-slot';d.id='slot-'+i;d.textContent=i;g.appendChild(d)}}
+
+/* ---------- Production ---------- */
 async function startProduction(preset){
   if(APP.busy)return;
   preset=(preset&&preset.plans)?preset:null;
-  const idea=preset?preset.idea:$('ideaInput').value.trim(),photo=preset?(preset.photo||null):APP.photos.idea;
-  if(!idea&&!photo){alert('Décris une idée ou importe une photo.');return}
+  const idea=preset?preset.idea:$('ideaInput').value.trim();
+  const cast=preset?(preset.photo?[preset.photo]:[]):APP.cast.slice();
+  if(!idea&&!cast.length){alert('Décris une idée ou ajoute une photo de casting.');return}
   if(!APP.keys.length){openApiModal();return}
-  
-  APP.busy=true;APP.cancel=false;
+  APP.busy=true;APP.cancel=false;MASTER.token++;MASTER.playing=false;
+  const total=parseInt($('totalDur').value)||60;
   const count=preset?preset.plans.length:(parseInt($('planCountSelect').value)||10);
-  
   $('launchBtn').disabled=true;$('launchBtn').textContent='⏳ Production…';$('cancelBtn').classList.remove('hidden');
-  ['controlRoom','aiActivity','plansCard','livePreview'].forEach(id=>$(id).classList.remove('hidden'));
-  for(let s=1;s<=3;s++)ctrl(s,'',''); 
-  $('liveProgress').style.width='0%';$('livePercent').textContent='0%';
-  $('plansGrid').innerHTML='';
-  APP.plans=[];APP.character='';APP.seed=Math.floor(Math.random()*1000);
-  APP.refPhoto=photo;APP.noRef=false;APP.noFuse=false;APP.stylePrompt=preset?preset.stylePrompt:null;
-  
-  for(let i=1;i<=count;i++){const d=document.createElement('div');d.className='slot plan-slot';d.id='slot-'+i;d.textContent=i;$('plansGrid').appendChild(d)}
-  
+  ['controlRoom','aiActivity','plansCard','livePreview','logCard'].forEach(id=>$(id).classList.remove('hidden'));
+  ['masterCard','bibleCard'].forEach(id=>$(id).classList.add('hidden'));
+  crReset();$('prodLog').innerHTML='';$('liveProgress').style.width='0%';$('livePercent').textContent='0%';
+  APP.plans=[];APP.character='';APP.bible=null;APP.seed=Math.floor(Math.random()*1000);APP.idea=idea;APP.total=total;
+  APP.refPhoto=cast[0]||null;APP.noRef=false;APP.noFuse=false;APP.stylePrompt=preset?preset.stylePrompt:null;
+  renderGrid(count);
+  let cur=1;
   try{
-    if(preset){
-      APP.character=preset.character;
-      preset.plans.forEach((scene,i)=>APP.plans.push({scene,url:null,blob:null}));
-      ctrl(1,'done','Fiche fournie');ctrl(2,'done',`${count} plans`);
-    }else{
-      setStatus('Fiche personnage…');
-      ctrl(1,'active');$('termStatus').textContent='Analyse du visage…';
-      if(photo){
-        APP.character=await analyzeImage(photo);
-        ctrl(1,'done','Basée sur ta photo');
-      }else{
-        ctrl(1,'active','Créée avec le scénario');
-      }
-
-      ctrl(2,'active');setStatus('Scénario…');$('termStatus').textContent='Écriture du scénario…';
-      const sys=`Tu es un réalisateur. Crée un storyboard de ${count} plans pour le format "${APP.format}", style "${APP.style}". Idée : "${idea||'à partir du personnage de la photo'}".
-Réponds UNIQUEMENT avec un JSON valide : {"character":"fiche personnage fixe en anglais","plans":["plan 1","plan 2",...]}.
-"plans" contient exactement ${count} descriptions en anglais : uniquement ACTIONS et CADRAGES (ex: "Wide shot, the man runs across the roof"), sans redécrire le physique.`;
-      const raw=await generateText('Assistant de production. Tu réponds en JSON strict.',sys);
-      const sc=parseScenario(raw,count);
-      if(!photo)APP.character=sc.character;
-      while(sc.plans.length<count)sc.plans.push(`Cinematic shot of ${idea||'the character'}`);
-      sc.plans.forEach((scene,i)=>APP.plans.push({scene,url:null,blob:null}));
-      ctrl(1,'done');ctrl(2,'done',`${count} plans`);
+    ctrl(1,'done',APP.format+' · '+(APP.stylePrompt?'univers perso':APP.style));log('START',`${count} plans · ${total} s`);
+    cur=2;ctrl(2,'active');setStatus('Compréhension…');
+    if(preset&&preset.character){APP.character=preset.character}
+    else if(cast.length){
+      const ds=[];
+      for(let i=0;i<cast.length;i++){$('termStatus').textContent=`Analyse photo ${i+1}/${cast.length}…`;ds.push(await analyzeImage(cast[i]));log('CASTING','Photo '+(i+1)+' analysée')}
+      APP.character=ds.map((d,i)=>cast.length>1?`Person ${i+1}: ${d}`:d).join(' | ');
     }
-
-    ctrl(3,'active');
+    ctrl(2,'done',cast.length?`${cast.length} photo(s) analysée(s)`:'Idée analysée');
+    if(preset){
+      preset.plans.forEach((sc,i)=>APP.plans.push(mkPlan(typeof sc==='string'?{visual:sc,voice:(preset.narr||[])[i]}:sc,total/count)));
+      ctrl(3,'done','Fournie');ctrl(4,'done','Fournie');ctrl(5,'done',`${count} plans`);
+    }else{
+      cur=3;ctrl(3,'active');setStatus('Bible créative…');$('termStatus').textContent='Écriture de la bible…';
+      const known=APP.character?` Fiche personnage imposée, à reprendre telle quelle dans "character" : ${APP.character}`:'';
+      const bible=await askJSON(`Tu es scénariste et directeur artistique. Format "${APP.format}", univers "${APP.stylePrompt||APP.style}", durée totale ${total} s, ${count} plans. Réponds UNIQUEMENT avec un JSON valide : {"title":"titre","synopsis":"résumé en français, 2 phrases","character":"fiche du ou des personnages en anglais (visage, cheveux, âge, tenue)","locations":"lieux principaux en anglais","art_direction":"direction artistique en anglais : palette, lumière, textures","arc":["rôle du plan 1","rôle du plan 2"]}. "arc" contient exactement ${count} rôles courts qui vont de HOOK à FIN (ex : HOOK, SETUP, TWIST, FIN).`,`Idée : "${idea||'à partir du personnage des photos'}".${known}`,'SCRIPT');
+      APP.bible=bible;if(!cast.length)APP.character=String(bible.character||'');
+      ctrl(3,'done','Personnages, lieux, DA');ctrl(4,'done',String(bible.title||'Histoire'));log('BIBLE',String(bible.title||'OK'));
+      cur=5;ctrl(5,'active');setStatus('Storyboard…');$('termStatus').textContent='Écriture du storyboard…';
+      const pj=await askJSON(`Tu es réalisateur. Bible du projet : ${JSON.stringify({title:bible.title,synopsis:bible.synopsis,character:APP.character,locations:bible.locations,art_direction:bible.art_direction,arc:bible.arc})}. Écris le storyboard de exactement ${count} plans, durée totale ${total} s (chaque plan entre 4 et 12 secondes, somme proche de ${total}). Réponds UNIQUEMENT avec un JSON valide : {"plans":[{"role":"HOOK","dur":6,"visual":"action et cadrage en anglais, sans redécrire le physique","location":"lieu en anglais","characters":"qui est présent","outfit":"tenues","camera":"caméra en anglais","movement":"mouvement en anglais","continuity":"lien avec le plan précédent, en français","dialogue":"dialogue ou chaîne vide","voice":"voix off courte en français","subtitle":"sous-titre court en français"}]}`,'Écris le storyboard.','SCRIPT');
+      const list=Array.isArray(pj.plans)?pj.plans.slice(0,count):[];
+      while(list.length<count)list.push({visual:`Cinematic shot of ${idea||'the character'}`});
+      list.forEach((o,i)=>APP.plans.push(mkPlan(typeof o==='string'?{visual:o}:o,total/count,(bible.arc||[])[i])));
+      ctrl(5,'done',`${count} plans`);log('SCRIPT',count+' plans validés');
+    }
+    showBible();autosave();
+    cur=6;ctrl(6,'active');
     for(let i=1;i<=count;i++){
       if(APP.cancel)throw new Error('Annulé');
-      ctrl(3,'active',`Plan ${i}/${count}`);setStatus(`Plan ${i}/${count}`);$('termStatus').textContent='Génération…';
+      ctrl(6,'active',`Plan ${i}/${count}`);setStatus(`Plan ${i}/${count}`);$('termStatus').textContent='Génération…';
       $('liveLabel').textContent='Plan '+i;
       $('livePercent').textContent=Math.round((i-1)/count*100)+'%';$('liveProgress').style.width=((i-1)/count*100)+'%';
-      try{
-        await renderPlan(i);
-        $('liveImage').src=APP.plans[i-1].url;
-      }catch(e){
-        if(e.message==='Annulé')throw e;
-        msgSlot($('slot-'+i),'Erreur : '+e.message,true);
-      }
+      try{await renderPlan(i);$('liveImage').src=APP.plans[i-1].url;log('IMAGE '+i,'Prête');autosave()}
+      catch(e){if(e.message==='Annulé')throw e;msgSlot($('slot-'+i),'Erreur : '+e.message,true);log('IMAGE '+i,'Erreur : '+e.message)}
       if(i<count)await sleep(3500);
     }
-    $('livePercent').textContent='100%';$('liveProgress').style.width='100%';
-    ctrl(3,'done','Terminé');$('termStatus').textContent='Terminé';setStatus('Terminé','green');
-    
-    const imgs = APP.plans.map(p => p.blob || p.url);
-    await saveToHistory({type:'STORYLAB',title:(idea||'Photo').substring(0,50),style:APP.stylePrompt?'Personnalisé':APP.style,images:imgs});
-    
+    $('livePercent').textContent='100%';$('liveProgress').style.width='100%';ctrl(6,'done','Terminé');
+    cur=7;ctrl(7,'active');setStatus('Contrôle…');
+    const miss=APP.plans.map((q,i)=>i+1).filter(n=>!APP.plans[n-1].url);
+    if(miss.length)log('QA',miss.length+' plan(s) manquant(s), nouvel essai');
+    for(const n of miss){
+      if(APP.cancel)break;
+      try{msgSlot($('slot-'+n),'Nouvel essai…');await renderPlan(n);log('IMAGE '+n,'Prête (2e essai)')}catch(e){msgSlot($('slot-'+n),'Erreur : '+e.message,true)}
+      await sleep(2000);
+    }
+    const ok=APP.plans.filter(q=>q.url).length;
+    ctrl(7,ok===count?'done':'error',`QA : ${ok}/${count} images`);
+    cur=8;ctrl(8,'done','Master prêt');$('termStatus').textContent='Terminé';setStatus('Terminé','green');log('DONE','Master prêt');
+    showMaster();autosave();
+    await saveToHistory({type:'STORYLAB',title:((APP.bible&&APP.bible.title)||idea||'Casting').substring(0,50),style:APP.stylePrompt?'Personnalisé':APP.style,images:APP.plans.map(q=>q.blob||q.url).filter(Boolean)});
   }catch(e){
-    if(e.message==='Annulé'){setStatus('Annulé','red');$('termStatus').textContent='Annulé';}
-    else{setStatus('Erreur','red');ctrl(2,'error',e.message);alert('Erreur : '+e.message)}
+    if(e.message==='Annulé'){setStatus('Annulé','red');$('termStatus').textContent='Annulé';log('STOP','Annulé');if(APP.plans.length)autosave()}
+    else{setStatus('Erreur','red');ctrl(cur,'error',e.message);log('ERREUR',e.message);alert('Erreur : '+e.message)}
   }finally{
     APP.busy=false;$('launchBtn').disabled=false;$('launchBtn').textContent='🎬 Lancer la production';$('cancelBtn').classList.add('hidden');
   }
+}
+
+/* ---------- Bible créative & script ---------- */
+let REC=null;
+async function toggleRec(i,btn){
+  if(REC&&REC.i===i){REC.mr.stop();return}
+  if(REC){alert('Un enregistrement est déjà en cours.');return}
+  try{
+    const st=await navigator.mediaDevices.getUserMedia({audio:true});
+    const mr=new MediaRecorder(st),ch=[];
+    mr.ondataavailable=e=>{if(e.data.size)ch.push(e.data)};
+    mr.onstop=()=>{st.getTracks().forEach(t=>t.stop());APP.plans[i].voice=new Blob(ch,{type:mr.mimeType||'audio/mp4'});REC=null;btn.textContent='🎙️ Réenregistrer ✓'};
+    mr.start();REC={i,mr};btn.textContent='⏹ Arrêter';
+  }catch(e){alert('Micro indisponible : autorise le micro pour ce site.')}
+}
+function showBible(){
+  $('bibleCard').classList.remove('hidden');
+  const b=APP.bible||{},box=$('bibleBody');box.innerHTML='';
+  $('bibleCount').textContent=APP.plans.length+' PLANS';
+  if(b.title){const h=document.createElement('div');h.style.marginBottom='12px';h.innerHTML=`<div style="font-weight:700;font-size:15px">${esc(b.title)}</div><div class="cd" style="margin-top:4px">${esc(b.synopsis||'')}</div>${b.art_direction?`<div class="cd" style="margin-top:6px">🎨 ${esc(b.art_direction)}</div>`:''}`;box.appendChild(h)}
+  APP.plans.forEach((p,i)=>{
+    const d=document.createElement('details');d.className='bible-plan';
+    const f=(k,v)=>v?`<div class="bible-f"><b>${k}</b> ${esc(v)}</div>`:'';
+    d.innerHTML=`<summary>PLAN ${i+1} · ${esc(p.role||'—')} · ${p.dur}s</summary>`+f('VISUEL',p.scene)+f('LIEU',p.loc)+f('PERSONNAGES',p.chars)+f('TENUES',p.outfit)+f('CAMÉRA',p.cam)+f('MOUVEMENT',p.move)+f('CONTINUITÉ',p.cont)+f('DIALOGUE',p.dialogue);
+    const t=document.createElement('textarea');t.style.cssText='min-height:60px;margin-top:8px';t.placeholder='Voix off (français)';t.value=p.narr||'';t.oninput=()=>{p.narr=t.value};t.onchange=autosave;
+    const s=document.createElement('input');s.type='text';s.style.marginTop='8px';s.placeholder='Sous-titre (sinon, la voix off)';s.value=p.sub||'';s.oninput=()=>{p.sub=s.value};s.onchange=autosave;
+    const r=document.createElement('button');r.className='btn sm';r.style.marginTop='8px';r.textContent=p.voice?'🎙️ Réenregistrer ✓':'🎙️ Enregistrer ma voix';r.onclick=()=>toggleRec(i,r);
+    d.append(t,s,r);box.appendChild(d);
+  });
+}
+
+/* ---------- Master player ---------- */
+const MASTER={playing:false,token:0};
+const planDur=p=>p.clipDur||p.dur||4;
+const fmt=t=>{t=Math.max(0,Math.round(t));return Math.floor(t/60)+':'+String(t%60).padStart(2,'0')};
+function masterTotal(){return APP.plans.reduce((a,p)=>a+((p.url||p.clipUrl)?planDur(p):0),0)}
+function masterRefresh(){const m=$('masterLbl');if(m&&!MASTER.playing)m.textContent='0:00 / '+fmt(masterTotal())}
+async function loadMedia(p,strict){
+  const cu=p.clipBlob||(!strict&&p.clipUrl);
+  if(cu){
+    const v=document.createElement('video');v.muted=true;v.playsInline=true;v.preload='auto';
+    v.src=p.clipBlob?URL.createObjectURL(p.clipBlob):p.clipUrl;
+    const ok=await new Promise(r=>{v.onloadeddata=()=>r(true);v.onerror=()=>r(false);setTimeout(()=>r(false),15000)});
+    if(ok&&v.videoWidth){p.clipDur=Math.round(v.duration)||p.clipDur;return{v,rel:()=>{v.pause();if(p.clipBlob)URL.revokeObjectURL(v.src)}}}
+  }
+  const src=p.blob?URL.createObjectURL(p.blob):(!strict&&p.url);
+  if(!src)return null;
+  const img=new Image();img.src=src;
+  try{await img.decode()}catch(e){return null}
+  return{img,rel:()=>{if(p.blob)URL.revokeObjectURL(src)}};
+}
+function drawPlanFrame(x,W,H,p,m,k,subs){
+  const src=m.v||m.img,sw=m.v?m.v.videoWidth:m.img.width,sh=m.v?m.v.videoHeight:m.img.height;
+  const z=m.v?1:1+.1*k,s=Math.max(W/sw,H/sh)*z,w=sw*s,h=sh*s;
+  x.fillStyle='#000';x.fillRect(0,0,W,H);x.drawImage(src,(W-w)/2,(H-h)/2,w,h);
+  const t=p.sub||p.narr;
+  if(subs&&t){
+    const fs=Math.round(W*.047),lh=fs*1.3;
+    x.font=`bold ${fs}px Inter,sans-serif`;x.textAlign='center';x.lineJoin='round';
+    const ls=wrapText(x,t,W*.89),y0=H-H*.1-ls.length*lh;
+    ls.forEach((l,i)=>{x.lineWidth=fs*.24;x.strokeStyle='#000';x.strokeText(l,W/2,y0+i*lh);x.fillStyle='#fff';x.fillText(l,W/2,y0+i*lh)});
+  }
+}
+function showMaster(){$('masterCard').classList.remove('hidden');masterRefresh();masterPoster()}
+async function masterPoster(){
+  const p=APP.plans.find(q=>q.url||q.clipUrl);if(!p)return;
+  const m=await loadMedia(p,false);if(!m)return;
+  const c=$('masterCanvas');drawPlanFrame(c.getContext('2d'),c.width,c.height,p,m,0,false);m.rel();
+}
+function masterStop(){MASTER.token++;MASTER.playing=false;$('masterBtn').textContent='▶ Lire le master';try{speechSynthesis.cancel()}catch(e){}}
+async function masterToggle(){
+  if(MASTER.playing){masterStop();return}
+  const list=APP.plans.filter(p=>p.url||p.clipUrl);
+  if(!list.length)return;
+  const my=++MASTER.token;MASTER.playing=true;$('masterBtn').textContent='⏹ Arrêter';
+  const c=$('masterCanvas'),x=c.getContext('2d'),W=c.width,H=c.height,total=masterTotal();
+  const subs=$('subs')&&$('subs').checked,speak=$('masterVoice').checked;
+  let acc=0;
+  for(let i=0;i<list.length&&MASTER.token===my;i++){
+    const p=list[i],m=await loadMedia(p,false);
+    if(!m)continue;
+    const dur=planDur(p)*1000;
+    $('masterPlan').textContent='Plan '+(APP.plans.indexOf(p)+1)+(p.role?' · '+p.role:'');
+    let au=null;
+    if(p.voice){au=new Audio(URL.createObjectURL(p.voice));au.play().catch(()=>{})}
+    else if(speak&&p.narr){try{const u=new SpeechSynthesisUtterance(p.narr);u.lang='fr-FR';speechSynthesis.speak(u)}catch(e){}}
+    if(m.v)m.v.play().catch(()=>{});
+    const t0=performance.now();
+    await new Promise(res=>{(function f(){
+      if(MASTER.token!==my){res();return}
+      const e=performance.now()-t0,k=Math.min(e/dur,1);
+      drawPlanFrame(x,W,H,p,m,k,subs);
+      $('masterBar').style.width=Math.min(100,(acc+e/1000)/total*100)+'%';
+      $('masterLbl').textContent=fmt(acc+e/1000)+' / '+fmt(total);
+      k<1?requestAnimationFrame(f):res();
+    })()});
+    m.rel();if(au)au.pause();
+    acc+=planDur(p);
+  }
+  if(MASTER.token===my){masterStop();$('masterBar').style.width='0%';masterRefresh()}
+}
+function exportVTT(){
+  const ts=t=>String(Math.floor(t/3600)).padStart(2,'0')+':'+String(Math.floor(t%3600/60)).padStart(2,'0')+':'+(t%60).toFixed(3).padStart(6,'0');
+  let t=0,out='WEBVTT\n\n';
+  APP.plans.forEach((p,i)=>{if(!(p.url||p.clipUrl))return;const d=planDur(p),tx=p.sub||p.narr;if(tx)out+=`${i+1}\n${ts(t)} --> ${ts(t+d)}\n${tx}\n\n`;t+=d});
+  saveBlobAs(new Blob([out],{type:'text/vtt'}),'storylab.vtt');
+}
+function exportJSON(){
+  const o={title:(APP.bible&&APP.bible.title)||APP.idea,idea:APP.idea,format:APP.format,style:APP.stylePrompt?'perso':APP.style,total:masterTotal(),bible:APP.bible,character:APP.character,
+    plans:APP.plans.map((p,i)=>({n:i+1,role:p.role,duration:planDur(p),visual:p.scene,location:p.loc,characters:p.chars,outfit:p.outfit,camera:p.cam,movement:p.move,continuity:p.cont,dialogue:p.dialogue,voice:p.narr,subtitle:p.sub,image:(p.url&&!p.url.startsWith('data:'))?p.url:null,clip:p.clipUrl||null}))};
+  saveBlobAs(new Blob([JSON.stringify(o,null,2)],{type:'application/json'}),'storylab.json');
+}
+
+/* ---------- Sauvegarde automatique ---------- */
+const SAVE_KEY='storylab_project';
+function autosave(){
+  if(!APP.plans.length)return;
+  try{
+    const o={idea:APP.idea,style:APP.style,stylePrompt:APP.stylePrompt,total:APP.total,character:APP.character,bible:APP.bible,cast:APP.cast,
+      plans:APP.plans.map(p=>({scene:p.scene,role:p.role,dur:p.dur,loc:p.loc,chars:p.chars,outfit:p.outfit,cam:p.cam,move:p.move,cont:p.cont,dialogue:p.dialogue,narr:p.narr,sub:p.sub,clipDur:p.clipDur,url:(p.url&&!p.url.startsWith('data:'))?p.url:null,clipUrl:p.clipUrl||null}))};
+    localStorage.setItem(SAVE_KEY,JSON.stringify(o));
+    const s=$('saveState');if(s)s.textContent='État sauvegardé à '+new Date().toLocaleTimeString('fr-FR');
+  }catch(e){}
+}
+function checkResume(){try{const o=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(o&&o.plans&&o.plans.length)$('resumeBtn').classList.remove('hidden')}catch(e){}}
+function restoreProject(){
+  let o=null;try{o=JSON.parse(localStorage.getItem(SAVE_KEY))}catch(e){}
+  if(!o||!o.plans)return;
+  Object.assign(APP,{idea:o.idea,style:o.style||APP.style,stylePrompt:o.stylePrompt||null,total:o.total,character:o.character||'',bible:o.bible||null,cast:o.cast||[],noRef:false,noFuse:false,seed:Math.floor(Math.random()*1000)});
+  APP.refPhoto=APP.cast[0]||null;
+  APP.plans=o.plans.map(p=>Object.assign({voice:null,blob:null,clipBlob:null},p));
+  $('ideaInput').value=o.idea||'';castRender();renderStyles();
+  ['plansCard','logCard','controlRoom'].forEach(id=>$(id).classList.remove('hidden'));
+  renderGrid(APP.plans.length);
+  APP.plans.forEach((p,i)=>{if(p.url||p.clipUrl)updatePlanSlot(i+1);else msgSlot($('slot-'+(i+1)),'À relancer',true)});
+  showBible();showMaster();$('resumeBtn').classList.add('hidden');
 }
 
 /* EXPORT ZIP ET VIDÉO */
@@ -661,21 +863,19 @@ function wrapText(x,t,w){
 
 async function exportVideo(){
   if(!window.MediaRecorder){$('exportMsg').textContent='Ce navigateur ne gère pas l’export vidéo.';$('exportMsg').classList.remove('hidden');return}
+  masterStop();
   const hasVoice=APP.plans.some(p=>p.voice);
   let ac=null,dest=null;
   if(hasVoice){try{ac=new (window.AudioContext||window.webkitAudioContext)();await ac.resume();dest=ac.createMediaStreamDestination()}catch(e){ac=null}}
   $('exportMsg').textContent='Récupération des médias…';$('exportMsg').classList.remove('hidden');
-  
   for(const p of APP.plans){
     if(p.url&&!p.blob)p.blob=await toBlob(p.url);
     if(p.clipUrl&&!p.clipBlob)p.clipBlob=await fetchBlob(p.clipUrl);
   }
   const done=APP.plans.filter(p=>p.blob||p.clipBlob);
   if(!done.length){$('exportMsg').textContent='Aucun média exploitable pour la vidéo.';return}
-  
   const subs=$('subs')&&$('subs').checked;
   $('exportMsg').textContent='Montage en cours, garde cet onglet ouvert et allumé…';
-  
   const W=720,H=1280,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
   const stream=c.captureStream(30);
   if(ac)dest.stream.getAudioTracks().forEach(t=>stream.addTrack(t));
@@ -683,17 +883,11 @@ async function exportVideo(){
   const rec=new MediaRecorder(stream,mime?{mimeType:mime}:undefined),chunks=[];
   rec.ondataavailable=e=>e.data.size&&chunks.push(e.data);
   const fin=new Promise(r=>rec.onstop=r);rec.start();
-  
   let nClips=0;
   for(const p of done){
-    let v=null,img=null,dur=3000;
-    if(p.clipBlob){
-      v=document.createElement('video');v.muted=true;v.playsInline=true;v.src=URL.createObjectURL(p.clipBlob);
-      await new Promise(r=>{v.onloadeddata=r;v.onerror=r});
-      if(v.videoWidth){dur=(v.duration||5)*1000;nClips++}else{URL.revokeObjectURL(v.src);v=null}
-    }
-    if(!v){if(!p.blob)continue;img=new Image();img.src=URL.createObjectURL(p.blob);await img.decode()}
-    
+    const m=await loadMedia(p,true);if(!m)continue;
+    if(m.v)nClips++;
+    let dur=planDur(p)*1000;
     if(ac&&p.voice){
       try{
         const buf=await ac.decodeAudioData(await p.voice.arrayBuffer());
@@ -701,25 +895,15 @@ async function exportVideo(){
         dur=Math.max(dur,buf.duration*1000+500);
       }catch(e){}
     }
-    if(v){try{await v.play()}catch(e){}}
-    
+    if(m.v)await m.v.play().catch(()=>{});
     const t0=performance.now();
-    await new Promise(res=>{
-      (function f(){
-        const k=Math.min((performance.now()-t0)/dur,1),src=v||img,sw=v?v.videoWidth:img.width,sh=v?v.videoHeight:img.height;
-        const z=v?1:1+.1*k,s=Math.max(W/sw,H/sh)*z,w=sw*s,h=sh*s;
-        x.fillStyle='#000';x.fillRect(0,0,W,H);x.drawImage(src,(W-w)/2,(H-h)/2,w,h);
-        if(subs&&p.narr){
-          x.font='bold 34px Inter,sans-serif';x.textAlign='center';x.lineJoin='round';
-          const ls=wrapText(x,p.narr,W-80),y0=H-130-ls.length*44;
-          ls.forEach((l,i)=>{x.lineWidth=8;x.strokeStyle='#000';x.strokeText(l,W/2,y0+i*44);x.fillStyle='#fff';x.fillText(l,W/2,y0+i*44)});
-        }
-        k<1?requestAnimationFrame(f):res();
-      })()
-    });
-    if(v){v.pause();URL.revokeObjectURL(v.src)}else URL.revokeObjectURL(img.src);
+    await new Promise(res=>{(function f(){
+      const k=Math.min((performance.now()-t0)/dur,1);
+      drawPlanFrame(x,W,H,p,m,k,subs);
+      k<1?requestAnimationFrame(f):res();
+    })()});
+    m.rel();
   }
-  
   rec.stop();await fin;if(ac)ac.close();
   const ext=(mime||'video/webm').includes('mp4')?'mp4':'webm';
   saveBlobAs(new Blob(chunks,{type:mime||'video/webm'}),'storylab.'+ext);
@@ -735,13 +919,14 @@ async function fetchBlob(url){
 
 /* ANIMATION DES PLANS */
 const ANIM_DEFAULT='The subject moves naturally, slow cinematic camera push-in. ';
+const animText=p=>ANIM_DEFAULT+[p.cam,p.move].filter(Boolean).join(', ')+(p.cam||p.move?'. ':'')+p.scene;
 async function animateCore(n,mp,add){
   const p=APP.plans[n-1];
   if(!p||!p.url||p.url.startsWith('data:'))throw new Error('image sans adresse publique');
   const key=APP.keys[Math.floor(Math.random()*APP.keys.length)],auth={Authorization:'Bearer '+key};
   add('Plan '+n+' : création…');
   const r=await fetch(AGNES_BASE+'/videos',{method:'POST',headers:{...auth,'Content-Type':'application/json'},
-    body:JSON.stringify({model:VIDEO_MODEL,prompt:mp,mode:'keyframe',first_frame:p.url,seconds:'5',size:'720P',aspect_ratio:'9:16'})});
+    body:JSON.stringify({model:VIDEO_MODEL,prompt:mp,mode:'keyframe',first_frame:p.url,seconds:String(Math.min(12,Math.max(4,Math.round(p.dur||5)))),size:'720P',aspect_ratio:'9:16'})});
   const t=await r.json().catch(()=>({}));
   if(!r.ok)throw new Error((t.error&&(t.error.message||t.error))||t.message||('HTTP '+r.status));
   if(!t.video_id)throw new Error('Pas de video_id');
@@ -763,14 +948,14 @@ async function animateCore(n,mp,add){
     if(st==='completed'&&d.url)url=d.url;
   }
   if(!url)throw new Error('Délai dépassé');
-  p.clipUrl=url;p.clipBlob=null;updatePlanSlot(n);
+  p.clipUrl=url;p.clipBlob=null;p.clipDur=Math.min(12,Math.max(4,Math.round(p.dur||5)));updatePlanSlot(n);autosave();masterRefresh();
 }
 
 async function animatePlan(n){
   const p=APP.plans[n-1];if(!p||!p.url)return;
   if(APP.busy){alert('Une opération est déjà en cours.');return}
   if(!APP.keys.length){openApiModal();return}
-  const mp=prompt('Mouvement et caméra (en anglais) :',ANIM_DEFAULT+p.scene);
+  const mp=prompt('Mouvement et caméra (en anglais) :',animText(p));
   if(mp===null)return;
   APP.busy=true;APP.cancel=false;setStatus('Animation…');
   const log=$('animLog');log.style.display='block';log.textContent='';
@@ -794,7 +979,7 @@ async function animateAll(){
     for(const n of todo){
       if(APP.cancel)break;
       setStatus(`Animation ${ok+1}/${todo.length}…`);
-      try{await animateCore(n,ANIM_DEFAULT+APP.plans[n-1].scene,add);ok++;add('✓ Plan '+n)}
+      try{await animateCore(n,animText(APP.plans[n-1]),add);ok++;add('✓ Plan '+n)}
       catch(e){if(e.message==='Annulé')break;add('✗ Plan '+n+' : '+e.message)}
     }
     setStatus(APP.cancel?'Annulé':'Terminé',APP.cancel?'red':'green');add(`${ok}/${todo.length} plans animés.`);
@@ -867,7 +1052,7 @@ function freeLaunch(){
   const plans=[...document.querySelectorAll('.fplan')].map(t=>t.value.trim()).filter(Boolean);
   if(!plans.length||!FREE.sel)return;
   switchTab('studio');
-  startProduction({idea:FREE.idea, photo:APP.photos.free, character:$('freeChar').value.trim(), plans, stylePrompt:FREE.sel.prompt});
+  startProduction({idea:FREE.idea, photo:APP.photos.free, character:$('freeChar').value.trim(), plans, narr:FREE.narr||[], stylePrompt:FREE.sel.prompt});
   setTimeout(()=>$('controlRoom').scrollIntoView({behavior:'smooth'}),300);
 }
 
