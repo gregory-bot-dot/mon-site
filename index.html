@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>STORYLAB & AVATAR LAB // v10.2</title>
+<title>STORYLAB & AVATAR LAB // v10.3</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
@@ -102,7 +102,7 @@ textarea{min-height:110px;resize:vertical}
 </head>
 <body>
 <div class="header">
-  <div class="header-title">STORYLAB & AVATAR LAB <span>// v10.2</span></div>
+  <div class="header-title">STORYLAB & AVATAR LAB <span>// v10.3</span></div>
   <div class="badges">
     <button class="back hidden" id="backBtn" onclick="goHome()">← Menu</button>
     <div class="badge" id="statusBadge"><div class="dot"></div><span>Inactif</span></div>
@@ -206,6 +206,7 @@ textarea{min-height:110px;resize:vertical}
         <button class="btn sm" onclick="exportVideo()">🎞️ Créer la vidéo finale</button>
       </div>
       <label class="chk"><input type="checkbox" id="subs" checked> Sous-titres (texte de la voix off)</label>
+      <label class="chk"><input type="checkbox" id="fx" checked> Mouvements de caméra simulés et fondus enchaînés</label>
       <div class="alert warn hidden" id="exportMsg"></div>
       <div id="animLog" class="terminal" style="margin-top:12px;white-space:pre-wrap;word-break:break-word;font-size:11px;display:none"></div>
     </div>
@@ -631,7 +632,7 @@ async function askJSON(sys,user,tag){
 }
 function mkPlan(o,defDur,role){
   const n=v=>(v==null?'':String(v)),d=Math.round(Number(o.dur));
-  return {scene:n(o.visual||o.scene),role:n(o.role||role),dur:(d>=4&&d<=12)?d:Math.min(12,Math.max(4,Math.round(defDur))),loc:n(o.location),chars:n(o.characters),outfit:n(o.outfit),cam:n(o.camera),move:n(o.movement),cont:n(o.continuity),dialogue:n(o.dialogue),narr:n(o.voice),sub:n(o.subtitle),voice:null,url:null,blob:null};
+  return {scene:n(o.visual||o.scene),role:n(o.role||role),dur:(d>=4&&d<=12)?d:Math.min(12,Math.max(4,Math.round(defDur))),loc:n(o.location),chars:n(o.characters),outfit:n(o.outfit),cam:n(o.camera),move:n(o.movement),cont:n(o.continuity),dialogue:n(o.dialogue),narr:n(o.voice),sub:n(o.subtitle),fx:'',voice:null,url:null,blob:null};
 }
 function renderGrid(count){const g=$('plansGrid');g.innerHTML='';for(let i=1;i<=count;i++){const d=document.createElement('div');d.className='slot plan-slot';d.id='slot-'+i;d.textContent=i;g.appendChild(d)}}
 
@@ -738,7 +739,10 @@ function showBible(){
     const t=document.createElement('textarea');t.style.cssText='min-height:60px;margin-top:8px';t.placeholder='Voix off (français)';t.value=p.narr||'';t.oninput=()=>{p.narr=t.value};t.onchange=autosave;
     const s=document.createElement('input');s.type='text';s.style.marginTop='8px';s.placeholder='Sous-titre (sinon, la voix off)';s.value=p.sub||'';s.oninput=()=>{p.sub=s.value};s.onchange=autosave;
     const r=document.createElement('button');r.className='btn sm';r.style.marginTop='8px';r.textContent=p.voice?'🎙️ Réenregistrer ✓':'🎙️ Enregistrer ma voix';r.onclick=()=>toggleRec(i,r);
-    d.append(t,s,r);box.appendChild(d);
+    const sel=document.createElement('select');sel.style.marginTop='8px';
+    [['','Mouvement de caméra : auto'],['in','Zoom avant'],['out','Zoom arrière'],['panL','Panoramique gauche'],['panR','Panoramique droite'],['up','Tilt haut'],['down','Tilt bas'],['orbit','Orbite'],['hand','Caméra épaule'],['still','Fixe']].forEach(o=>{const op=document.createElement('option');op.value=o[0];op.textContent=o[1];sel.appendChild(op)});
+    sel.value=p.fx||'';sel.onchange=()=>{p.fx=sel.value;autosave()};
+    d.append(t,s,sel,r);box.appendChild(d);
   });
 }
 
@@ -762,10 +766,44 @@ async function loadMedia(p,strict){
   try{await img.decode()}catch(e){return null}
   return{img,rel:()=>{if(p.blob)URL.revokeObjectURL(src)}};
 }
-function drawPlanFrame(x,W,H,p,m,k,subs){
-  const src=m.v||m.img,sw=m.v?m.v.videoWidth:m.img.width,sh=m.v?m.v.videoHeight:m.img.height;
-  const z=m.v?1:1+.1*k,s=Math.max(W/sw,H/sh)*z,w=sw*s,h=sh*s;
-  x.fillStyle='#000';x.fillRect(0,0,W,H);x.drawImage(src,(W-w)/2,(H-h)/2,w,h);
+const MOVES={in:{z:[1.05,1.22]},out:{z:[1.22,1.05]},panL:{z:[1.25,1.25],x:[.9,-.9]},panR:{z:[1.25,1.25],x:[-.9,.9]},up:{z:[1.25,1.25],y:[.9,-.9]},down:{z:[1.25,1.25],y:[-.9,.9]},orbit:{z:[1.1,1.25],x:[-.8,.8]},hand:{z:[1.12,1.12],h:1},still:{z:[1,1.02]}};
+const AUTO_MOVES=['in','panR','out','panL','up','down'];
+function pickMove(p,i){
+  if(p.fx&&MOVES[p.fx])return p.fx;
+  const t=((p.cam||'')+' '+(p.move||'')).toLowerCase();
+  if(/orbit/.test(t))return 'orbit';
+  if(/handheld|shake/.test(t))return 'hand';
+  if(/dolly out|pull back|pulls back|zoom out|reveal|backward/.test(t))return 'out';
+  if(/dolly in|push in|push-in|zoom in|slow zoom|forward|approach/.test(t))return 'in';
+  if(/pan(ning)? (to the )?left|track(ing)? (to the )?left/.test(t))return 'panL';
+  if(/pan(ning)? (to the )?right|track(ing)? (to the )?right|side track/.test(t))return 'panR';
+  if(/tilt up|crane|rising|rises/.test(t))return 'up';
+  if(/tilt down|descend/.test(t))return 'down';
+  if(/static|locked|still/.test(t))return 'still';
+  return AUTO_MOVES[Math.max(0,i)%AUTO_MOVES.length];
+}
+function snapCanvas(c){const q=document.createElement('canvas');q.width=c.width;q.height=c.height;q.getContext('2d').drawImage(c,0,0);return q}
+function drawPlanFrame(x,W,H,p,m,k,subs,fade){
+  const sw=m.v?m.v.videoWidth:m.img.width,sh=m.v?m.v.videoHeight:m.img.height,s0=Math.max(W/sw,H/sh);
+  x.fillStyle='#000';x.fillRect(0,0,W,H);
+  if(fade&&fade.prev&&fade.a<1)x.drawImage(fade.prev,0,0,W,H);
+  x.globalAlpha=fade?Math.max(0,Math.min(1,fade.a)):1;
+  if(m.v){x.drawImage(m.v,(W-sw*s0)/2,(H-sh*s0)/2,sw*s0,sh*s0)}
+  else{
+    let z=1+.1*k,dx=0,dy=0;
+    if(fade){
+      const mv=MOVES[pickMove(p,APP.plans.indexOf(p))],e=k*k*(3-2*k);
+      z=mv.z[0]+(mv.z[1]-mv.z[0])*e;
+      const sx=(sw*s0*z-W)/2,sy=(sh*s0*z-H)/2;
+      if(mv.x)dx=(mv.x[0]+(mv.x[1]-mv.x[0])*e)*sx;
+      if(mv.y)dy=(mv.y[0]+(mv.y[1]-mv.y[0])*e)*sy;
+      if(mv.h){dx+=Math.sin(k*61)*sx*.3;dy+=Math.cos(k*47)*sy*.3}
+    }
+    const w=sw*s0*z,h=sh*s0*z;
+    x.drawImage(m.img,(W-w)/2+dx,(H-h)/2+dy,w,h);
+  }
+  x.globalAlpha=1;
+  if(fade&&fade.out>0){x.fillStyle='rgba(0,0,0,'+Math.min(1,fade.out)+')';x.fillRect(0,0,W,H)}
   const t=p.sub||p.narr;
   if(subs&&t){
     const fs=Math.round(W*.047),lh=fs*1.3;
@@ -787,12 +825,12 @@ async function masterToggle(){
   if(!list.length)return;
   const my=++MASTER.token;MASTER.playing=true;$('masterBtn').textContent='⏹ Arrêter';
   const c=$('masterCanvas'),x=c.getContext('2d'),W=c.width,H=c.height,total=masterTotal();
-  const subs=$('subs')&&$('subs').checked,speak=$('masterVoice').checked;
+  const subs=$('subs')&&$('subs').checked,speak=$('masterVoice').checked,fxOn=!!($('fx')&&$('fx').checked);
   let acc=0;
   for(let i=0;i<list.length&&MASTER.token===my;i++){
     const p=list[i],m=await loadMedia(p,false);
     if(!m)continue;
-    const dur=planDur(p)*1000;
+    const dur=planDur(p)*1000,prevC=fxOn?snapCanvas(c):null;
     $('masterPlan').textContent='Plan '+(APP.plans.indexOf(p)+1)+(p.role?' · '+p.role:'');
     let au=null;
     if(p.voice){au=new Audio(URL.createObjectURL(p.voice));au.play().catch(()=>{})}
@@ -802,7 +840,7 @@ async function masterToggle(){
     await new Promise(res=>{(function f(){
       if(MASTER.token!==my){res();return}
       const e=performance.now()-t0,k=Math.min(e/dur,1);
-      drawPlanFrame(x,W,H,p,m,k,subs);
+      drawPlanFrame(x,W,H,p,m,k,subs,fxOn?{prev:prevC,a:e/500,out:i===list.length-1?Math.max(0,1-(dur-e)/600):0}:undefined);
       $('masterBar').style.width=Math.min(100,(acc+e/1000)/total*100)+'%';
       $('masterLbl').textContent=fmt(acc+e/1000)+' / '+fmt(total);
       k<1?requestAnimationFrame(f):res();
@@ -830,7 +868,7 @@ function autosave(){
   if(!APP.plans.length)return;
   try{
     const o={idea:APP.idea,style:APP.style,stylePrompt:APP.stylePrompt,total:APP.total,character:APP.character,bible:APP.bible,cast:APP.cast,
-      plans:APP.plans.map(p=>({scene:p.scene,role:p.role,dur:p.dur,loc:p.loc,chars:p.chars,outfit:p.outfit,cam:p.cam,move:p.move,cont:p.cont,dialogue:p.dialogue,narr:p.narr,sub:p.sub,clipDur:p.clipDur,url:(p.url&&!p.url.startsWith('data:'))?p.url:null,clipUrl:p.clipUrl||null}))};
+      plans:APP.plans.map(p=>({scene:p.scene,role:p.role,dur:p.dur,loc:p.loc,chars:p.chars,outfit:p.outfit,cam:p.cam,move:p.move,cont:p.cont,dialogue:p.dialogue,narr:p.narr,sub:p.sub,fx:p.fx,clipDur:p.clipDur,url:(p.url&&!p.url.startsWith('data:'))?p.url:null,clipUrl:p.clipUrl||null}))};
     localStorage.setItem(SAVE_KEY,JSON.stringify(o));
     const s=$('saveState');if(s)s.textContent='État sauvegardé à '+new Date().toLocaleTimeString('fr-FR');
   }catch(e){}
@@ -877,7 +915,7 @@ async function exportVideo(){
   }
   const done=APP.plans.filter(p=>p.blob||p.clipBlob);
   if(!done.length){$('exportMsg').textContent='Aucune image récupérable (le serveur d’images bloque la copie). Coche « Garder les images sur mon téléphone » et relance la production.';return}
-  const subs=$('subs')&&$('subs').checked;
+  const subs=$('subs')&&$('subs').checked,fxOn=!!($('fx')&&$('fx').checked);
   $('exportMsg').textContent='Montage en cours, garde cet onglet ouvert et allumé…';
   const W=720,H=1280,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
   const stream=c.captureStream(30);
@@ -887,8 +925,10 @@ async function exportVideo(){
   rec.ondataavailable=e=>e.data.size&&chunks.push(e.data);
   const fin=new Promise(r=>rec.onstop=r);rec.start();
   let nClips=0;
-  for(const p of done){
+  for(let di=0;di<done.length;di++){
+    const p=done[di];
     const m=await loadMedia(p,true);if(!m)continue;
+    const prevC=fxOn?snapCanvas(c):null;
     if(m.v)nClips++;
     let dur=planDur(p)*1000;
     if(ac&&p.voice){
@@ -902,7 +942,7 @@ async function exportVideo(){
     const t0=performance.now();
     await new Promise(res=>{(function f(){
       const k=Math.min((performance.now()-t0)/dur,1);
-      drawPlanFrame(x,W,H,p,m,k,subs);
+      drawPlanFrame(x,W,H,p,m,k,subs,fxOn?{prev:prevC,a:k*dur/500,out:di===done.length-1?Math.max(0,1-(dur-k*dur)/600):0}:undefined);
       k<1?requestAnimationFrame(f):res();
     })()});
     m.rel();
