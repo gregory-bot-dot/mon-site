@@ -3,62 +3,59 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>STORYLAB & AVATAR LAB // v10.4</title>
+<title>STORYLAB & AVATAR LAB // v10.3</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
-:root{--bg:#f3f4f6;--card:#fff;--text:#111827;--muted:#4b5563;--primary:#0284c7;--pl:#e0f2fe;--ok:#059669;--err:#dc2626;--border:#e5e7eb;--dark:#111827;--r:16px;--font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace}
+:root{--bg:#f3f4f6;--card:#fff;--text:#111827;--muted:#6b7280;--primary:#0ea5e9;--pl:#e0f2fe;--ok:#10b981;--err:#dc2626;--border:#e5e7eb;--dark:#111827;--r:16px;--font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.5;padding-bottom:max(40px,env(safe-area-inset-bottom));-webkit-text-size-adjust:100%}
-button:focus-visible,select:focus-visible,textarea:focus-visible,input:focus-visible,.option-btn:focus-visible,.style-item:focus-visible,.pill:focus-visible,.home-btn:focus-visible,.action-btn:focus-visible{outline:3px solid var(--primary);outline-offset:2px}
-.btn:focus-visible{outline:3px solid #fff;outline-offset:2px;box-shadow:0 0 0 5px var(--primary)}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.5;padding-bottom:40px}
 .hidden{display:none!important}
 .header{background:var(--bg);padding:16px 20px 4px;position:sticky;top:0;z-index:100;border-bottom:1px solid var(--border)}
 .header-title{font-size:16px;font-weight:700;margin-bottom:10px}.header-title span{color:var(--muted);font-weight:400;font-size:14px}
 .badges{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
-.badge{background:var(--card);border:1px solid var(--border);padding:8px 14px;border-radius:20px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:6px;cursor:pointer;min-height:36px}
+.badge{background:var(--card);border:1px solid var(--border);padding:6px 12px;border-radius:20px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:6px;cursor:pointer}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}.dot.green{background:var(--ok)}.dot.blue{background:var(--primary)}.dot.red{background:var(--err)}
 .container{padding:16px 20px;max-width:600px;margin:0 auto}
 .card{background:var(--card);border-radius:var(--r);padding:20px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
 .card-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px}
 .step-num{background:var(--text);color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
 .step-title{font-size:16px;font-weight:700;text-transform:uppercase}.step-sub{font-size:12px;color:var(--muted);text-transform:uppercase}
-select,textarea,input[type=text]{width:100%;border:1px solid var(--border);border-radius:12px;padding:12px;font-family:var(--font);font-size:16px;background:var(--card);outline:none}
-select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14'><path d='M2 5l5 5 5-5' fill='none' stroke='%234b5563' stroke-width='1.8' stroke-linecap='round'/></svg>");background-repeat:no-repeat;background-position:right 12px center;min-height:48px}
+select,textarea,input[type=text]{width:100%;border:1px solid var(--border);border-radius:12px;padding:12px;font-family:var(--font);font-size:14px;background:var(--card);outline:none}
+select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14'><path d='M2 5l5 5 5-5' fill='none' stroke='%236b7280' stroke-width='1.8' stroke-linecap='round'/></svg>");background-repeat:no-repeat;background-position:right 12px center}
 select:focus,textarea:focus,input:focus{border-color:var(--primary)}
-textarea{min-height:110px;resize:vertical;font-size:16px}
-.row{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap}
-.chk{display:flex;gap:10px;align-items:flex-start;margin-top:14px;font-size:14px;line-height:1.4;cursor:pointer}
-.chk input{width:18px;height:18px;margin-top:2px;flex-shrink:0;accent-color:var(--primary)}
+textarea{min-height:110px;resize:vertical}
+.row{display:flex;gap:12px;margin-top:12px}
+.chk{display:flex;gap:8px;align-items:center;margin-top:12px;font-size:13px}
 .upload-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-.upload-btn{display:flex;align-items:center;gap:8px;background:var(--pl);color:var(--primary);border:1px dashed var(--primary);padding:14px 16px;border-radius:12px;font-weight:600;font-size:15px;cursor:pointer;width:100%;justify-content:center;text-align:center;min-height:48px}
+.upload-btn{display:flex;align-items:center;gap:8px;background:var(--pl);color:var(--primary);border:1px dashed var(--primary);padding:10px 16px;border-radius:12px;font-weight:600;font-size:14px;cursor:pointer;width:100%;justify-content:center;text-align:center}
 .upload-btn input{display:none}
 .photo-preview{width:60px;height:60px;border-radius:8px;object-fit:cover;border:2px solid var(--primary);display:none}
 
 .grid-options{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.option-btn{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;user-select:none;-webkit-user-select:none;min-height:100px}
+.option-btn{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;user-select:none;-webkit-user-select:none}
 .option-btn *{pointer-events:none}
 .option-btn.active{border-color:var(--primary);background:var(--pl)}
 .option-icon{font-size:24px}.option-title{font-weight:600;font-size:14px}.option-desc{font-size:12px;color:var(--muted)}
 
 .pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
-.pill{background:#f3f4f6;padding:8px 16px;border-radius:20px;font-size:13px;cursor:pointer;user-select:none;border:1px solid transparent;min-height:36px;display:inline-flex;align-items:center}
+.pill{background:#f3f4f6;padding:6px 14px;border-radius:20px;font-size:13px;cursor:pointer;user-select:none;border:1px solid transparent}
 .pill.active{background:var(--text);color:#fff}
-.styles-list{display:flex;flex-direction:column;gap:8px;max-height:380px;overflow-y:auto;-webkit-overflow-scrolling:touch}
-.style-item{border:1px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;display:flex;align-items:center;gap:12px;user-select:none;background:var(--card);min-height:56px}
+.styles-list{display:flex;flex-direction:column;gap:8px;max-height:380px;overflow-y:auto}
+.style-item{border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;display:flex;align-items:center;gap:12px;user-select:none;background:var(--card)}
 .style-item.active{border-color:var(--primary);background:var(--pl)}
-.style-icon{font-size:24px}.style-name{font-weight:600;font-size:14px}.style-desc{font-size:12px;color:var(--muted)}
+.style-icon{font-size:24px}.style-name{font-weight:600;font-size:14px}.style-desc{font-size:11px;color:var(--muted)}
 
 .home{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
-.home-btn{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:26px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;font-family:var(--font);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.05);min-height:120px}
+.home-btn{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:26px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;font-family:var(--font);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.05)}
 .home-btn:active{background:var(--pl);border-color:var(--primary)}
 .home-ic{font-size:36px}.home-t{font-weight:700;font-size:15px}.home-d{font-size:12px;color:var(--muted);text-align:center}
-.back{background:var(--card);border:1px solid var(--border);padding:8px 16px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text);font-family:var(--font);min-height:36px}
+.back{background:var(--card);border:1px solid var(--border);padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;color:var(--text);font-family:var(--font)}
 
-.btn{width:100%;border:0;border-radius:12px;padding:16px;font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;background:#f3f4f6;color:var(--text);min-height:52px}
+.btn{width:100%;border:0;border-radius:12px;padding:16px;font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;background:#f3f4f6;color:var(--text)}
 .btn.primary{background:#1a73e8;color:#fff}.btn.danger{background:#fee2e2;color:var(--err)}
 .btn:disabled{opacity:.6;cursor:not-allowed}
-.btn.sm{padding:12px;font-size:14px;min-height:44px}
+.btn.sm{padding:10px;font-size:14px}
 .alert{padding:12px;border-radius:8px;font-size:13px;margin-top:12px;text-align:center;background:#ecfdf5;color:#065f46}
 .alert.warn{background:#fef3c7;color:#92400e}
 
@@ -83,7 +80,7 @@ textarea{min-height:110px;resize:vertical;font-size:16px}
 .plan-slot{aspect-ratio:9/16}.av-slot{aspect-ratio:3/4}
 .slot img,.slot video{width:100%;height:100%;object-fit:cover;display:block}
 .slot-actions{position:absolute;top:8px;right:8px;display:flex;gap:4px;z-index:10}
-.action-btn{background:rgba(255,255,255,.95);border:0;border-radius:50%;width:40px;height:40px;font-size:16px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center}
+.action-btn{background:rgba(255,255,255,.9);border:0;border-radius:50%;width:32px;height:32px;font-size:14px;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,.2)}
 .plan-label{position:absolute;bottom:0;left:0;right:0;background:rgba(255,255,255,.9);padding:6px;font-size:11px;font-weight:600}
 .slot-msg{font-size:12px;color:var(--muted);padding:10px;text-align:center;font-weight:400}.slot-msg.err{color:var(--err)}
 
@@ -105,9 +102,9 @@ textarea{min-height:110px;resize:vertical;font-size:16px}
 </head>
 <body>
 <div class="header">
-  <div class="header-title">STORYLAB & AVATAR LAB <span>// v10.4</span></div>
+  <div class="header-title">STORYLAB & AVATAR LAB <span>// v10.3</span></div>
   <div class="badges">
-    <a class="back" href="https://gregory-bot-dot.github.io/mon-ia/" style="text-decoration:none">🧠 AI HUB</a>
+    <a class="back" href="https://gregory-bot-dot.github.io/" style="text-decoration:none">🧠 AI HUB</a>
     <button class="back hidden" id="backBtn" onclick="goHome()">← Menu</button>
     <div class="badge" id="statusBadge"><div class="dot"></div><span>Inactif</span></div>
     <div class="badge" id="apiBadge" onclick="openApiModal()"><div class="dot"></div><span>Clé API</span></div>
@@ -156,8 +153,7 @@ textarea{min-height:110px;resize:vertical;font-size:16px}
         <select id="planCountSelect"><option value="4">4 plans</option><option value="6">6 plans</option><option value="10" selected>10 plans</option></select>
       </div>
       <label class="chk"><input type="checkbox" id="fuseFace" checked> Reprendre exactement le visage de ma photo</label>
-      <label class="chk"><input type="checkbox" id="keepLocal" checked> Garder les images sur mon téléphone (recommandé pour l’export vidéo)</label>
-      <div class="cd" id="keepLocalHint" style="margin-top:4px;padding-left:28px">Les images restent en local → export vidéo plus fiable. Tu pourras toujours régénérer un plan en mode cloud pour l’animer avec Agnes.</div>
+      <label class="chk"><input type="checkbox" id="keepLocal" checked> Garder les images sur mon téléphone (export vidéo fiable, mais sans animation Agnes)</label>
       <div class="row">
         <button class="btn primary" id="launchBtn" onclick="startProduction()">🎬 Lancer la production</button>
         <button class="btn danger hidden" id="cancelBtn" style="width:auto" onclick="APP.cancel=true">Annuler</button>
@@ -207,10 +203,9 @@ textarea{min-height:110px;resize:vertical;font-size:16px}
         <button class="btn sm" onclick="retryFailed()">↻ Relancer les erreurs</button>
       </div>
       <div class="row">
-        <button class="btn sm" id="animateAllBtn" onclick="animateAll()" aria-label="Animer tous les plans avec Agnes">🎬 Animer tous les plans</button>
-        <button class="btn sm" onclick="exportVideo()" aria-label="Créer la vidéo finale">🎞️ Créer la vidéo finale</button>
+        <button class="btn sm" onclick="animateAll()">🎬 Animer tous les plans</button>
+        <button class="btn sm" onclick="exportVideo()">🎞️ Créer la vidéo finale</button>
       </div>
-      <div class="cd" id="animHint" style="margin-top:8px">💡 L’animation Agnes consomme des crédits vidéo. Si ton solde est à 0 $, utilise plutôt « Créer la vidéo finale » (mouvements simulés gratuits).</div>
       <label class="chk"><input type="checkbox" id="subs" checked> Sous-titres (texte de la voix off)</label>
       <label class="chk"><input type="checkbox" id="fx" checked> Mouvements de caméra simulés et fondus enchaînés</label>
       <div class="alert warn hidden" id="exportMsg"></div>
@@ -323,14 +318,16 @@ textarea{min-height:110px;resize:vertical;font-size:16px}
   <div class="modal">
     <h2 style="margin-bottom:8px">🔑 Clés API Agnes</h2>
     <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Une clé par ligne, commençant par sk-</p>
-    <textarea id="apiKeyInput" style="height:100px;font-family:var(--mono);font-size:12px;margin-bottom:16px;resize:none"></textarea>
+    <textarea id="apiKeyInput" style="height:100px;font-family:var(--mono);font-size:12px;margin-bottom:12px;resize:none"></textarea>
+    <label class="chk" style="margin:0 0 16px"><input type="checkbox" id="useHub" checked> ✍️ Écrire les scénarios avec Gemini gratuit (via AI HUB) pour garder les crédits Agnes pour les images</label>
     <div style="display:flex;gap:8px"><button class="btn" onclick="closeApiModal()">Annuler</button><button class="btn primary" onclick="saveApiKeys()">Sauvegarder</button></div>
   </div>
 </div>
 
 <script>
 const AGNES_BASE='https://apihub.agnes-ai.com/v1', TEXT_MODEL='agnes-3.0-flash', IMG_MODEL='agnes-image-2.5-flash', VIDEO_MODEL='agnes-video-2.5';
-const APP={format:'Court-métrage',genre:'Tous',style:'Kung-fu classique',keys:[],busy:false,cancel:false,quotaBlocked:false,photos:{idea:null,avatar:null,free:null},plans:[]};
+const HUB_URL='https://ai-hub-proxy.pasquet-gregory.workers.dev'; // proxy AI HUB (Gemini gratuit) pour écrire les textes
+const APP={format:'Court-métrage',genre:'Tous',style:'Kung-fu classique',keys:[],busy:false,cancel:false,photos:{idea:null,avatar:null,free:null},plans:[]};
 
 const STYLES=[
  {genre:'action',name:'Kung-fu classique',icon:'🥋',desc:'Chorégraphie lisible, cadres larges',prompt:'classic kung-fu movie style, 1970s martial arts film'},
@@ -379,18 +376,6 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 document.addEventListener('DOMContentLoaded',()=>{
   loadKeys();renderPills();renderStyles();refreshKeyUI();libRender();castInit();crInit();checkResume();
   document.querySelectorAll('input[type=file][data-target]').forEach(i=>i.addEventListener('change',()=>handlePhotoUpload(i,i.dataset.target)));
-  const kl=$('keepLocal');
-  if(kl){
-    const updateHint=()=>{
-      const h=$('keepLocalHint');
-      if(!h)return;
-      h.textContent=kl.checked
-        ?'Les images restent en local → export vidéo plus fiable. Tu pourras toujours régénérer un plan en mode cloud pour l’animer avec Agnes.'
-        :'Mode cloud : les images sont des URLs. Export vidéo parfois moins fiable (CORS), mais animation Agnes possible directement.';
-    };
-    kl.addEventListener('change',updateHint);
-    updateHint();
-  }
 });
 
 function switchTab(id){
@@ -457,10 +442,15 @@ function refreshKeyUI(){
   const a=$('readyAlert');if(a){a.className='alert'+(ok?'':' warn');a.textContent=ok?'✓ Prêt.':'Ajoute une clé API (badge en haut) pour commencer.'}
 }
 
-function loadKeys(){try{APP.keys=JSON.parse(localStorage.getItem('storylab_keys')||'[]')}catch(e){APP.keys=[]}}
-function openApiModal(){$('apiModal').classList.add('open');$('apiKeyInput').value=APP.keys.join('\n')}
+function loadKeys(){
+  try{APP.keys=JSON.parse(localStorage.getItem('storylab_keys')||'[]')}catch(e){APP.keys=[]}
+  try{APP.useHub=localStorage.getItem('storylab_usehub')!=='0'}catch(e){APP.useHub=true}
+}
+function openApiModal(){$('apiModal').classList.add('open');$('apiKeyInput').value=APP.keys.join('\n');$('useHub').checked=APP.useHub}
 function closeApiModal(){$('apiModal').classList.remove('open')}
 function saveApiKeys(){
+  APP.useHub=$('useHub').checked;
+  try{localStorage.setItem('storylab_usehub',APP.useHub?'1':'0')}catch(e){}
   const keys=$('apiKeyInput').value.split('\n').map(k=>k.trim()).filter(k=>k.startsWith('sk-'));
   if(!keys.length){alert('Aucune clé valide : elle doit commencer par sk-.');return}
   APP.keys=keys;try{localStorage.setItem('storylab_keys',JSON.stringify(keys))}catch(e){}
@@ -484,22 +474,47 @@ async function agnesCall(path,payload,tries=4){
   }
   throw last;
 }
+/* Texte via AI HUB (Gemini gratuit) : mode « raw » = notre propre consigne, réponse complète d'un coup */
+async function hubCall(mode,messages,temperature){
+  if(APP.cancel)throw new Error('Annulé');
+  const res=await fetch(HUB_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode,raw:true,stream:false,temperature,messages})});
+  const raw=await res.text();let d={};try{d=JSON.parse(raw)}catch(e){}
+  if(!res.ok)throw new Error((d.error&&(d.error.message||d.error))||('AI HUB '+res.status));
+  const t=d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content;
+  if(!t||typeof t!=='string')throw new Error('Réponse vide de AI HUB');
+  APP.textModel=res.headers.get('X-Model-Used')||'AI HUB';
+  return t.trim();
+}
 async function generateText(system,user){
-  const d=await agnesCall('/chat/completions',{model:TEXT_MODEL,messages:[{role:'system',content:system},{role:'user',content:user}],temperature:.7});
+  const msgs=[{role:'system',content:system},{role:'user',content:user}];
+  if(APP.useHub){
+    try{return await hubCall('script',msgs,.7)}
+    catch(e){
+      if(e.message==='Annulé')throw e;
+      console.warn('AI HUB indisponible, repli sur Agnes',e);
+      if(!APP.keys.length)throw e;
+      APP.textModel='Agnes (repli)';
+    }
+  }else APP.textModel='Agnes';
+  const d=await agnesCall('/chat/completions',{model:TEXT_MODEL,messages:msgs,temperature:.7});
   return d.choices[0].message.content.trim();
 }
 
 async function analyzeImage(b64){
-  const d=await agnesCall('/chat/completions',{model:TEXT_MODEL,messages:[
-    {role:'system',content:"You are a forensic facial composite expert. Describe ONLY the person's face and physical traits in extreme detail: exact eye color/shape, nose shape, jawline, cheekbones, skin texture, exact hair style and color, facial hair, age, ethnicity, clothing, posture. Do NOT describe the background. Output in English."},
-    {role:'user',content:[{type:'text',text:'Describe this person in extreme detail.'},{type:'image_url',image_url:{url:b64}}]}]});
+  const sys="You are a forensic facial composite expert. Describe ONLY the person's face and physical traits in extreme detail: exact eye color/shape, nose shape, jawline, cheekbones, skin texture, exact hair style and color, facial hair, age, ethnicity, clothing, posture. Do NOT describe the background. Output in English.";
+  const msgs=[{role:'system',content:sys},{role:'user',content:[{type:'text',text:'Describe this person in extreme detail.'},{type:'image_url',image_url:{url:b64}}]}];
+  if(APP.useHub){
+    try{
+      const t=await hubCall('vision',msgs,.2);
+      // Un refus ou une réponse trop courte ne sert à rien pour la cohérence du personnage : on bascule sur Agnes
+      if(t.length>60&&!/^(i['’]?m sorry|i am sorry|sorry|i cannot|i can['’]?t|i['’]?m unable|i am unable)/i.test(t)){APP.textModel='vision: '+APP.textModel;return t}
+    }catch(e){if(e.message==='Annulé')throw e;console.warn('Description via AI HUB impossible, repli sur Agnes',e)}
+  }
+  const d=await agnesCall('/chat/completions',{model:TEXT_MODEL,messages:msgs});
   return d.choices[0].message.content.trim();
 }
 
-const rf=()=>{
-  if(window.__forceUrl)return 'url';
-  return ($('keepLocal')&&$('keepLocal').checked)?'b64_json':'url';
-};
+const rf=()=>($('keepLocal')&&$('keepLocal').checked)?'b64_json':'url';
 async function generateImage(prompt,ratio='9:16',seed,ref){
   const p={model:IMG_MODEL,prompt,size:'1K',ratio,extra_body:{response_format:rf()}};
   if(seed!=null)p.seed=seed;
@@ -535,9 +550,9 @@ function updatePlanSlot(n){
   const slot=$('slot-'+n),p=APP.plans[n-1];if(!slot||!p)return;
   slot.innerHTML='';
   const act=document.createElement('div');act.className='slot-actions';
-  const dl=document.createElement('button');dl.className='action-btn';dl.textContent='⬇️';dl.title='Télécharger';dl.setAttribute('aria-label','Télécharger le plan '+n);dl.onclick=()=>downloadImage(p.url,`plan_${n}.jpg`,p.blob);
-  const rg=document.createElement('button');rg.className='action-btn';rg.textContent='↻';rg.title='Régénérer';rg.setAttribute('aria-label','Régénérer le plan '+n);rg.onclick=()=>regeneratePlan(n);
-  const an=document.createElement('button');an.className='action-btn';an.textContent='🎬';an.title=p.url&&p.url.startsWith('data:')?'Régénérer en cloud puis animer':'Animer';an.setAttribute('aria-label','Animer le plan '+n);an.onclick=()=>animatePlan(n);
+  const dl=document.createElement('button');dl.className='action-btn';dl.textContent='⬇️';dl.title='Télécharger';dl.onclick=()=>downloadImage(p.url,`plan_${n}.jpg`,p.blob);
+  const rg=document.createElement('button');rg.className='action-btn';rg.textContent='↻';rg.title='Régénérer';rg.onclick=()=>regeneratePlan(n);
+  const an=document.createElement('button');an.className='action-btn';an.textContent='🎬';an.title='Animer';an.onclick=()=>animatePlan(n);
   act.append(dl,rg,an);
   
   let img;
@@ -640,36 +655,17 @@ function log(tag,msg){
   b.appendChild(l);b.scrollTop=b.scrollHeight;
 }
 
-/* ---------- Scénario : bible + plans (avec réparation du JSON renforcée) ---------- */
-function cleanJSON(raw){
-  // Remove markdown fences, leading/trailing junk, trailing commas
-  let s=String(raw).trim();
-  s=s.replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'');
-  const m=s.match(/\{[\s\S]*\}/);
-  if(!m)return null;
-  s=m[0]
-    .replace(/,\s*([}\]])/g,'$1')           // trailing commas
-    .replace(/[\u201C\u201D]/g,'"')         // smart quotes
-    .replace(/[\u2018\u2019]/g,"'")
-    .replace(/\n\s*\n/g,'\n');
-  return s;
-}
+/* ---------- Scénario : bible + plans (avec réparation du JSON) ---------- */
 async function askJSON(sys,user,tag){
   let raw='';
-  const maxTries=4;
-  for(let t=1;t<=maxTries;t++){
-    const prompt=t===1?user:
-      t===2?`Le JSON précédent était invalide. Corrige-le et renvoie UNIQUEMENT un objet JSON valide, sans markdown, sans commentaire, sans texte avant ou après.\n\nJSON à corriger :\n${raw}`:
-      `Répare ce JSON cassé. Renvoie UNIQUEMENT le JSON valide (commence par { et finis par }). Aucun autre texte.\n\n${raw}`;
-    raw=await generateText(sys+(t>1?'\n\nIMPORTANT : ta réponse doit être un JSON strictement valide.':'') ,prompt);
-    const cleaned=cleanJSON(raw);
-    if(cleaned){
-      try{return JSON.parse(cleaned)}catch(e){log(tag,'Parse fail après nettoyage ('+t+'/'+maxTries+')')}
-    }else{
-      log(tag,'Aucun objet JSON trouvé ('+t+'/'+maxTries+')');
-    }
+  for(let t=1;t<=3;t++){
+    raw=await generateText(sys,t===1?user:'Corrige ce JSON invalide ou incomplet et renvoie UNIQUEMENT le JSON valide, rien d’autre :\n'+raw);
+    log(tag,'Texte écrit par '+(APP.textModel||'?'));
+    const m=raw.match(/\{[\s\S]*\}/);
+    if(m){try{return JSON.parse(m[0])}catch(e){}}
+    log(tag,'JSON invalide, réparation '+t+'/3');
   }
-  throw new Error('Le scénario est illisible après plusieurs tentatives. Relance la production.');
+  throw new Error('Le scénario est illisible, relance la production.');
 }
 function mkPlan(o,defDur,role){
   const n=v=>(v==null?'':String(v)),d=Math.round(Number(o.dur));
@@ -955,7 +951,7 @@ async function exportVideo(){
     if(p.clipUrl&&!p.clipBlob)p.clipBlob=await fetchBlob(p.clipUrl);
   }
   const done=APP.plans.filter(p=>p.blob||p.clipBlob);
-  if(!done.length){$('exportMsg').textContent='Aucune image récupérable (le serveur d’images bloque la copie). Coche « Garder les images sur mon téléphone », relance la production, puis réessaie l’export.';return}
+  if(!done.length){$('exportMsg').textContent='Aucune image récupérable (le serveur d’images bloque la copie). Coche « Garder les images sur mon téléphone » et relance la production.';return}
   const subs=$('subs')&&$('subs').checked,fxOn=!!($('fx')&&$('fx').checked);
   $('exportMsg').textContent='Montage en cours, garde cet onglet ouvert et allumé…';
   const W=720,H=1280,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
@@ -1002,49 +998,19 @@ async function fetchBlob(url){
 }
 
 /* ANIMATION DES PLANS */
-const QUOTA_RE=/quota|rate limit|upgrade|insufficient|credit|billing|balance|solde/i;
-const quotaHint=()=>'⛔ Crédits Agnes insuffisants pour la vidéo. Recharge sur platform.agnes-ai.com (Billing), ou utilise « Créer la vidéo finale » : les images fixes sont déjà animées avec zoom et fondus gratuits.';
+const QUOTA_RE=/quota|rate limit|upgrade|insufficient/i;
+const quotaHint=()=>'⛔ Crédits Agnes insuffisants pour la vidéo (solde à 0 $). Recharge sur platform.agnes-ai.com (Billing), ou garde les images fixes : la vidéo finale les anime déjà avec un léger zoom.';
 const ANIM_DEFAULT='The subject moves naturally, slow cinematic camera push-in. ';
 const animText=p=>ANIM_DEFAULT+[p.cam,p.move].filter(Boolean).join(', ')+(p.cam||p.move?'. ':'')+p.scene;
-
-// Régénère un plan en mode cloud (URL) pour pouvoir l’animer, sans toucher au checkbox keepLocal global
-async function ensureCloudUrl(n,add){
-  const p=APP.plans[n-1];
-  if(!p||!p.url)throw new Error('Plan sans image');
-  if(!p.url.startsWith('data:'))return p.url; // déjà une URL cloud
-  add('Plan '+n+' : image locale → régénération temporaire en mode cloud…');
-  const oldRf=rf;
-  // Force URL just for this generation
-  window.__forceUrl=true;
-  try{
-    const prompt=buildPrompt(p);
-    p.url=await generateImage(prompt,'9:16',APP.seed,APP.refPhoto);
-    p.blob=await toBlob(p.url);
-    if(p.url.startsWith('data:'))throw new Error('Impossible d’obtenir une URL cloud');
-    updatePlanSlot(n);autosave();
-    add('Plan '+n+' : URL cloud obtenue');
-    return p.url;
-  }finally{window.__forceUrl=false}
-}
-
 async function animateCore(n,mp,add){
   const p=APP.plans[n-1];
-  if(!p||!p.url)throw new Error('Plan sans image');
-  // Si image locale, on tente de la régénérer en cloud pour ce plan uniquement
-  if(p.url.startsWith('data:')){
-    await ensureCloudUrl(n,add);
-  }
-  if(p.url.startsWith('data:'))throw new Error('Image toujours locale. Décoche « Garder les images… » puis régénère ce plan.');
+  if(!p||!p.url||p.url.startsWith('data:'))throw new Error('image gardée sur le téléphone : décoche « Garder les images sur mon téléphone » et relance la production pour pouvoir l’animer');
   const key=APP.keys[Math.floor(Math.random()*APP.keys.length)],auth={Authorization:'Bearer '+key};
-  add('Plan '+n+' : création vidéo…');
+  add('Plan '+n+' : création…');
   const r=await fetch(AGNES_BASE+'/videos',{method:'POST',headers:{...auth,'Content-Type':'application/json'},
     body:JSON.stringify({model:VIDEO_MODEL,prompt:mp,mode:'keyframe',first_frame:p.url,seconds:String(Math.min(12,Math.max(4,Math.round(p.dur||5)))),size:'720P',aspect_ratio:'9:16'})});
   const t=await r.json().catch(()=>({}));
-  if(!r.ok){
-    const msg=(t.error&&(t.error.message||t.error))||t.message||('HTTP '+r.status);
-    if(QUOTA_RE.test(msg))APP.quotaBlocked=true;
-    throw new Error(msg);
-  }
+  if(!r.ok)throw new Error((t.error&&(t.error.message||t.error))||t.message||('HTTP '+r.status));
   if(!t.video_id)throw new Error('Pas de video_id');
   
   let url=null,last='';
@@ -1071,35 +1037,22 @@ async function animatePlan(n){
   const p=APP.plans[n-1];if(!p||!p.url)return;
   if(APP.busy){alert('Une opération est déjà en cours.');return}
   if(!APP.keys.length){openApiModal();return}
-  if(APP.quotaBlocked){alert(quotaHint());return}
-  const isLocal=p.url.startsWith('data:');
-  const msg=isLocal
-    ?'Cette image est en local. On va la régénérer temporairement en mode cloud pour pouvoir l’animer (le reste du projet reste inchangé).\n\nMouvement et caméra (en anglais) :'
-    :'Mouvement et caméra (en anglais) :';
-  const mp=prompt(msg,animText(p));
+  const mp=prompt('Mouvement et caméra (en anglais) :',animText(p));
   if(mp===null)return;
   APP.busy=true;APP.cancel=false;setStatus('Animation…');
   const log=$('animLog');log.style.display='block';log.textContent='';
-  const add=t=>{log.textContent+=t+'\n';log.scrollTop=log.scrollHeight};log.scrollIntoView({behavior:'smooth',block:'center'});
+  const add=t=>{log.textContent+=t+'\n'};log.scrollIntoView({behavior:'smooth',block:'center'});
   try{await animateCore(n,mp,add);add('✓ Plan '+n+' animé');setStatus('Terminé','green')}
-  catch(e){
-    add('✗ '+e.message+(QUOTA_RE.test(e.message)?'\n'+quotaHint():''));
-    if(QUOTA_RE.test(e.message))APP.quotaBlocked=true;
-    setStatus('Erreur','red');
-  }
+  catch(e){add('✗ '+e.message+(QUOTA_RE.test(e.message)?'\n'+quotaHint():''));setStatus('Erreur','red')}
   finally{APP.busy=false}
 }
 
 async function animateAll(){
   if(APP.busy){alert('Une opération est déjà en cours.');return}
   if(!APP.keys.length){openApiModal();return}
-  if(APP.quotaBlocked){alert(quotaHint());return}
   const todo=APP.plans.map((p,i)=>i+1).filter(n=>APP.plans[n-1].url&&!APP.plans[n-1].clipUrl);
   if(!todo.length){$('exportMsg').textContent='Rien à animer.';$('exportMsg').classList.remove('hidden');return}
-  const localCount=todo.filter(n=>APP.plans[n-1].url.startsWith('data:')).length;
-  let confirmMsg=`Animer ${todo.length} plan(s) ?`;
-  if(localCount)confirmMsg+=`\n\n${localCount} plan(s) sont en local : ils seront régénérés temporairement en mode cloud pour l’animation.`;
-  if(!confirm(confirmMsg))return;
+  if(!confirm(`Animer ${todo.length} plan(s) ?`))return;
   APP.busy=true;APP.cancel=false;$('cancelBtn').classList.remove('hidden');
   const log=$('animLog');log.style.display='block';log.textContent='';
   const add=t=>{log.textContent+=t+'\n';log.scrollTop=log.scrollHeight};
@@ -1127,8 +1080,8 @@ async function freeAnalyze(){
     const sys=`Tu es directeur artistique. Analyse la description et propose 5 univers visuels différents. Laisse libre cours à ton imagination : mélange des choix évidents et des idées audacieuses.
 Réponds UNIQUEMENT avec un JSON valide : {"summary":"ce que tu as compris","universes":[{"name":"nom court","icon":"emoji","desc":"description courte","prompt":"style visuel détaillé en anglais"}]}`;
     const txt = await generateText(sys,`Description : ${idea}`);
-    const cleaned=cleanJSON(txt); if(!cleaned) throw new Error('Format invalide');
-    const j = JSON.parse(cleaned);
+    const m = txt.match(/\{[\s\S]*\}/); if(!m) throw new Error('Format invalide');
+    const j = JSON.parse(m[0]);
     FREE.unis=(j.universes||[]).slice(0,6).map(u=>({genre:'libre',name:String(u.name),icon:String(u.icon||'🎨'),desc:String(u.desc||''),prompt:String(u.prompt)}));
     if(!FREE.unis.length)throw new Error('Aucune proposition.');
     
@@ -1158,8 +1111,8 @@ async function freeGenerateScript(){
     const sys=`Tu es un réalisateur. Crée un storyboard de ${count} plans pour l'univers "${FREE.sel.name}" (${FREE.sel.prompt}). Description : "${FREE.idea}".
 Réponds UNIQUEMENT avec un JSON valide : {"character":"fiche du personnage principal en anglais","plans":["plan 1",...],"narration":["phrase 1",...]}.`;
     const txt = await generateText(sys,`Génère le storyboard.`);
-    const cleaned=cleanJSON(txt); if(!cleaned) throw new Error('Format invalide');
-    const j = JSON.parse(cleaned);
+    const m = txt.match(/\{[\s\S]*\}/); if(!m) throw new Error('Format invalide');
+    const j = JSON.parse(m[0]);
     $('freeChar').value = j.character || '';
     FREE.narr = j.narration || [];
     
