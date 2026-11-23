@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>STORYLAB & AVATAR LAB // v10.4</title>
+<title>STORYLAB & AVATAR LAB // v11.0</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
@@ -105,7 +105,7 @@ textarea{min-height:110px;resize:vertical;font-size:16px}
 </head>
 <body>
 <div class="header">
-  <div class="header-title">STORYLAB & AVATAR LAB <span>// v10.4</span></div>
+  <div class="header-title">STORYLAB & AVATAR LAB <span>// v11.0</span></div>
   <div class="badges">
     <a class="back" href="https://gregory-bot-dot.github.io/mon-ia/" style="text-decoration:none">🧠 AI HUB</a>
     <button class="back hidden" id="backBtn" onclick="goHome()">← Menu</button>
@@ -117,54 +117,69 @@ textarea{min-height:110px;resize:vertical;font-size:16px}
 <div class="container">
   <!-- MENU PRINCIPAL -->
   <div class="home" id="home">
-    <button class="home-btn" onclick="switchTab('studio')"><div class="home-ic">🎬</div><div class="home-t">StoryLab</div><div class="home-d">Une histoire en 4 ou 10 plans</div></button>
-    <button class="home-btn" onclick="switchTab('free')"><div class="home-ic">✨</div><div class="home-t">Libre</div><div class="home-d">Décris, l’IA propose des univers</div></button>
+    <button class="home-btn" onclick="switchTab('studio')"><div class="home-ic">🎬</div><div class="home-t">Créer un film</div><div class="home-d">De l'idée aux plans</div></button>
     <button class="home-btn" onclick="switchTab('avatar')"><div class="home-ic">👤</div><div class="home-t">Avatar</div><div class="home-d">Portraits d’une personne</div></button>
     <button class="home-btn" onclick="switchTab('history')"><div class="home-ic">📂</div><div class="home-t">Historique</div><div class="home-d">Tes créations</div></button>
-    <button class="home-btn" style="grid-column:span 2" onclick="switchTab('lib')"><div class="home-ic">📚</div><div class="home-t">Bibliothèque d’effets</div><div class="home-d">Cadrages, lumières, caméras, textures…</div></button>
+    <button class="home-btn" onclick="switchTab('lib')"><div class="home-ic">📚</div><div class="home-t">Bibliothèque</div><div class="home-d">Effets, cadrages, lumières</div></button>
   </div>
 
-  <!-- ================= STORYLAB ================= -->
+  <!-- ================= STORYLAB (ex-Libre fusionné) ================= -->
   <div id="tab-studio" class="hidden">
     <button class="btn sm hidden" id="resumeBtn" onclick="restoreProject()" style="margin-bottom:16px">↺ Reprendre le dernier projet</button>
+    
+    <!-- ÉTAPE 1 -->
     <div class="card">
-      <div class="card-header"><div class="step-num">1</div><div><div class="step-title">Format</div><div class="step-sub">Type de vidéo</div></div></div>
+      <div class="card-header"><div class="step-num">1</div><div><div class="step-title">Format & Paramètres</div><div class="step-sub">Type de vidéo</div></div></div>
       <div class="grid-options" id="formatGrid">
         <div class="option-btn active" onclick="setFormat(this,'Court-métrage')"><div class="option-icon">🎬</div><div class="option-title">Court-métrage</div><div class="option-desc">Fiction</div></div>
         <div class="option-btn" onclick="setFormat(this,'JT / Reportage')"><div class="option-icon">📺</div><div class="option-title">JT / Reportage</div><div class="option-desc">Info</div></div>
         <div class="option-btn" onclick="setFormat(this,'Clip musical')"><div class="option-icon">🎵</div><div class="option-title">Clip musical</div><div class="option-desc">Rythme</div></div>
         <div class="option-btn" onclick="setFormat(this,'TikTok / Hook')"><div class="option-icon">📱</div><div class="option-title">TikTok</div><div class="option-desc">Vertical</div></div>
-        <div class="option-btn" onclick="setFormat(this,'Documentaire')"><div class="option-icon">🎙️</div><div class="option-title">Documentaire</div><div class="option-desc">Observation</div></div>
-        <div class="option-btn" onclick="setFormat(this,'Épisode animé')"><div class="option-icon">📼</div><div class="option-title">Épisode animé</div><div class="option-desc">Série / cartoon</div></div>
       </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header"><div class="step-num">2</div><div><div class="step-title">Univers visuel</div></div></div>
-      <div class="pills" id="genrePills"></div>
-      <div class="styles-list" id="stylesList"></div>
-    </div>
-
-    <div class="card">
-      <div class="card-header"><div class="step-num">3</div><div><div class="step-title">Ton idée / scénario</div><div class="step-sub">Sois précis</div></div></div>
-      <div class="cd" style="margin-bottom:6px">Casting : jusqu’à 3 photos de référence (optionnel)</div>
-      <div class="cast-grid" id="castGrid"></div>
-      <input type="file" id="castInput" accept="image/*" multiple class="hidden">
-      <textarea id="ideaInput" placeholder="Décris ta scène : un homme en costume se réveille sur la lune, plan large…"></textarea>
       <div class="row">
         <select id="totalDur"><option value="30">30 s</option><option value="45">45 s</option><option value="60" selected>60 s</option><option value="70">70 s</option><option value="90">90 s</option></select>
         <select id="planCountSelect"><option value="4">4 plans</option><option value="6">6 plans</option><option value="10" selected>10 plans</option></select>
       </div>
+    </div>
+
+    <!-- ÉTAPE 2 -->
+    <div class="card">
+      <div class="card-header"><div class="step-num">2</div><div><div class="step-title">Ton idée & Casting</div><div class="step-sub">Décris ta scène</div></div></div>
+      <div class="cd" style="margin-bottom:6px">Casting : jusqu’à 3 photos de référence (optionnel)</div>
+      <div class="cast-grid" id="castGrid"></div>
+      <input type="file" id="castInput" accept="image/*" multiple class="hidden">
+      <textarea id="ideaInput" placeholder="Ex: Un samouraï perdu dans une ville futuriste sous la pluie, cherchant son chemin..."></textarea>
       <label class="chk"><input type="checkbox" id="fuseFace" checked> Reprendre exactement le visage de ma photo</label>
       <label class="chk"><input type="checkbox" id="keepLocal" checked> Garder les images sur mon téléphone (recommandé pour l’export vidéo)</label>
-      <div class="cd" id="keepLocalHint" style="margin-top:4px;padding-left:28px">Les images restent en local → export vidéo plus fiable. Tu pourras toujours régénérer un plan en mode cloud pour l’animer avec Agnes.</div>
-      <div class="row">
-        <button class="btn primary" id="launchBtn" onclick="startProduction()">🎬 Lancer la production</button>
-        <button class="btn danger hidden" id="cancelBtn" style="width:auto" onclick="APP.cancel=true">Annuler</button>
+    </div>
+
+    <!-- ÉTAPE 3 : Univers -->
+    <div class="card">
+      <div class="card-header"><div class="step-num">3</div><div><div class="step-title">Univers Visuel</div><div class="step-sub">Laisse l'IA proposer ou choisis</div></div></div>
+      
+      <button class="btn primary" onclick="generateUniverses()" id="genUniBtn">✨ L'IA me propose des univers sur mesure</button>
+      
+      <div id="customUniversesBox" class="hidden" style="margin-top:16px">
+        <div class="cd" style="margin-bottom:8px;font-weight:700">Sélectionne un univers proposé :</div>
+        <div class="styles-list" id="customStylesList"></div>
+        <button class="btn sm" onclick="generateUniverses()" style="margin-top:12px">↻ Demander d'autres idées</button>
       </div>
+      
+      <div style="margin-top:20px;border-top:1px solid var(--border);padding-top:16px">
+        <div class="cd" style="margin-bottom:8px;font-weight:700">Ou choisis dans notre bibliothèque :</div>
+        <div class="pills" id="genrePills"></div>
+        <div class="styles-list" id="stylesList"></div>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 4 : Lancer -->
+    <div class="card">
+      <button class="btn primary" id="launchBtn" onclick="startProduction()">🎬 Lancer la production</button>
+      <button class="btn danger hidden" id="cancelBtn" style="margin-top:12px" onclick="APP.cancel=true">Annuler</button>
       <div class="alert" id="readyAlert"></div>
     </div>
 
+    <!-- RÉSULTATS DE PRODUCTION -->
     <div class="live hidden" id="livePreview">
       <div class="live-tag">LIVE</div>
       <img id="liveImage" src="" alt="Aperçu en direct">
@@ -175,7 +190,7 @@ textarea{min-height:110px;resize:vertical;font-size:16px}
       <div class="card-header"><div class="step-title">Master player</div></div>
       <canvas id="masterCanvas" width="360" height="640" style="width:100%;max-width:300px;display:block;margin:0 auto;background:#000;border-radius:12px"></canvas>
       <div style="padding-top:12px"><div class="prog-l"><span id="masterLbl">0:00 / 0:00</span><span id="masterPlan">—</span></div><div class="bar"><div class="fill" id="masterBar"></div></div></div>
-      <label class="chk"><input type="checkbox" id="masterVoice"> 🔊 Lire la voix off avec la synthèse du téléphone (aperçu seulement)</label>
+      <label class="chk"><input type="checkbox" id="masterVoice"> 🔊 Lire la voix off avec la synthèse du téléphone</label>
       <div class="row"><button class="btn primary sm" id="masterBtn" onclick="masterToggle()">▶ Lire le master</button><button class="btn sm" onclick="exportVTT()">VTT</button><button class="btn sm" onclick="exportJSON()">JSON</button></div>
     </div>
 
@@ -223,43 +238,6 @@ textarea{min-height:110px;resize:vertical;font-size:16px}
     </div>
   </div>
 
-  <!-- ================= LIBRE ================= -->
-  <div id="tab-free" class="hidden">
-    <div class="card">
-      <div class="card-header"><div class="step-num">1</div><div><div class="step-title">Ton idée brute</div><div class="step-sub">L'IA va créer des univers autour de ça</div></div></div>
-      <div class="upload-row">
-        <label class="upload-btn">📷 Importer une photo de visage (optionnel)<input type="file" accept="image/*" data-target="free"></label>
-        <img id="freePhotoPreview" class="photo-preview" alt="">
-      </div>
-      <textarea id="freeIdea" placeholder="Ex: Un samouraï perdu dans une ville futuriste sous la pluie..."></textarea>
-      <div class="row">
-        <select id="freePlanCount"><option value="4">4 plans</option><option value="10" selected>10 plans</option></select>
-      </div>
-      <div class="row">
-        <button class="btn primary" id="freeAnalyzeBtn" onclick="freeAnalyze()">🔍 Analyser et proposer des univers</button>
-      </div>
-    </div>
-
-    <div class="card hidden" id="freeStep2">
-      <div class="card-header"><div class="step-num">2</div><div><div class="step-title">Choisis un univers</div><div class="step-sub">Proposé par l'IA</div></div></div>
-      <div class="styles-list" id="freeStylesList"></div>
-      <div class="row">
-        <button class="btn sm" onclick="freeAnalyze()">↻ Autres idées</button>
-        <button class="btn primary" id="freeGenScriptBtn" onclick="freeGenerateScript()">✍️ Écrire le scénario</button>
-      </div>
-    </div>
-
-    <div class="card hidden" id="freeStep3">
-      <div class="card-header"><div class="step-num">3</div><div><div class="step-title">Vérifie ton scénario</div><div class="step-sub">Tu peux modifier le texte</div></div></div>
-      <div class="cd" style="margin-bottom:4px">Fiche personnage (si une photo a été importée)</div>
-      <textarea id="freeChar" style="min-height:70px;margin-bottom:12px" placeholder="Description du personnage..."></textarea>
-      <div id="freeScriptContainer"></div>
-      <div class="row">
-        <button class="btn primary" onclick="freeLaunch()">🎬 Lancer la production</button>
-      </div>
-    </div>
-  </div>
-
   <!-- ================= AVATAR ================= -->
   <div id="tab-avatar" class="hidden">
     <div class="card">
@@ -297,7 +275,6 @@ textarea{min-height:110px;resize:vertical;font-size:16px}
       <div class="card-header"><div class="step-num">2</div><div><div class="step-title">Envoie</div><div class="step-sub" id="libCount">Aucun effet sélectionné</div></div></div>
       <select id="libTarget">
         <option value="idea">→ Mon idée (StoryLab)</option>
-        <option value="free">→ Mon descriptif (Libre)</option>
         <option value="copy">→ Copier seulement</option>
       </select>
       <div class="row">
@@ -385,8 +362,8 @@ document.addEventListener('DOMContentLoaded',()=>{
       const h=$('keepLocalHint');
       if(!h)return;
       h.textContent=kl.checked
-        ?'Les images restent en local → export vidéo plus fiable. Tu pourras toujours régénérer un plan en mode cloud pour l’animer avec Agnes.'
-        :'Mode cloud : les images sont des URLs. Export vidéo parfois moins fiable (CORS), mais animation Agnes possible directement.';
+        ?'Les images restent en local → export vidéo plus fiable.'
+        :'Mode cloud : les images sont des URLs. Export vidéo parfois moins fiable (CORS).';
     };
     kl.addEventListener('change',updateHint);
     updateHint();
@@ -395,7 +372,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 function switchTab(id){
   $('home').classList.add('hidden');$('backBtn').classList.remove('hidden');
-  ['studio','free','avatar','history','lib'].forEach(t=>{
+  ['studio','avatar','history','lib'].forEach(t=>{
     const el=$('tab-'+t);
     if(el) el.classList.toggle('hidden',t!==id);
   });
@@ -403,7 +380,7 @@ function switchTab(id){
   window.scrollTo(0,0);
 }
 function goHome(){
-  ['studio','free','avatar','history','lib'].forEach(t=>{const el=$('tab-'+t);if(el)el.classList.add('hidden')});
+  ['studio','avatar','history','lib'].forEach(t=>{const el=$('tab-'+t);if(el)el.classList.add('hidden')});
   $('home').classList.remove('hidden');$('backBtn').classList.add('hidden');window.scrollTo(0,0);
 }
 
@@ -428,11 +405,67 @@ function renderStyles(){
   const list=$('stylesList');list.innerHTML='';
   STYLES.filter(s=>APP.genre==='Tous'||s.genre===APP.genre).forEach(s=>{
     const d=document.createElement('div');
-    d.className='style-item'+(s.name===APP.style?' active':'');
+    d.className='style-item'+(s.name===APP.style&&!APP.stylePrompt?' active':'');
     d.innerHTML=`<div class="style-icon">${esc(s.icon)}</div><div style="flex:1"><div class="style-name">${esc(s.name)}</div><div class="style-desc">${esc(s.desc)}</div></div>`;
-    d.onclick=()=>{APP.style=s.name;renderStyles()};
+    d.onclick=()=>{
+      APP.style=s.name; APP.stylePrompt=null; // reset custom
+      $('customUniversesBox').classList.add('hidden');
+      renderStyles();
+    };
     list.appendChild(d);
   });
+}
+
+/* ---------- GÉNÉRATION D'UNIVERS (ex-Libre) ---------- */
+async function generateUniverses(){
+  const idea=$('ideaInput').value.trim();
+  if(!idea){alert('Écris d\'abord ton idée à l\'étape 2.');return}
+  if(!APP.keys.length){openApiModal();return}
+  
+  const btn=$('genUniBtn'); btn.disabled=true; btn.textContent='⏳ Recherche d\'idées...';
+  setStatus('Création...');
+  
+  try{
+    const sys=`Tu es directeur artistique. Analyse la description et propose 5 univers visuels différents adaptés à cette idée. Laisse libre cours à ton imagination : mélange des choix évidents et des idées audacieuses.
+Réponds UNIQUEMENT avec un JSON valide : {"summary":"ce que tu as compris","universes":[{"name":"nom court","icon":"emoji","desc":"description courte","prompt":"style visuel détaillé en anglais"}]}`;
+    const txt = await generateText(sys,`Description : ${idea}`);
+    const cleaned=cleanJSON(txt); if(!cleaned) throw new Error('Format invalide');
+    const j = JSON.parse(cleaned);
+    const unis=(j.universes||[]).slice(0,6).map(u=>({genre:'libre',name:String(u.name),icon:String(u.icon||'🎨'),desc:String(u.desc||''),prompt:String(u.prompt)}));
+    if(!unis.length) throw new Error('Aucune proposition.');
+    
+    const box=$('customUniversesBox'); box.classList.remove('hidden');
+    const list=$('customStylesList'); list.innerHTML='';
+    
+    unis.forEach(u=>{
+      const d=document.createElement('div');d.className='style-item';
+      d.innerHTML=`<div class="style-icon">${esc(u.icon)}</div><div style="flex:1"><div class="style-name">${esc(u.name)}</div><div class="style-desc">${esc(u.desc)}</div></div>`;
+      d.onclick=()=>{
+        // Désélectionne la liste statique
+        list.querySelectorAll('.style-item').forEach(x=>x.classList.remove('active'));
+        $('stylesList').querySelectorAll('.style-item').forEach(x=>x.classList.remove('active'));
+        d.classList.add('active');
+        APP.style=u.name;
+        APP.stylePrompt=u.prompt;
+        APP.selectedUniverse=u; // garder une trace
+        setStatus('Univers sélectionné', 'green');
+      };
+      list.appendChild(d);
+    });
+    setStatus('Prêt','green');
+  }catch(e){
+    alert('Erreur : '+e.message); setStatus('Erreur','red');
+  }finally{
+    btn.disabled=false; btn.textContent='✨ L\'IA me propose des univers sur mesure';
+  }
+}
+
+function cleanJSON(raw){
+  let s=String(raw).trim().replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'');
+  const m=s.match(/\{[\s\S]*\}/);
+  if(!m)return null;
+  s=m[0].replace(/,\s*([}\]])/g,'$1').replace(/[\u201C\u201D]/g,'"').replace(/[\u2018\u2019]/g,"'").replace(/\n\s*\n/g,'\n');
+  return s;
 }
 
 function handlePhotoUpload(input,target){
@@ -462,7 +495,7 @@ function openApiModal(){$('apiModal').classList.add('open');$('apiKeyInput').val
 function closeApiModal(){$('apiModal').classList.remove('open')}
 function saveApiKeys(){
   const keys=$('apiKeyInput').value.split('\n').map(k=>k.trim()).filter(k=>k.startsWith('sk-'));
-  if(!keys.length){alert('Aucune clé valide : elle doit commencer par sk-.');return}
+  if(!keys.length){alert('Aucune clé valide.');return}
   APP.keys=keys;try{localStorage.setItem('storylab_keys',JSON.stringify(keys))}catch(e){}
   refreshKeyUI();closeApiModal();
 }
@@ -537,7 +570,7 @@ function updatePlanSlot(n){
   const act=document.createElement('div');act.className='slot-actions';
   const dl=document.createElement('button');dl.className='action-btn';dl.textContent='⬇️';dl.title='Télécharger';dl.setAttribute('aria-label','Télécharger le plan '+n);dl.onclick=()=>downloadImage(p.url,`plan_${n}.jpg`,p.blob);
   const rg=document.createElement('button');rg.className='action-btn';rg.textContent='↻';rg.title='Régénérer';rg.setAttribute('aria-label','Régénérer le plan '+n);rg.onclick=()=>regeneratePlan(n);
-  const an=document.createElement('button');an.className='action-btn';an.textContent='🎬';an.title=p.url&&p.url.startsWith('data:')?'Régénérer en cloud puis animer':'Animer';an.setAttribute('aria-label','Animer le plan '+n);an.onclick=()=>animatePlan(n);
+  const an=document.createElement('button');an.className='action-btn';an.textContent='🎬';an.title='Animer';an.setAttribute('aria-label','Animer le plan '+n);an.onclick=()=>animatePlan(n);
   act.append(dl,rg,an);
   
   let img;
@@ -607,7 +640,7 @@ async function retryFailed(){
   }finally{APP.busy=false}
 }
 
-/* ---------- Casting (jusqu'à 3 photos) ---------- */
+/* ---------- Casting ---------- */
 APP.cast=[];
 function shrink(file,max){return new Promise(res=>{const rd=new FileReader();rd.onload=e=>{const img=new Image();img.onload=()=>{const k=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=img.width*k;c.height=img.height*k;c.getContext('2d').drawImage(img,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',.85))};img.onerror=()=>res(null);img.src=e.target.result};rd.onerror=()=>res(null);rd.readAsDataURL(file)})}
 function castRender(){
@@ -628,7 +661,7 @@ function castInit(){
   });
 }
 
-/* ---------- Control room 8 étapes + journal ---------- */
+/* ---------- Control room 8 étapes ---------- */
 const CR=[['Conception','Format, univers, idée'],['Compréhension','Analyse idée + casting'],['Bible créative','Personnages, lieux, DA'],['Histoire','Structure HOOK → FIN'],['Plans','Storyboard et continuité'],['Production','Images des plans'],['Contrôle','QA et cohérence'],['Terminé','Master prêt']];
 function crInit(){const b=$('crList');b.innerHTML='';CR.forEach((c,i)=>{const d=document.createElement('div');d.className='ctrl';d.innerHTML=`<div class="ci" id="ci${i+1}">${i+1}</div><div><div class="ct">${c[0]}</div><div class="cd" id="cd${i+1}">${c[1]}</div></div>`;b.appendChild(d)})}
 function ctrl(step,status,desc){const i=$('ci'+step);i.className='ci '+status;i.textContent=status==='done'?'✓':status==='error'?'!':step;if(desc!==undefined)$('cd'+step).textContent=desc}
@@ -640,20 +673,6 @@ function log(tag,msg){
   b.appendChild(l);b.scrollTop=b.scrollHeight;
 }
 
-/* ---------- Scénario : bible + plans (avec réparation du JSON renforcée) ---------- */
-function cleanJSON(raw){
-  // Remove markdown fences, leading/trailing junk, trailing commas
-  let s=String(raw).trim();
-  s=s.replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'');
-  const m=s.match(/\{[\s\S]*\}/);
-  if(!m)return null;
-  s=m[0]
-    .replace(/,\s*([}\]])/g,'$1')           // trailing commas
-    .replace(/[\u201C\u201D]/g,'"')         // smart quotes
-    .replace(/[\u2018\u2019]/g,"'")
-    .replace(/\n\s*\n/g,'\n');
-  return s;
-}
 async function askJSON(sys,user,tag){
   let raw='';
   const maxTries=4;
@@ -693,11 +712,14 @@ async function startProduction(preset){
   ['masterCard','bibleCard'].forEach(id=>$(id).classList.add('hidden'));
   crReset();$('prodLog').innerHTML='';$('liveProgress').style.width='0%';$('livePercent').textContent='0%';
   APP.plans=[];APP.character='';APP.bible=null;APP.seed=Math.floor(Math.random()*1000);APP.idea=idea;APP.total=total;
-  APP.refPhoto=cast[0]||null;APP.noRef=false;APP.noFuse=false;APP.stylePrompt=preset?preset.stylePrompt:null;
+  APP.refPhoto=cast[0]||null;APP.noRef=false;APP.noFuse=false;
+  // Si un univers IA a été sélectionné, il est déjà dans APP.stylePrompt. Sinon on garde celui de la liste.
+  if(!preset && !APP.stylePrompt) APP.stylePrompt=null; 
+  
   renderGrid(count);
   let cur=1;
   try{
-    ctrl(1,'done',APP.format+' · '+(APP.stylePrompt?'univers perso':APP.style));log('START',`${count} plans · ${total} s`);
+    ctrl(1,'done',APP.format+' · '+(APP.stylePrompt?APP.style:APP.style));log('START',`${count} plans · ${total} s`);
     cur=2;ctrl(2,'active');setStatus('Compréhension…');
     if(preset&&preset.character){APP.character=preset.character}
     else if(cast.length){
@@ -746,7 +768,7 @@ async function startProduction(preset){
     ctrl(7,ok===count?'done':'error',`QA : ${ok}/${count} images`);
     cur=8;ctrl(8,'done','Master prêt');$('termStatus').textContent='Terminé';setStatus('Terminé','green');log('DONE','Master prêt');
     showMaster();autosave();
-    await saveToHistory({type:'STORYLAB',title:((APP.bible&&APP.bible.title)||idea||'Casting').substring(0,50),style:APP.stylePrompt?'Personnalisé':APP.style,images:APP.plans.map(q=>q.blob||q.url).filter(Boolean)});
+    await saveToHistory({type:'STORYLAB',title:((APP.bible&&APP.bible.title)||idea||'Casting').substring(0,50),style:APP.stylePrompt?APP.style:APP.style,images:APP.plans.map(q=>q.blob||q.url).filter(Boolean)});
   }catch(e){
     if(e.message==='Annulé'){setStatus('Annulé','red');$('termStatus').textContent='Annulé';log('STOP','Annulé');if(APP.plans.length)autosave()}
     else{setStatus('Erreur','red');ctrl(cur,'error',e.message);log('ERREUR',e.message);alert('Erreur : '+e.message)}
@@ -955,7 +977,7 @@ async function exportVideo(){
     if(p.clipUrl&&!p.clipBlob)p.clipBlob=await fetchBlob(p.clipUrl);
   }
   const done=APP.plans.filter(p=>p.blob||p.clipBlob);
-  if(!done.length){$('exportMsg').textContent='Aucune image récupérable (le serveur d’images bloque la copie). Coche « Garder les images sur mon téléphone », relance la production, puis réessaie l’export.';return}
+  if(!done.length){$('exportMsg').textContent='Aucune image récupérable (le serveur bloque). Coche « Garder les images sur mon téléphone », relance et réessaie.';return}
   const subs=$('subs')&&$('subs').checked,fxOn=!!($('fx')&&$('fx').checked);
   $('exportMsg').textContent='Montage en cours, garde cet onglet ouvert et allumé…';
   const W=720,H=1280,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
@@ -1113,76 +1135,6 @@ async function animateAll(){
     }
     setStatus(APP.cancel?'Annulé':'Terminé',APP.cancel?'red':'green');add(`${ok}/${todo.length} plans animés.`);
   }finally{APP.busy=false;$('cancelBtn').classList.add('hidden')}
-}
-
-/* LIBRE */
-const FREE={idea:'',unis:[],sel:null,narr:[]};
-async function freeAnalyze(){
-  const idea=$('freeIdea').value.trim();
-  if(!idea){alert('Écris d’abord ton descriptif.');return}
-  if(!APP.keys.length){openApiModal();return}
-  FREE.idea=idea;FREE.sel=null;
-  const btn=$('freeAnalyzeBtn');btn.disabled=true;btn.textContent='⏳ Analyse…';setStatus('Analyse…');
-  try{
-    const sys=`Tu es directeur artistique. Analyse la description et propose 5 univers visuels différents. Laisse libre cours à ton imagination : mélange des choix évidents et des idées audacieuses.
-Réponds UNIQUEMENT avec un JSON valide : {"summary":"ce que tu as compris","universes":[{"name":"nom court","icon":"emoji","desc":"description courte","prompt":"style visuel détaillé en anglais"}]}`;
-    const txt = await generateText(sys,`Description : ${idea}`);
-    const cleaned=cleanJSON(txt); if(!cleaned) throw new Error('Format invalide');
-    const j = JSON.parse(cleaned);
-    FREE.unis=(j.universes||[]).slice(0,6).map(u=>({genre:'libre',name:String(u.name),icon:String(u.icon||'🎨'),desc:String(u.desc||''),prompt:String(u.prompt)}));
-    if(!FREE.unis.length)throw new Error('Aucune proposition.');
-    
-    $('freeStep2').classList.remove('hidden');$('freeStep3').classList.add('hidden');
-    
-    const list=$('freeStylesList'); list.innerHTML='';
-    FREE.unis.forEach(u=>{
-      const d=document.createElement('div');d.className='style-item';
-      d.innerHTML=`<div class="style-icon">${esc(u.icon)}</div><div style="flex:1"><div class="style-name">${esc(u.name)}</div><div class="style-desc">${esc(u.desc)}</div></div>`;
-      d.onclick=()=>{
-        list.querySelectorAll('.style-item').forEach(x=>x.classList.remove('active'));
-        d.classList.add('active'); FREE.sel=u;
-        $('freeGenScriptBtn').classList.remove('hidden');
-      };
-      list.appendChild(d);
-    });
-    setStatus('Prêt','green');
-  }catch(e){alert('Erreur : '+e.message);setStatus('Erreur','red')}
-  finally{btn.disabled=false;btn.textContent='🔍 Analyser et proposer des univers'}
-}
-
-async function freeGenerateScript(){
-  if(!FREE.sel) return;
-  const count = parseInt($('freePlanCount').value) || 10;
-  const btn=$('freeGenScriptBtn');btn.disabled=true;btn.textContent='⏳ Écriture…';setStatus('Écriture…');
-  try{
-    const sys=`Tu es un réalisateur. Crée un storyboard de ${count} plans pour l'univers "${FREE.sel.name}" (${FREE.sel.prompt}). Description : "${FREE.idea}".
-Réponds UNIQUEMENT avec un JSON valide : {"character":"fiche du personnage principal en anglais","plans":["plan 1",...],"narration":["phrase 1",...]}.`;
-    const txt = await generateText(sys,`Génère le storyboard.`);
-    const cleaned=cleanJSON(txt); if(!cleaned) throw new Error('Format invalide');
-    const j = JSON.parse(cleaned);
-    $('freeChar').value = j.character || '';
-    FREE.narr = j.narration || [];
-    
-    const list=$('freeScriptContainer'); list.innerHTML='';
-    (j.plans||[]).forEach((p,i)=>{
-      const l=document.createElement('div');l.className='cd';l.textContent='Plan '+(i+1);
-      const t=document.createElement('textarea');t.className='fplan';t.value=p;
-      list.append(l,t);
-    });
-    $('freeStep3').classList.remove('hidden');
-    $('freeStep3').scrollIntoView({behavior:'smooth'});
-    setStatus('Prêt','green');
-  }catch(e){alert('Erreur : '+e.message)}
-  finally{btn.disabled=false;btn.textContent='✍️ Écrire le scénario'}
-}
-
-function freeLaunch(){
-  if(APP.busy){alert('Déjà en cours.');return}
-  const plans=[...document.querySelectorAll('.fplan')].map(t=>t.value.trim()).filter(Boolean);
-  if(!plans.length||!FREE.sel)return;
-  switchTab('studio');
-  startProduction({idea:FREE.idea, photo:APP.photos.free, character:$('freeChar').value.trim(), plans, narr:FREE.narr||[], stylePrompt:FREE.sel.prompt});
-  setTimeout(()=>$('controlRoom').scrollIntoView({behavior:'smooth'}),300);
 }
 
 /* AVATAR */
