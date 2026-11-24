@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>STORYLAB & AVATAR LAB // v11.0</title>
+<title>STORYLAB & AVATAR LAB // v11.1</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
@@ -105,7 +105,7 @@ textarea{min-height:110px;resize:vertical;font-size:16px}
 </head>
 <body>
 <div class="header">
-  <div class="header-title">STORYLAB & AVATAR LAB <span>// v11.0</span></div>
+  <div class="header-title">STORYLAB & AVATAR LAB <span>// v11.1</span></div>
   <div class="badges">
     <a class="back" href="https://gregory-bot-dot.github.io/mon-ia/" style="text-decoration:none">🧠 AI HUB</a>
     <button class="back hidden" id="backBtn" onclick="goHome()">← Menu</button>
@@ -118,12 +118,12 @@ textarea{min-height:110px;resize:vertical;font-size:16px}
   <!-- MENU PRINCIPAL -->
   <div class="home" id="home">
     <button class="home-btn" onclick="switchTab('studio')"><div class="home-ic">🎬</div><div class="home-t">Créer un film</div><div class="home-d">De l'idée aux plans</div></button>
-    <button class="home-btn" onclick="switchTab('avatar')"><div class="home-ic">👤</div><div class="home-t">Avatar</div><div class="home-d">Portraits d’une personne</div></button>
+    <button class="home-btn" onclick="switchTab('avatar')"><div class="home-ic">👤</div><div class="home-t">Avatar & Fusion</div><div class="home-d">Portraits et échanges de visage</div></button>
     <button class="home-btn" onclick="switchTab('history')"><div class="home-ic">📂</div><div class="home-t">Historique</div><div class="home-d">Tes créations</div></button>
     <button class="home-btn" onclick="switchTab('lib')"><div class="home-ic">📚</div><div class="home-t">Bibliothèque</div><div class="home-d">Effets, cadrages, lumières</div></button>
   </div>
 
-  <!-- ================= STORYLAB (ex-Libre fusionné) ================= -->
+  <!-- ================= STORYLAB ================= -->
   <div id="tab-studio" class="hidden">
     <button class="btn sm hidden" id="resumeBtn" onclick="restoreProject()" style="margin-bottom:16px">↺ Reprendre le dernier projet</button>
     
@@ -238,8 +238,9 @@ textarea{min-height:110px;resize:vertical;font-size:16px}
     </div>
   </div>
 
-  <!-- ================= AVATAR ================= -->
+  <!-- ================= AVATAR & FUSION ================= -->
   <div id="tab-avatar" class="hidden">
+    <!-- PARTIE 1 : AVATAR SIMPLE -->
     <div class="card">
       <div class="card-header"><div class="step-num">1</div><div><div class="step-title">Avatar ultra-réaliste</div></div></div>
       <div class="upload-row">
@@ -259,6 +260,29 @@ textarea{min-height:110px;resize:vertical;font-size:16px}
     </div>
     <div class="card hidden" id="avatarResultCard">
       <div class="avatar-grid"><div class="slot av-slot" id="av-slot-1">1</div><div class="slot av-slot" id="av-slot-2">2</div></div>
+    </div>
+
+    <!-- PARTIE 2 : FUSION DE VISAGE -->
+    <div class="card">
+      <div class="card-header"><div class="step-num">2</div><div><div class="step-title">Fusion de visage</div><div class="step-sub">Échanger un visage sur une image</div></div></div>
+      <p class="cd" style="margin-bottom:12px">Prenez une image de scène (ou un plan généré), et appliquez-y le visage de votre choix.</p>
+      
+      <div class="upload-row">
+        <label class="upload-btn">🖼️ Image principale (la scène)<input type="file" accept="image/*" data-target="scene"></label>
+        <img id="scenePhotoPreview" class="photo-preview" alt="">
+      </div>
+      
+      <div class="upload-row">
+        <label class="upload-btn">🙂 Photo du visage à mettre<input type="file" accept="image/*" data-target="face"></label>
+        <img id="facePhotoPreview" class="photo-preview" alt="">
+      </div>
+
+      <textarea id="fusPrompt" style="min-height:70px" placeholder="Précision optionnelle, en anglais (ex : keep the smile, change the hair color)"></textarea>
+      
+      <div class="row"><button class="btn primary" id="fusBtn" onclick="fusionRun()">🔀 Lancer la fusion</button></div>
+      
+      <div id="fusOut" class="avatar-grid" style="margin-top:12px"></div>
+      <div id="fusLog" class="terminal" style="margin-top:12px;white-space:pre-wrap;word-break:break-word;font-size:11px;display:none"></div>
     </div>
   </div>
 
@@ -307,7 +331,7 @@ textarea{min-height:110px;resize:vertical;font-size:16px}
 
 <script>
 const AGNES_BASE='https://apihub.agnes-ai.com/v1', TEXT_MODEL='agnes-3.0-flash', IMG_MODEL='agnes-image-2.5-flash', VIDEO_MODEL='agnes-video-2.5';
-const APP={format:'Court-métrage',genre:'Tous',style:'Kung-fu classique',keys:[],busy:false,cancel:false,quotaBlocked:false,photos:{idea:null,avatar:null,free:null},plans:[]};
+const APP={format:'Court-métrage',genre:'Tous',style:'Kung-fu classique',keys:[],busy:false,cancel:false,quotaBlocked:false,photos:{idea:null,avatar:null,free:null,scene:null,face:null},plans:[]};
 
 const STYLES=[
  {genre:'action',name:'Kung-fu classique',icon:'🥋',desc:'Chorégraphie lisible, cadres larges',prompt:'classic kung-fu movie style, 1970s martial arts film'},
@@ -1137,7 +1161,7 @@ async function animateAll(){
   }finally{APP.busy=false;$('cancelBtn').classList.add('hidden')}
 }
 
-/* AVATAR */
+/* AVATAR & FUSION */
 async function generateAvatar(){
   const txt=$('avatarPrompt').value.trim(),photo=APP.photos.avatar;
   if(!txt&&!photo){alert('Décris ou importe un portrait.');return}
@@ -1163,6 +1187,47 @@ async function generateAvatar(){
     await saveToHistory({type:'AVATAR',title:photo?'Avatar (photo)':txt.substring(0,30),style:'Avatar',images:blobs.map((b,i)=>b||urls[i])});
   }catch(e){alert('Erreur : '+e.message);msgSlot($('av-slot-1'),'Erreur : '+e.message,true);$('av-slot-2').innerHTML=''}
   finally{btn.disabled=false;btn.textContent="👤 Générer l'avatar (x2)"}
+}
+
+/* FUSION */
+function nearestRatio(w,h){const r=w/h;return [['9:16',9/16],['2:3',2/3],['3:4',3/4],['1:1',1],['4:3',4/3],['3:2',3/2],['16:9',16/9],['21:9',21/9]].sort((a,b)=>Math.abs(a[1]-r)-Math.abs(b[1]-r))[0][0]}
+async function fusionRun(){
+  const sc=APP.photos.scene,fc=APP.photos.face;
+  if(!sc||!fc){alert('Importe d’abord les deux photos.');return}
+  if(!APP.keys.length){openApiModal();return}
+  const btn=$('fusBtn'),log=$('fusLog'),out=$('fusOut');
+  btn.disabled=true;btn.textContent='⏳ Test en cours…';out.innerHTML='';log.style.display='block';log.textContent='';APP.cancel=false;
+  const extra=$('fusPrompt').value.trim();
+  const prompt='Replace the face of the main person in the first image with the face of the person in the second image. Keep the first image exactly the same: pose, body, clothes, background, lighting. Photorealistic, seamless blend.'+(extra?' '+extra:'');
+  const base={model:IMG_MODEL,prompt,size:'1K',ratio:'9:16',extra_body:{response_format:'url'}}; // Force URL pour éviter les bugs base64
+  const variants=[
+    ['/images/generations',{image:[sc,fc]}],
+    ['/images/generations',{images:[sc,fc]}],
+    ['/images/generations',{image:sc,reference_image:fc}],
+    ['/images/edits',{image:[sc,fc]}],
+    ['/images/generations',{extra_body:{response_format:'url',image:[sc,fc]}}]
+  ];
+  const add=t=>{log.textContent+=t+'\n'};
+  let ok=false;
+  try{
+    for(let i=0;i<variants.length&&!ok;i++){
+      const [path,extraP]=variants[i];
+      add(`Essai ${i+1} : ${path} avec ${Object.keys(extraP).join(', ')}`);
+      try{
+        const d=await agnesCall(path,Object.assign({},base,extraP),1);
+        const it=d.data[0],url=it.url||('data:image/png;base64,'+it.b64_json);
+        add('✓ Requête acceptée. Regarde si le visage a bien été remplacé.');
+        const blob=await toBlob(url);
+        const slot=document.createElement('div');slot.className='slot av-slot';
+        const act=document.createElement('div');act.className='slot-actions';
+        const b=document.createElement('button');b.className='action-btn';b.textContent='⬇️';b.onclick=()=>downloadImage(url,'fusion.jpg',blob);
+        act.appendChild(b);const im=document.createElement('img');im.src=url;im.alt='Résultat';slot.append(act,im);out.appendChild(slot);
+        await saveToHistory({type:'FUSION',title:'Fusion de visage',style:'Fusion',images:[blob||url]});
+        ok=true;
+      }catch(e){add('✗ '+String(e.message).slice(0,200))}
+    }
+    if(!ok)add('\nAucun format accepté : Agnes ne semble pas gérer l’édition avec deux images.');
+  }finally{btn.disabled=false;btn.textContent='🔀 Lancer la fusion'}
 }
 
 /* BIBLIOTHÈQUE */
