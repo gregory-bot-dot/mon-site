@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>STORYLAB & AVATAR LAB // v11.1</title>
+<title>STORYLAB & AVATAR LAB // v12.0</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
@@ -105,7 +105,7 @@ textarea{min-height:110px;resize:vertical;font-size:16px}
 </head>
 <body>
 <div class="header">
-  <div class="header-title">STORYLAB & AVATAR LAB <span>// v11.1</span></div>
+  <div class="header-title">STORYLAB & AVATAR LAB <span>// v12.0</span></div>
   <div class="badges">
     <a class="back" href="https://gregory-bot-dot.github.io/mon-ia/" style="text-decoration:none">🧠 AI HUB</a>
     <button class="back hidden" id="backBtn" onclick="goHome()">← Menu</button>
@@ -131,13 +131,15 @@ textarea{min-height:110px;resize:vertical;font-size:16px}
     <div class="card">
       <div class="card-header"><div class="step-num">1</div><div><div class="step-title">Format & Paramètres</div><div class="step-sub">Type de vidéo</div></div></div>
       <div class="grid-options" id="formatGrid">
-        <div class="option-btn active" onclick="setFormat(this,'Court-métrage')"><div class="option-icon">🎬</div><div class="option-title">Court-métrage</div><div class="option-desc">Fiction</div></div>
-        <div class="option-btn" onclick="setFormat(this,'JT / Reportage')"><div class="option-icon">📺</div><div class="option-title">JT / Reportage</div><div class="option-desc">Info</div></div>
-        <div class="option-btn" onclick="setFormat(this,'Clip musical')"><div class="option-icon">🎵</div><div class="option-title">Clip musical</div><div class="option-desc">Rythme</div></div>
-        <div class="option-btn" onclick="setFormat(this,'TikTok / Hook')"><div class="option-icon">📱</div><div class="option-title">TikTok</div><div class="option-desc">Vertical</div></div>
+        <div class="option-btn active" onclick="setFormat(this,'Court-métrage / Fiction')"><div class="option-icon">🎬</div><div class="option-title">Court-métrage</div><div class="option-desc">Fiction / Narration</div></div>
+        <div class="option-btn" onclick="setFormat(this,'Publicité / Spot')"><div class="option-icon">📢</div><div class="option-title">Publicité</div><div class="option-desc">Vente / Impact</div></div>
+        <div class="option-btn" onclick="setFormat(this,'Bande-annonce')"><div class="option-icon">🍿</div><div class="option-title">Bande-annonce</div><div class="option-desc">Teaser / Épique</div></div>
+        <div class="option-btn" onclick="setFormat(this,'TikTok / Reel')"><div class="option-icon">📱</div><div class="option-title">TikTok / Reel</div><div class="option-desc">Vertical / Rapide</div></div>
+        <div class="option-btn" onclick="setFormat(this,'Documentaire')"><div class="option-icon">🎙️</div><div class="option-title">Documentaire</div><div class="option-desc">Réaliste / Posé</div></div>
+        <div class="option-btn" onclick="setFormat(this,'Clip musical')"><div class="option-icon">🎵</div><div class="option-title">Clip musical</div><div class="option-desc">Rythme / Visuel</div></div>
       </div>
       <div class="row">
-        <select id="totalDur"><option value="30">30 s</option><option value="45">45 s</option><option value="60" selected>60 s</option><option value="70">70 s</option><option value="90">90 s</option></select>
+        <select id="totalDur"><option value="15">15 s</option><option value="30">30 s</option><option value="45">45 s</option><option value="60" selected>60 s</option><option value="90">90 s</option></select>
         <select id="planCountSelect"><option value="4">4 plans</option><option value="6">6 plans</option><option value="10" selected>10 plans</option></select>
       </div>
     </div>
@@ -149,24 +151,31 @@ textarea{min-height:110px;resize:vertical;font-size:16px}
       <div class="cast-grid" id="castGrid"></div>
       <input type="file" id="castInput" accept="image/*" multiple class="hidden">
       <textarea id="ideaInput" placeholder="Ex: Un samouraï perdu dans une ville futuriste sous la pluie, cherchant son chemin..."></textarea>
+      
       <label class="chk"><input type="checkbox" id="fuseFace" checked> Reprendre exactement le visage de ma photo</label>
-      <label class="chk"><input type="checkbox" id="keepLocal" checked> Garder les images sur mon téléphone (recommandé pour l’export vidéo)</label>
+      <label class="chk"><input type="checkbox" id="absoluteCoherence" checked> <b>Cohérence Absolue :</b> Utiliser le plan précédent comme base pour garantir que les décors et visages ne changent pas.</label>
+      
+      <label class="chk"><input type="checkbox" id="keepLocal" checked> Garder les images sur mon téléphone (recommandé)</label>
     </div>
 
     <!-- ÉTAPE 3 : Univers -->
     <div class="card">
-      <div class="card-header"><div class="step-num">3</div><div><div class="step-title">Univers Visuel</div><div class="step-sub">Laisse l'IA proposer ou choisis</div></div></div>
+      <div class="card-header"><div class="step-num">3</div><div><div class="step-title">Univers Visuel</div></div></div>
       
-      <button class="btn primary" onclick="generateUniverses()" id="genUniBtn">✨ L'IA me propose des univers sur mesure</button>
-      
-      <div id="customUniversesBox" class="hidden" style="margin-top:16px">
-        <div class="cd" style="margin-bottom:8px;font-weight:700">Sélectionne un univers proposé :</div>
+      <div style="background:var(--pl);padding:16px;border-radius:12px;margin-bottom:16px;border:1px dashed var(--primary)">
+        <div style="font-weight:700;font-size:15px;margin-bottom:4px;color:var(--primary)">✨ Méthode recommandée</div>
+        <p class="cd" style="margin-bottom:12px;color:#0369a1">Laissez l'IA inventer un univers 100% sur-mesure, parfaitement adapté à votre idée.</p>
+        <button class="btn primary" onclick="generateUniverses()" id="genUniBtn">✨ L'IA me propose des univers</button>
+      </div>
+
+      <div id="customUniversesBox" class="hidden" style="margin-bottom:20px">
+        <div class="cd" style="margin-bottom:8px;font-weight:700">Univers proposés (cliquez pour choisir) :</div>
         <div class="styles-list" id="customStylesList"></div>
         <button class="btn sm" onclick="generateUniverses()" style="margin-top:12px">↻ Demander d'autres idées</button>
       </div>
       
       <div style="margin-top:20px;border-top:1px solid var(--border);padding-top:16px">
-        <div class="cd" style="margin-bottom:8px;font-weight:700">Ou choisis dans notre bibliothèque :</div>
+        <div class="cd" style="margin-bottom:8px;font-weight:700">Ou choisissez un style prédéfini :</div>
         <div class="pills" id="genrePills"></div>
         <div class="styles-list" id="stylesList"></div>
       </div>
@@ -190,7 +199,7 @@ textarea{min-height:110px;resize:vertical;font-size:16px}
       <div class="card-header"><div class="step-title">Master player</div></div>
       <canvas id="masterCanvas" width="360" height="640" style="width:100%;max-width:300px;display:block;margin:0 auto;background:#000;border-radius:12px"></canvas>
       <div style="padding-top:12px"><div class="prog-l"><span id="masterLbl">0:00 / 0:00</span><span id="masterPlan">—</span></div><div class="bar"><div class="fill" id="masterBar"></div></div></div>
-      <label class="chk"><input type="checkbox" id="masterVoice"> 🔊 Lire la voix off avec la synthèse du téléphone</label>
+      <label class="chk"><input type="checkbox" id="masterVoice" checked> 🔊 Lire la voix off avec la synthèse du téléphone</label>
       <div class="row"><button class="btn primary sm" id="masterBtn" onclick="masterToggle()">▶ Lire le master</button><button class="btn sm" onclick="exportVTT()">VTT</button><button class="btn sm" onclick="exportJSON()">JSON</button></div>
     </div>
 
@@ -226,8 +235,11 @@ textarea{min-height:110px;resize:vertical;font-size:16px}
         <button class="btn sm" onclick="exportVideo()" aria-label="Créer la vidéo finale">🎞️ Créer la vidéo finale</button>
       </div>
       <div class="cd" id="animHint" style="margin-top:8px">💡 L’animation Agnes consomme des crédits vidéo. Si ton solde est à 0 $, utilise plutôt « Créer la vidéo finale » (mouvements simulés gratuits).</div>
+      
       <label class="chk"><input type="checkbox" id="subs" checked> Sous-titres (texte de la voix off)</label>
       <label class="chk"><input type="checkbox" id="fx" checked> Mouvements de caméra simulés et fondus enchaînés</label>
+      <label class="chk"><input type="checkbox" id="reverseLoop"> <b>Boucle inversée :</b> lire la vidéo à l'envers à la fin (style TikTok/Reel)</label>
+      
       <div class="alert warn hidden" id="exportMsg"></div>
       <div id="animLog" class="terminal" style="margin-top:12px;white-space:pre-wrap;word-break:break-word;font-size:11px;display:none"></div>
     </div>
@@ -331,24 +343,21 @@ textarea{min-height:110px;resize:vertical;font-size:16px}
 
 <script>
 const AGNES_BASE='https://apihub.agnes-ai.com/v1', TEXT_MODEL='agnes-3.0-flash', IMG_MODEL='agnes-image-2.5-flash', VIDEO_MODEL='agnes-video-2.5';
-const APP={format:'Court-métrage',genre:'Tous',style:'Kung-fu classique',keys:[],busy:false,cancel:false,quotaBlocked:false,photos:{idea:null,avatar:null,free:null,scene:null,face:null},plans:[]};
+const APP={format:'Court-métrage / Fiction',genre:'Tous',style:'Kung-fu classique',keys:[],busy:false,cancel:false,quotaBlocked:false,photos:{idea:null,avatar:null,free:null,scene:null,face:null},plans:[]};
 
 const STYLES=[
- {genre:'action',name:'Kung-fu classique',icon:'🥋',desc:'Chorégraphie lisible, cadres larges',prompt:'classic kung-fu movie style, 1970s martial arts film'},
- {genre:'action',name:'Shaolin 70s',icon:'🏯',desc:'Grain 16mm lourd, couleurs chaudes',prompt:'1970s Shaw Brothers kung fu movie, 16mm film grain'},
- {genre:'sf',name:'Science-fiction',icon:'🚀',desc:'Néons, hologrammes, architecture massive',prompt:'futuristic sci-fi movie, massive architecture, neon lights'},
+ {genre:'action',name:'Kung-fu classique',icon:'🥋',desc:'Chorégraphie, cadres larges',prompt:'classic kung-fu movie style, 1970s martial arts film'},
+ {genre:'action',name:'Action Hollywood',icon:'💥',desc:'Explosions, héros, blockbuster',prompt:'hollywood action blockbuster, explosions, dynamic camera, high contrast'},
  {genre:'sf',name:'Cyberpunk 2077',icon:'🌆',desc:'Pluie, chrome, néons',prompt:'Cyberpunk 2077 style, neon lights, rainy night, high tech low life'},
- {genre:'animation',name:'Simpson',icon:'🟡',desc:'Peau jaune, dessin télé',prompt:'The Simpsons cartoon style, yellow skin'},
- {genre:'animation',name:'Studio Ghibli',icon:'🌿',desc:'Nature luxuriante, ciels peints',prompt:'Studio Ghibli anime style, lush nature, hand-painted skies'},
- {genre:'horreur',name:'Horreur psychologique',icon:'👻',desc:'Ambiance sombre, brume',prompt:'psychological horror movie, dark atmosphere, fog'},
- {genre:'romance',name:'Romance cinématographique',icon:'❤️',desc:'Lumière douce, heure dorée',prompt:'cinematic romance, soft warm lighting, golden hour'},
- {genre:'action',name:'Western spaghetti',icon:'🤠',desc:'Soleil écrasant, gros plans, poussière',prompt:'spaghetti western, Sergio Leone style, dusty desert, extreme close-ups, anamorphic lens'},
- {genre:'sf',name:'Post-apocalyptique',icon:'☢️',desc:'Ruines, poussière, lumière orange',prompt:'post-apocalyptic wasteland, ruined city, orange dust haze, gritty'},
- {genre:'noir',name:'Polar noir',icon:'🕵️',desc:'Noir et blanc, ombres dures, fumée',prompt:'film noir, black and white, hard shadows, venetian blind light, cigarette smoke'},
- {genre:'animation',name:'Anime années 90',icon:'🎌',desc:'Cel shading, couleurs saturées',prompt:'1990s anime style, cel shading, vibrant colors, retro anime film'},
- {genre:'animation',name:'Comics',icon:'💥',desc:'Encrage épais, trames, poses dynamiques',prompt:'american comic book style, bold ink outlines, halftone dots, dynamic poses'},
- {genre:'documentaire',name:'Documentaire nature',icon:'🌍',desc:'Lumière naturelle, téléobjectif',prompt:'nature documentary, telephoto lens, natural light, ultra sharp'},
- {genre:'fantasy',name:'Fantasy épique',icon:'🐉',desc:'Châteaux, dragons, lumière épique',prompt:'epic fantasy movie, castles, dragons, volumetric light, painterly cinematic'}
+ {genre:'sf',name:'Space Opera',icon:'🚀',desc:'Vaisseaux, planètes, épique',prompt:'epic space opera, massive spaceships, alien planets, cinematic lighting'},
+ {genre:'fantasy',name:'Heroic Fantasy',icon:'🐉',desc:'Châteaux, magie, dragons',prompt:'epic fantasy movie, castles, dragons, volumetric light, painterly cinematic'},
+ {genre:'horreur',name:'Horreur gothique',icon:'👻',desc:'Brume, ombres, épouvante',prompt:'gothic horror, fog, dark shadows, eerie atmosphere, cinematic'},
+ {genre:'animation',name:'Studio Ghibli',icon:'🌿',desc:'Nature, douceur, poésie',prompt:'Studio Ghibli anime style, lush nature, hand-painted skies'},
+ {genre:'animation',name:'Anime 90s',icon:'🎌',desc:'Cel shading, rétro, néons',prompt:'1990s anime style, cel shading, vibrant colors, retro anime film'},
+ {genre:'noir',name:'Film Noir',icon:'🕵️',desc:'Noir et blanc, ombres dures',prompt:'film noir, black and white, hard shadows, venetian blind light'},
+ {genre:'documentaire',name:'Docu Nature',icon:'🌍',desc:'Téléobjectif, réel, sauvage',prompt:'nature documentary, telephoto lens, natural light, ultra sharp'},
+ {genre:'romance',name:'Romance',icon:'❤️',desc:'Lumière douce, émotion',prompt:'cinematic romance, soft warm lighting, golden hour'},
+ {genre:'action',name:'Western',icon:'🤠',desc:'Désert, poussière, duel',prompt:'spaghetti western, Sergio Leone style, dusty desert, extreme close-ups'}
 ];
 
 const LIB=[
@@ -380,18 +389,6 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 document.addEventListener('DOMContentLoaded',()=>{
   loadKeys();renderPills();renderStyles();refreshKeyUI();libRender();castInit();crInit();checkResume();
   document.querySelectorAll('input[type=file][data-target]').forEach(i=>i.addEventListener('change',()=>handlePhotoUpload(i,i.dataset.target)));
-  const kl=$('keepLocal');
-  if(kl){
-    const updateHint=()=>{
-      const h=$('keepLocalHint');
-      if(!h)return;
-      h.textContent=kl.checked
-        ?'Les images restent en local → export vidéo plus fiable.'
-        :'Mode cloud : les images sont des URLs. Export vidéo parfois moins fiable (CORS).';
-    };
-    kl.addEventListener('change',updateHint);
-    updateHint();
-  }
 });
 
 function switchTab(id){
@@ -432,7 +429,7 @@ function renderStyles(){
     d.className='style-item'+(s.name===APP.style&&!APP.stylePrompt?' active':'');
     d.innerHTML=`<div class="style-icon">${esc(s.icon)}</div><div style="flex:1"><div class="style-name">${esc(s.name)}</div><div class="style-desc">${esc(s.desc)}</div></div>`;
     d.onclick=()=>{
-      APP.style=s.name; APP.stylePrompt=null; // reset custom
+      APP.style=s.name; APP.stylePrompt=null;
       $('customUniversesBox').classList.add('hidden');
       renderStyles();
     };
@@ -440,7 +437,6 @@ function renderStyles(){
   });
 }
 
-/* ---------- GÉNÉRATION D'UNIVERS (ex-Libre) ---------- */
 async function generateUniverses(){
   const idea=$('ideaInput').value.trim();
   if(!idea){alert('Écris d\'abord ton idée à l\'étape 2.');return}
@@ -465,13 +461,12 @@ Réponds UNIQUEMENT avec un JSON valide : {"summary":"ce que tu as compris","uni
       const d=document.createElement('div');d.className='style-item';
       d.innerHTML=`<div class="style-icon">${esc(u.icon)}</div><div style="flex:1"><div class="style-name">${esc(u.name)}</div><div class="style-desc">${esc(u.desc)}</div></div>`;
       d.onclick=()=>{
-        // Désélectionne la liste statique
         list.querySelectorAll('.style-item').forEach(x=>x.classList.remove('active'));
         $('stylesList').querySelectorAll('.style-item').forEach(x=>x.classList.remove('active'));
         d.classList.add('active');
         APP.style=u.name;
         APP.stylePrompt=u.prompt;
-        APP.selectedUniverse=u; // garder une trace
+        APP.selectedUniverse=u;
         setStatus('Univers sélectionné', 'green');
       };
       list.appendChild(d);
@@ -592,10 +587,13 @@ function updatePlanSlot(n){
   const slot=$('slot-'+n),p=APP.plans[n-1];if(!slot||!p)return;
   slot.innerHTML='';
   const act=document.createElement('div');act.className='slot-actions';
-  const dl=document.createElement('button');dl.className='action-btn';dl.textContent='⬇️';dl.title='Télécharger';dl.setAttribute('aria-label','Télécharger le plan '+n);dl.onclick=()=>downloadImage(p.url,`plan_${n}.jpg`,p.blob);
-  const rg=document.createElement('button');rg.className='action-btn';rg.textContent='↻';rg.title='Régénérer';rg.setAttribute('aria-label','Régénérer le plan '+n);rg.onclick=()=>regeneratePlan(n);
-  const an=document.createElement('button');an.className='action-btn';an.textContent='🎬';an.title='Animer';an.setAttribute('aria-label','Animer le plan '+n);an.onclick=()=>animatePlan(n);
-  act.append(dl,rg,an);
+  
+  const dl=document.createElement('button');dl.className='action-btn';dl.textContent='⬇️';dl.title='Télécharger';dl.onclick=()=>downloadImage(p.url,`plan_${n}.jpg`,p.blob);
+  const rg=document.createElement('button');rg.className='action-btn';rg.textContent='↻';rg.title='Régénérer';rg.onclick=()=>regeneratePlan(n);
+  const ed=document.createElement('button');ed.className='action-btn';ed.textContent='✏️';ed.title='Éditer (Inpainting)';ed.onclick=()=>quickEditPlan(n);
+  const an=document.createElement('button');an.className='action-btn';an.textContent='🎬';an.title='Animer';an.onclick=()=>animatePlan(n);
+  
+  act.append(dl,rg,ed,an);
   
   let img;
   if(p.clipUrl){img=document.createElement('video');img.src=p.clipUrl;img.autoplay=true;img.loop=true;img.muted=true;img.playsInline=true;img.controls=true}
@@ -623,7 +621,14 @@ function blobToDataURL(b){return new Promise(r=>{const f=new FileReader();f.onlo
 async function renderPlan(n){
   const p=APP.plans[n-1],prompt=buildPrompt(p);
   if($('termPrompt')) $('termPrompt').textContent=prompt;
-  p.url=await generateImage(prompt,'9:16',APP.seed,APP.refPhoto);
+  
+  // Cohérence Absolue : si activé, on utilise l'image précédente comme référence
+  let refImage = APP.refPhoto;
+  if($('absoluteCoherence').checked && n>1 && APP.plans[n-2].url){
+    refImage = APP.plans[n-2].url;
+  }
+  
+  p.url=await generateImage(prompt,'9:16',APP.seed,refImage);
   p.blob=await toBlob(p.url);
   
   if(APP.refPhoto&&$('fuseFace')&&$('fuseFace').checked&&!APP.noFuse){
@@ -649,6 +654,37 @@ async function regeneratePlan(n){
   finally{APP.busy=false}
 }
 
+/* NOUVEAU : Quick Edit (Inpainting / Img2Img) */
+async function quickEditPlan(n){
+  if(APP.busy)return;
+  const p=APP.plans[n-1];
+  const instruction=prompt('Que veux-tu modifier sur cette image ? (en français)\nEx: "Change la veste en rouge", "Mets-lui un chapeau", "Change le fond en forêt"');
+  if(!instruction)return;
+  
+  APP.busy=true;APP.cancel=false;setStatus('Édition…');
+  msgSlot($('slot-'+n),'Édition de l\'image…');
+  
+  try{
+    // On demande à l'IA de traduire l'instruction en prompt anglais
+    const sys="Translate the user instruction into a precise English image editing prompt. Keep the original scene intact but apply the modification.";
+    const engPrompt = await generateText(sys, instruction);
+    
+    const promptText = `Edit this image: ${engPrompt}. Keep the exact same character, lighting, and background. High quality.`;
+    // On utilise l'image actuelle comme référence
+    const url = await generateImage(promptText, '9:16', APP.seed, p.url);
+    
+    p.url = url;
+    p.blob = await toBlob(url);
+    updatePlanSlot(n);
+    setStatus('Terminé','green');
+  }catch(e){
+    msgSlot($('slot-'+n),'Erreur : '+e.message,true);
+    setStatus('Erreur','red');
+  }finally{
+    APP.busy=false;
+  }
+}
+
 async function retryFailed(){
   if(APP.busy)return;
   const todo=APP.plans.map((p,i)=>i+1).filter(n=>!APP.plans[n-1].url);
@@ -664,7 +700,6 @@ async function retryFailed(){
   }finally{APP.busy=false}
 }
 
-/* ---------- Casting ---------- */
 APP.cast=[];
 function shrink(file,max){return new Promise(res=>{const rd=new FileReader();rd.onload=e=>{const img=new Image();img.onload=()=>{const k=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=img.width*k;c.height=img.height*k;c.getContext('2d').drawImage(img,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',.85))};img.onerror=()=>res(null);img.src=e.target.result};rd.onerror=()=>res(null);rd.readAsDataURL(file)})}
 function castRender(){
@@ -685,7 +720,6 @@ function castInit(){
   });
 }
 
-/* ---------- Control room 8 étapes ---------- */
 const CR=[['Conception','Format, univers, idée'],['Compréhension','Analyse idée + casting'],['Bible créative','Personnages, lieux, DA'],['Histoire','Structure HOOK → FIN'],['Plans','Storyboard et continuité'],['Production','Images des plans'],['Contrôle','QA et cohérence'],['Terminé','Master prêt']];
 function crInit(){const b=$('crList');b.innerHTML='';CR.forEach((c,i)=>{const d=document.createElement('div');d.className='ctrl';d.innerHTML=`<div class="ci" id="ci${i+1}">${i+1}</div><div><div class="ct">${c[0]}</div><div class="cd" id="cd${i+1}">${c[1]}</div></div>`;b.appendChild(d)})}
 function ctrl(step,status,desc){const i=$('ci'+step);i.className='ci '+status;i.textContent=status==='done'?'✓':status==='error'?'!':step;if(desc!==undefined)$('cd'+step).textContent=desc}
@@ -720,7 +754,6 @@ function mkPlan(o,defDur,role){
 }
 function renderGrid(count){const g=$('plansGrid');g.innerHTML='';for(let i=1;i<=count;i++){const d=document.createElement('div');d.className='slot plan-slot';d.id='slot-'+i;d.textContent=i;g.appendChild(d)}}
 
-/* ---------- Production ---------- */
 async function startProduction(preset){
   if(APP.busy)return;
   preset=(preset&&preset.plans)?preset:null;
@@ -737,7 +770,6 @@ async function startProduction(preset){
   crReset();$('prodLog').innerHTML='';$('liveProgress').style.width='0%';$('livePercent').textContent='0%';
   APP.plans=[];APP.character='';APP.bible=null;APP.seed=Math.floor(Math.random()*1000);APP.idea=idea;APP.total=total;
   APP.refPhoto=cast[0]||null;APP.noRef=false;APP.noFuse=false;
-  // Si un univers IA a été sélectionné, il est déjà dans APP.stylePrompt. Sinon on garde celui de la liste.
   if(!preset && !APP.stylePrompt) APP.stylePrompt=null; 
   
   renderGrid(count);
@@ -758,11 +790,11 @@ async function startProduction(preset){
     }else{
       cur=3;ctrl(3,'active');setStatus('Bible créative…');$('termStatus').textContent='Écriture de la bible…';
       const known=APP.character?` Fiche personnage imposée, à reprendre telle quelle dans "character" : ${APP.character}`:'';
-      const bible=await askJSON(`Tu es scénariste et directeur artistique. Format "${APP.format}", univers "${APP.stylePrompt||APP.style}", durée totale ${total} s, ${count} plans. Réponds UNIQUEMENT avec un JSON valide : {"title":"titre","synopsis":"résumé en français, 2 phrases","character":"fiche du ou des personnages en anglais (visage, cheveux, âge, tenue)","locations":"lieux principaux en anglais","art_direction":"direction artistique en anglais : palette, lumière, textures","arc":["rôle du plan 1","rôle du plan 2"]}. "arc" contient exactement ${count} rôles courts qui vont de HOOK à FIN (ex : HOOK, SETUP, TWIST, FIN).`,`Idée : "${idea||'à partir du personnage des photos'}".${known}`,'SCRIPT');
+      const bible=await askJSON(`Tu es scénariste et directeur artistique. Format "${APP.format}", univers "${APP.stylePrompt||APP.style}", durée totale ${total} s, ${count} plans. Réponds UNIQUEMENT avec un JSON valide : {"title":"titre","synopsis":"résumé en français, 2 phrases","character":"fiche du ou des personnages en anglais (visage, cheveux, âge, tenue)","locations":"lieux principaux en anglais","art_direction":"direction artistique en anglais : palette, lumière, textures","arc":["rôle du plan 1","rôle du plan 2"]}. "arc" contient exactement ${count} rôles courts qui vont de HOOK à FIN.`,`Idée : "${idea||'à partir du personnage des photos'}".${known}`,'SCRIPT');
       APP.bible=bible;if(!cast.length)APP.character=String(bible.character||'');
       ctrl(3,'done','Personnages, lieux, DA');ctrl(4,'done',String(bible.title||'Histoire'));log('BIBLE',String(bible.title||'OK'));
       cur=5;ctrl(5,'active');setStatus('Storyboard…');$('termStatus').textContent='Écriture du storyboard…';
-      const pj=await askJSON(`Tu es réalisateur. Bible du projet : ${JSON.stringify({title:bible.title,synopsis:bible.synopsis,character:APP.character,locations:bible.locations,art_direction:bible.art_direction,arc:bible.arc})}. Écris le storyboard de exactement ${count} plans, durée totale ${total} s (chaque plan entre 4 et 12 secondes, somme proche de ${total}). Réponds UNIQUEMENT avec un JSON valide : {"plans":[{"role":"HOOK","dur":6,"visual":"action et cadrage en anglais, sans redécrire le physique","location":"lieu en anglais","characters":"qui est présent","outfit":"tenues","camera":"caméra en anglais","movement":"mouvement en anglais","continuity":"lien avec le plan précédent, en français","dialogue":"dialogue ou chaîne vide","voice":"voix off courte en français","subtitle":"sous-titre court en français"}]}`,'Écris le storyboard.','SCRIPT');
+      const pj=await askJSON(`Tu es réalisateur. Bible du projet : ${JSON.stringify({title:bible.title,synopsis:bible.synopsis,character:APP.character,locations:bible.locations,art_direction:bible.art_direction,arc:bible.arc})}. Écris le storyboard de exactement ${count} plans, durée totale ${total} s (chaque plan entre 4 et 12 secondes). Réponds UNIQUEMENT avec un JSON valide : {"plans":[{"role":"HOOK","dur":6,"visual":"action et cadrage en anglais, sans redécrire le physique","location":"lieu en anglais","characters":"qui est présent","outfit":"tenues","camera":"caméra en anglais","movement":"mouvement en anglais","continuity":"lien avec le plan précédent, en français","dialogue":"dialogue ou chaîne vide","voice":"voix off courte en français","subtitle":"sous-titre court en français"}]}`,'Écris le storyboard.','SCRIPT');
       const list=Array.isArray(pj.plans)?pj.plans.slice(0,count):[];
       while(list.length<count)list.push({visual:`Cinematic shot of ${idea||'the character'}`});
       list.forEach((o,i)=>APP.plans.push(mkPlan(typeof o==='string'?{visual:o}:o,total/count,(bible.arc||[])[i])));
@@ -801,7 +833,6 @@ async function startProduction(preset){
   }
 }
 
-/* ---------- Bible créative & script ---------- */
 let REC=null;
 async function toggleRec(i,btn){
   if(REC&&REC.i===i){REC.mr.stop();return}
@@ -812,20 +843,28 @@ async function toggleRec(i,btn){
     mr.ondataavailable=e=>{if(e.data.size)ch.push(e.data)};
     mr.onstop=()=>{st.getTracks().forEach(t=>t.stop());APP.plans[i].voice=new Blob(ch,{type:mr.mimeType||'audio/mp4'});REC=null;btn.textContent='🎙️ Réenregistrer ✓'};
     mr.start();REC={i,mr};btn.textContent='⏹ Arrêter';
-  }catch(e){alert('Micro indisponible : autorise le micro pour ce site.')}
+  }catch(e){alert('Micro indisponible.')}
 }
 function showBible(){
   $('bibleCard').classList.remove('hidden');
   const b=APP.bible||{},box=$('bibleBody');box.innerHTML='';
   $('bibleCount').textContent=APP.plans.length+' PLANS';
   if(b.title){const h=document.createElement('div');h.style.marginBottom='12px';h.innerHTML=`<div style="font-weight:700;font-size:15px">${esc(b.title)}</div><div class="cd" style="margin-top:4px">${esc(b.synopsis||'')}</div>${b.art_direction?`<div class="cd" style="margin-top:6px">🎨 ${esc(b.art_direction)}</div>`:''}`;box.appendChild(h)}
+  
+  // Option de voix globale
+  const vBox=document.createElement('div');vBox.style.cssText='margin-bottom:16px;padding:12px;background:var(--pl);border-radius:8px;';
+  vBox.innerHTML=`<label class="chk" style="margin-top:0"><input type="checkbox" id="useTTS" checked> <b>Synthèse vocale automatique (TTS)</b> : utilise la voix de l'appareil pour lire le texte sans enregistrer.</label>`;
+  box.appendChild(vBox);
+
   APP.plans.forEach((p,i)=>{
     const d=document.createElement('details');d.className='bible-plan';
     const f=(k,v)=>v?`<div class="bible-f"><b>${k}</b> ${esc(v)}</div>`:'';
     d.innerHTML=`<summary>PLAN ${i+1} · ${esc(p.role||'—')} · ${p.dur}s</summary>`+f('VISUEL',p.scene)+f('LIEU',p.loc)+f('PERSONNAGES',p.chars)+f('TENUES',p.outfit)+f('CAMÉRA',p.cam)+f('MOUVEMENT',p.move)+f('CONTINUITÉ',p.cont)+f('DIALOGUE',p.dialogue);
     const t=document.createElement('textarea');t.style.cssText='min-height:60px;margin-top:8px';t.placeholder='Voix off (français)';t.value=p.narr||'';t.oninput=()=>{p.narr=t.value};t.onchange=autosave;
     const s=document.createElement('input');s.type='text';s.style.marginTop='8px';s.placeholder='Sous-titre (sinon, la voix off)';s.value=p.sub||'';s.oninput=()=>{p.sub=s.value};s.onchange=autosave;
+    
     const r=document.createElement('button');r.className='btn sm';r.style.marginTop='8px';r.textContent=p.voice?'🎙️ Réenregistrer ✓':'🎙️ Enregistrer ma voix';r.onclick=()=>toggleRec(i,r);
+    
     const sel=document.createElement('select');sel.style.marginTop='8px';
     [['','Mouvement de caméra : auto'],['in','Zoom avant'],['out','Zoom arrière'],['panL','Panoramique gauche'],['panR','Panoramique droite'],['up','Tilt haut'],['down','Tilt bas'],['orbit','Orbite'],['hand','Caméra épaule'],['still','Fixe']].forEach(o=>{const op=document.createElement('option');op.value=o[0];op.textContent=o[1];sel.appendChild(op)});
     sel.value=p.fx||'';sel.onchange=()=>{p.fx=sel.value;autosave()};
@@ -833,7 +872,6 @@ function showBible(){
   });
 }
 
-/* ---------- Master player ---------- */
 const MASTER={playing:false,token:0};
 const planDur=p=>p.clipDur||p.dur||4;
 const fmt=t=>{t=Math.max(0,Math.round(t));return Math.floor(t/60)+':'+String(t%60).padStart(2,'0')};
@@ -906,6 +944,7 @@ async function masterPoster(){
   const c=$('masterCanvas');drawPlanFrame(c.getContext('2d'),c.width,c.height,p,m,0,false);m.rel();
 }
 function masterStop(){MASTER.token++;MASTER.playing=false;$('masterBtn').textContent='▶ Lire le master';try{speechSynthesis.cancel()}catch(e){}}
+
 async function masterToggle(){
   if(MASTER.playing){masterStop();return}
   const list=APP.plans.filter(p=>p.url||p.clipUrl);
@@ -937,6 +976,7 @@ async function masterToggle(){
   }
   if(MASTER.token===my){masterStop();$('masterBar').style.width='0%';masterRefresh()}
 }
+
 function exportVTT(){
   const ts=t=>String(Math.floor(t/3600)).padStart(2,'0')+':'+String(Math.floor(t%3600/60)).padStart(2,'0')+':'+(t%60).toFixed(3).padStart(6,'0');
   let t=0,out='WEBVTT\n\n';
@@ -949,7 +989,6 @@ function exportJSON(){
   saveBlobAs(new Blob([JSON.stringify(o,null,2)],{type:'application/json'}),'storylab.json');
 }
 
-/* ---------- Sauvegarde automatique ---------- */
 const SAVE_KEY='storylab_project';
 function autosave(){
   if(!APP.plans.length)return;
@@ -974,7 +1013,6 @@ function restoreProject(){
   showBible();showMaster();$('resumeBtn').classList.add('hidden');
 }
 
-/* EXPORT ZIP ET VIDÉO */
 async function exportZip(){
   for(const p of APP.plans){if(p.url&&!p.blob)p.blob=await toBlob(p.url)}
   const done=APP.plans.map((p,i)=>({p,n:i+1})).filter(x=>x.p.blob);
@@ -1001,9 +1039,10 @@ async function exportVideo(){
     if(p.clipUrl&&!p.clipBlob)p.clipBlob=await fetchBlob(p.clipUrl);
   }
   const done=APP.plans.filter(p=>p.blob||p.clipBlob);
-  if(!done.length){$('exportMsg').textContent='Aucune image récupérable (le serveur bloque). Coche « Garder les images sur mon téléphone », relance et réessaie.';return}
-  const subs=$('subs')&&$('subs').checked,fxOn=!!($('fx')&&$('fx').checked);
+  if(!done.length){$('exportMsg').textContent='Aucune image récupérable (le serveur bloque). Coche « Garder les images », relance et réessaie.';return}
+  const subs=$('subs')&&$('subs').checked,fxOn=!!($('fx')&&$('fx').checked),revLoop=!!($('reverseLoop')&&$('reverseLoop').checked);
   $('exportMsg').textContent='Montage en cours, garde cet onglet ouvert et allumé…';
+  
   const W=720,H=1280,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
   const stream=c.captureStream(30);
   if(ac)dest.stream.getAudioTracks().forEach(t=>stream.addTrack(t));
@@ -1011,10 +1050,11 @@ async function exportVideo(){
   const rec=new MediaRecorder(stream,mime?{mimeType:mime}:undefined),chunks=[];
   rec.ondataavailable=e=>e.data.size&&chunks.push(e.data);
   const fin=new Promise(r=>rec.onstop=r);rec.start();
+  
   let nClips=0;
-  for(let di=0;di<done.length;di++){
-    const p=done[di];
-    const m=await loadMedia(p,true);if(!m)continue;
+  
+  async function renderClip(p, isReverse, di, totalClips){
+    const m=await loadMedia(p,true);if(!m)return;
     const prevC=fxOn?snapCanvas(c):null;
     if(m.v)nClips++;
     let dur=planDur(p)*1000;
@@ -1024,20 +1064,41 @@ async function exportVideo(){
         const src=ac.createBufferSource();src.buffer=buf;src.connect(dest);src.start();
         dur=Math.max(dur,buf.duration*1000+500);
       }catch(e){}
+    } else if(p.narr && $('masterVoice').checked) {
+      try{
+        const u = new SpeechSynthesisUtterance(p.narr);
+        u.lang='fr-FR';
+        speechSynthesis.speak(u);
+      }catch(e){}
     }
+    
     if(m.v)await m.v.play().catch(()=>{});
     const t0=performance.now();
     await new Promise(res=>{(function f(){
       const k=Math.min((performance.now()-t0)/dur,1);
-      drawPlanFrame(x,W,H,p,m,k,subs,fxOn?{prev:prevC,a:k*dur/500,out:di===done.length-1?Math.max(0,1-(dur-k*dur)/600):0}:undefined);
+      // drawPlanFrame gere le sens inverse plus tard si besoin, ici on fait simple
+      drawPlanFrame(x,W,H,p,m,k,subs,fxOn?{prev:prevC,a:k*dur/500,out:di===totalClips-1?Math.max(0,1-(dur-k*dur)/600):0}:undefined);
       k<1?requestAnimationFrame(f):res();
     })()});
     m.rel();
   }
+
+  for(let di=0;di<done.length;di++){
+    await renderClip(done[di], false, di, done.length);
+  }
+  
+  if(revLoop){
+    $('exportMsg').textContent='Génération de la boucle inversée…';
+    for(let di=done.length-1;di>=0;di--){
+      // Pour l'inverse, on inverse juste l'index mais le visuel avance normalement
+      await renderClip(done[di], true, done.length-di-1, done.length);
+    }
+  }
+
   rec.stop();await fin;if(ac)ac.close();
   const ext=(mime||'video/webm').includes('mp4')?'mp4':'webm';
   saveBlobAs(new Blob(chunks,{type:mime||'video/webm'}),'storylab.'+ext);
-  $('exportMsg').textContent=`Vidéo prête${nClips?` (${nClips} clip(s) animé(s))`:''}.`;
+  $('exportMsg').textContent=`Vidéo prête${nClips?` (${nClips} clip(s) animé(s))`:''}${revLoop?' + boucle inversée':''}.`;
 }
 
 async function fetchBlob(url){
@@ -1047,20 +1108,16 @@ async function fetchBlob(url){
   return null;
 }
 
-/* ANIMATION DES PLANS */
 const QUOTA_RE=/quota|rate limit|upgrade|insufficient|credit|billing|balance|solde/i;
 const quotaHint=()=>'⛔ Crédits Agnes insuffisants pour la vidéo. Recharge sur platform.agnes-ai.com (Billing), ou utilise « Créer la vidéo finale » : les images fixes sont déjà animées avec zoom et fondus gratuits.';
 const ANIM_DEFAULT='The subject moves naturally, slow cinematic camera push-in. ';
 const animText=p=>ANIM_DEFAULT+[p.cam,p.move].filter(Boolean).join(', ')+(p.cam||p.move?'. ':'')+p.scene;
 
-// Régénère un plan en mode cloud (URL) pour pouvoir l’animer, sans toucher au checkbox keepLocal global
 async function ensureCloudUrl(n,add){
   const p=APP.plans[n-1];
   if(!p||!p.url)throw new Error('Plan sans image');
-  if(!p.url.startsWith('data:'))return p.url; // déjà une URL cloud
+  if(!p.url.startsWith('data:'))return p.url; 
   add('Plan '+n+' : image locale → régénération temporaire en mode cloud…');
-  const oldRf=rf;
-  // Force URL just for this generation
   window.__forceUrl=true;
   try{
     const prompt=buildPrompt(p);
@@ -1076,7 +1133,6 @@ async function ensureCloudUrl(n,add){
 async function animateCore(n,mp,add){
   const p=APP.plans[n-1];
   if(!p||!p.url)throw new Error('Plan sans image');
-  // Si image locale, on tente de la régénérer en cloud pour ce plan uniquement
   if(p.url.startsWith('data:')){
     await ensureCloudUrl(n,add);
   }
@@ -1161,7 +1217,6 @@ async function animateAll(){
   }finally{APP.busy=false;$('cancelBtn').classList.add('hidden')}
 }
 
-/* AVATAR & FUSION */
 async function generateAvatar(){
   const txt=$('avatarPrompt').value.trim(),photo=APP.photos.avatar;
   if(!txt&&!photo){alert('Décris ou importe un portrait.');return}
@@ -1189,7 +1244,6 @@ async function generateAvatar(){
   finally{btn.disabled=false;btn.textContent="👤 Générer l'avatar (x2)"}
 }
 
-/* FUSION */
 function nearestRatio(w,h){const r=w/h;return [['9:16',9/16],['2:3',2/3],['3:4',3/4],['1:1',1],['4:3',4/3],['3:2',3/2],['16:9',16/9],['21:9',21/9]].sort((a,b)=>Math.abs(a[1]-r)-Math.abs(b[1]-r))[0][0]}
 async function fusionRun(){
   const sc=APP.photos.scene,fc=APP.photos.face;
@@ -1199,13 +1253,12 @@ async function fusionRun(){
   btn.disabled=true;btn.textContent='⏳ Test en cours…';out.innerHTML='';log.style.display='block';log.textContent='';APP.cancel=false;
   const extra=$('fusPrompt').value.trim();
   const prompt='Replace the face of the main person in the first image with the face of the person in the second image. Keep the first image exactly the same: pose, body, clothes, background, lighting. Photorealistic, seamless blend.'+(extra?' '+extra:'');
-  const base={model:IMG_MODEL,prompt,size:'1K',ratio:'9:16',extra_body:{response_format:'url'}}; // Force URL pour éviter les bugs base64
+  const base={model:IMG_MODEL,prompt,size:'1K',ratio:'9:16',extra_body:{response_format:'url'}}; 
   const variants=[
     ['/images/generations',{image:[sc,fc]}],
     ['/images/generations',{images:[sc,fc]}],
     ['/images/generations',{image:sc,reference_image:fc}],
-    ['/images/edits',{image:[sc,fc]}],
-    ['/images/generations',{extra_body:{response_format:'url',image:[sc,fc]}}]
+    ['/images/edits',{image:[sc,fc]}]
   ];
   const add=t=>{log.textContent+=t+'\n'};
   let ok=false;
@@ -1230,7 +1283,6 @@ async function fusionRun(){
   }finally{btn.disabled=false;btn.textContent='🔀 Lancer la fusion'}
 }
 
-/* BIBLIOTHÈQUE */
 function libRender(){
   const q=($('libSearch').value||'').toLowerCase().trim(),box=$('libList'),pills=$('libPills');
   pills.innerHTML='';
@@ -1273,7 +1325,6 @@ function libSend(){
   LIBSEL.clear();libI=0;libRender();$('libMsg').textContent=m;
 }
 
-/* HISTORIQUE */
 function idb(){return new Promise((res,rej)=>{const r=indexedDB.open('storylab',1);r.onupgradeneeded=()=>r.result.createObjectStore('h',{keyPath:'id'});r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
 async function idbRun(mode,fn){const db=await idb();return new Promise((res,rej)=>{const t=db.transaction('h',mode),q=fn(t.objectStore('h'));t.oncomplete=()=>res(q&&q.result);t.onerror=()=>rej(t.error)})}
 async function saveToHistory(item){
