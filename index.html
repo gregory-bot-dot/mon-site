@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>STORYLAB & AVATAR LAB // v13.0</title>
+<title>STORYLAB & AVATAR LAB // v14.0</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
-:root{--bg:#f3f4f6;--card:#fff;--text:#111827;--muted:#4b5563;--primary:#0284c7;--pl:#e0f2fe;--ok:#059669;--err:#dc2626;--border:#e5e7eb;--dark:#111827;--r:16px;--font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace}
+:root{--bg:#f3f4f6;--card:#fff;--text:#111827;--muted:#4b5563;--primary:#0284c7;--pl:#e0f2fe;--ok:#059669;--err:#dc2626;--warn:#d97706;--border:#e5e7eb;--dark:#111827;--r:16px;--font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.5;padding-bottom:max(40px,env(safe-area-inset-bottom));-webkit-text-size-adjust:100%}
 button:focus-visible,select:focus-visible,textarea:focus-visible,input:focus-visible,.option-btn:focus-visible,.style-item:focus-visible,.pill:focus-visible,.home-btn:focus-visible,.action-btn:focus-visible{outline:3px solid var(--primary);outline-offset:2px}
@@ -82,17 +82,31 @@ textarea{min-height:110px;resize:vertical;font-size:16px}
 .slot{background:var(--border);border-radius:12px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#9ca3af}
 .plan-slot{aspect-ratio:9/16}.av-slot{aspect-ratio:3/4}
 .slot img,.slot video{width:100%;height:100%;object-fit:cover;display:block}
-.slot-actions{position:absolute;top:8px;right:8px;display:flex;gap:4px;z-index:10}
-.action-btn{background:rgba(255,255,255,.95);border:0;border-radius:50%;width:40px;height:40px;font-size:16px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center}
+.slot-actions{position:absolute;top:8px;right:8px;display:flex;gap:4px;z-index:10;flex-wrap:wrap;justify-content:flex-end;max-width:80%}
+.action-btn{background:rgba(255,255,255,.95);border:0;border-radius:50%;width:36px;height:36px;font-size:14px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center}
+.action-btn.free{border:2px solid var(--ok)}
+.action-btn.paid{border:2px solid var(--warn)}
 .plan-label{position:absolute;bottom:0;left:0;right:0;background:rgba(255,255,255,.9);padding:6px;font-size:11px;font-weight:600}
 .slot-msg{font-size:12px;color:var(--muted);padding:10px;text-align:center;font-weight:400}.slot-msg.err{color:var(--err)}
+
+/* Modals */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(2px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--card);border-radius:16px;width:100%;max-width:400px;padding:20px;max-height:90vh;overflow-y:auto}
+.modal h2{font-size:18px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.anim-opt{display:flex;align-items:center;gap:12px;padding:16px;border:1px solid var(--border);border-radius:12px;margin-bottom:10px;cursor:pointer;transition:0.2s}
+.anim-opt:hover{background:#f8fafc;border-color:var(--primary)}
+.anim-opt .ico{font-size:24px}
+.anim-opt .txt{flex:1}
+.anim-opt .t{font-weight:700;font-size:14px;display:flex;align-items:center;gap:6px}
+.anim-opt .d{font-size:12px;color:var(--muted);margin-top:2px}
+.badge-free{background:#dcfce7;color:#166534;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:700}
+.badge-paid{background:#fef3c7;color:#92400e;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:700}
 
 .hist-card{border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px}
 .hist-title{font-weight:700;font-size:14px;margin-bottom:4px}.hist-meta{font-size:12px;color:var(--muted);margin-bottom:12px}
 .thumbs{display:flex;gap:8px;overflow-x:auto}.thumbs img{width:80px;height:140px;object-fit:cover;border-radius:8px;cursor:pointer}
 
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px}
-.modal-overlay.open{display:flex}.modal{background:var(--card);border-radius:16px;width:100%;max-width:400px;padding:20px}
 .cast-grid{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap}
 .cast-item,.cast-add{position:relative;width:84px;height:84px;border-radius:12px}
 .cast-item img{width:100%;height:100%;object-fit:cover;border-radius:12px;border:2px solid var(--primary)}
@@ -105,7 +119,7 @@ textarea{min-height:110px;resize:vertical;font-size:16px}
 </head>
 <body>
 <div class="header">
-  <div class="header-title">STORYLAB & AVATAR LAB <span>// v13.0</span></div>
+  <div class="header-title">STORYLAB & AVATAR LAB <span>// v14.0</span></div>
   <div class="badges">
     <a class="back" href="https://gregory-bot-dot.github.io/mon-ia/" style="text-decoration:none">🧠 AI HUB</a>
     <button class="back hidden" id="backBtn" onclick="goHome()">← Menu</button>
@@ -224,10 +238,10 @@ textarea{min-height:110px;resize:vertical;font-size:16px}
         <button class="btn sm" onclick="retryFailed()">↻ Relancer les erreurs</button>
       </div>
       <div class="row">
-        <button class="btn sm" id="animateAllBtn" onclick="animateAll()">🎬 Animer (Magic Hour)</button>
+        <button class="btn sm" id="animateAllBtn" onclick="animateAll()">🎬 Animer tous les plans</button>
         <button class="btn sm" onclick="exportVideo()">🎞️ Créer la vidéo finale</button>
       </div>
-      <div class="cd" id="animHint" style="margin-top:8px">💡 Magic Hour génère de vraies vidéos IA. L'export final assemble le tout.</div>
+      <div class="cd" id="animHint" style="margin-top:8px">💡 Cliquez sur l'icône 🎬 sur une image pour choisir la méthode d'animation.</div>
       
       <label class="chk"><input type="checkbox" id="subs" checked> Sous-titres</label>
       <label class="chk"><input type="checkbox" id="fx" checked> Mouvements (si pas de vidéo IA)</label>
@@ -316,18 +330,56 @@ textarea{min-height:110px;resize:vertical;font-size:16px}
   </div>
 </div>
 
-<!-- MODAL API -->
+<!-- MODALS -->
 <div class="modal-overlay" id="apiModal">
   <div class="modal">
     <h2 style="margin-bottom:8px">🔑 Clés API</h2>
-    
     <label style="font-weight:600;font-size:14px;">Agnes (Images)</label>
     <textarea id="apiKeyInput" style="height:80px;font-family:var(--mono);font-size:12px;margin-bottom:12px;resize:none;width:100%;padding:8px;border:1px solid var(--border);border-radius:8px;"></textarea>
-    
     <label style="font-weight:600;font-size:14px;">Magic Hour (Vidéos)</label>
     <input type="text" id="mhKeyInput" placeholder="mh_..." style="height:40px;font-family:var(--mono);font-size:12px;margin-bottom:16px;width:100%;padding:8px;border:1px solid var(--border);border-radius:8px;">
-    
     <div style="display:flex;gap:8px"><button class="btn" onclick="closeApiModal()">Annuler</button><button class="btn primary" onclick="saveApiKeys()">Sauvegarder</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="animModal">
+  <div class="modal">
+    <h2>🎬 Comment animer ce plan ?</h2>
+    
+    <div class="anim-opt" onclick="animateWithWeb('kling')">
+      <div class="ico">🌐</div>
+      <div class="txt">
+        <div class="t">Kling AI / PixVerse <span class="badge-free">GRATUIT</span></div>
+        <div class="d">Télécharge l'image, copie le prompt et ouvre le site web.</div>
+      </div>
+    </div>
+
+    <div class="anim-opt" onclick="animateWithMagicHour()">
+      <div class="ico">✨</div>
+      <div class="txt">
+        <div class="t">Magic Hour (IA) <span class="badge-paid">PAYANT</span></div>
+        <div class="d">Génère une vraie vidéo IA (nécessite des crédits).</div>
+      </div>
+    </div>
+
+    <div class="anim-opt" onclick="animateLocal()">
+      <div class="ico">🎞️</div>
+      <div class="txt">
+        <div class="t">Effet Ken Burns <span class="badge-free">GRATUIT</span></div>
+        <div class="d">Zoom lent local (aucune IA, inclus dans l'export final).</div>
+      </div>
+    </div>
+
+    <div class="anim-opt" onclick="$('importVideoInput').click()">
+      <div class="ico">📤</div>
+      <div class="txt">
+        <div class="t">Importer une vidéo <span class="badge-free">GRATUIT</span></div>
+        <div class="d">Ajouter un fichier MP4 généré ailleurs.</div>
+      </div>
+    </div>
+    <input type="file" id="importVideoInput" accept="video/mp4,video/webm" style="display:none" onchange="importExternalVideo(this)">
+
+    <button class="btn" style="margin-top:12px" onclick="closeAnimModal()">Annuler</button>
   </div>
 </div>
 
@@ -335,6 +387,7 @@ textarea{min-height:110px;resize:vertical;font-size:16px}
 const AGNES_BASE='https://apihub.agnes-ai.com/v1', TEXT_MODEL='agnes-3.0-flash', IMG_MODEL='agnes-image-2.5-flash';
 const MH_BASE='https://api.magichour.ai/v1';
 const APP={format:'Court-métrage / Fiction',genre:'Tous',style:'Kung-fu classique',keys:[],mhKey:'',busy:false,cancel:false,quotaBlocked:false,photos:{idea:null,avatar:null,free:null,scene:null,face:null},plans:[]};
+let CURRENT_ANIM_PLAN = 0;
 
 const STYLES=[
  {genre:'action',name:'Kung-fu classique',icon:'🥋',desc:'Chorégraphie, cadres larges',prompt:'classic kung-fu movie style, 1970s martial arts film'},
@@ -559,7 +612,7 @@ function updatePlanSlot(n){
   const dl=document.createElement('button');dl.className='action-btn';dl.textContent='⬇️';dl.onclick=()=>downloadImage(p.url,`plan_${n}.jpg`,p.blob);
   const rg=document.createElement('button');rg.className='action-btn';rg.textContent='↻';rg.onclick=()=>regeneratePlan(n);
   const ed=document.createElement('button');ed.className='action-btn';ed.textContent='✏️';ed.onclick=()=>quickEditPlan(n);
-  const an=document.createElement('button');an.className='action-btn';an.textContent='🎬';an.onclick=()=>animatePlan(n);
+  const an=document.createElement('button');an.className='action-btn paid';an.textContent='🎬';an.onclick=()=>openAnimModal(n);
   act.append(dl,rg,ed,an);
   
   let img;
@@ -1010,132 +1063,198 @@ async function fetchBlob(url){
   return null;
 }
 
-/* ---------- ANIMATION MAGIC HOUR ---------- */
+/* ---------- MODAL ANIMATION ---------- */
+function openAnimModal(n){
+  if(APP.busy) return;
+  CURRENT_ANIM_PLAN = n;
+  $('animModal').classList.add('open');
+}
+function closeAnimModal(){
+  $('animModal').classList.remove('open');
+}
+
+/* ---------- MODES D'ANIMATION ---------- */
+
+// 1. Mode Web Gratuit (Redirection)
+async function animateWithWeb(service) {
+  closeAnimModal();
+  const n = CURRENT_ANIM_PLAN;
+  const p = APP.plans[n-1];
+  if(!p || !p.url) return;
+
+  APP.busy = true;
+  setStatus('Préparation...');
+  
+  try {
+    // 1. Télécharger l'image
+    await downloadImage(p.url, `plan_${n}_pour_${service}.jpg`, p.blob);
+    
+    // 2. Copier le prompt
+    const promptText = animText(p);
+    try {
+      await navigator.clipboard.writeText(promptText);
+      alert(`✅ Image téléchargée et prompt copié !\n\n1. L'image "${service}" va s'ouvrir dans un nouvel onglet.\n2. Uploadez l'image.\n3. Collez le prompt (Ctrl+V / Cmd+V).`);
+    } catch (err) {
+      alert(`✅ Image téléchargée !\n\n⚠️ Impossible de copier le prompt automatiquement. Le voici :\n\n${promptText}`);
+    }
+
+    // 3. Ouvrir le site web
+    const urls = {
+      'kling': 'https://klingai.com/',
+      'pixverse': 'https://pixverse.ai/',
+      'runway': 'https://app.runwayml.com/'
+    };
+    
+    if (urls[service]) {
+      window.open(urls[service], '_blank');
+    }
+
+  } catch (e) {
+    alert('Erreur : ' + e.message);
+  } finally {
+    APP.busy = false;
+    setStatus('Prêt', 'green');
+  }
+}
+
+// 2. Mode Local (Effet Ken Burns)
+function animateLocal() {
+  closeAnimModal();
+  alert("💡 Pour l'effet local gratuit (Ken Burns), ne cliquez pas sur le bouton 🎬.\n\nIl suffit d'aller en bas de la page et de cliquer sur le bouton '🎞️ Créer la vidéo finale'. Le zoom lent sera appliqué automatiquement à l'export !");
+}
+
+// 3. Mode Magic Hour (Payant) - AVEC CORRECTION UPLOAD
 const ANIM_DEFAULT='The subject moves naturally, slow cinematic camera push-in. ';
 const animText=p=>ANIM_DEFAULT+[p.cam,p.move].filter(Boolean).join(', ')+(p.cam||p.move?'. ':'')+p.scene;
 
 async function uploadToMagicHour(blob) {
-    const formData = new FormData();
-    formData.append('file', blob, 'image.jpg');
-    const res = await fetch(`${MH_BASE}/files/upload`, {
+    // 1. Demander une URL d'upload pré-signée
+    const urlRes = await fetch(`${MH_BASE}/files/upload-urls`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${APP.mhKey}` },
-        body: formData
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${APP.mhKey}`
+        },
+        body: JSON.stringify({
+            items: [{ type: 'image', extension: 'jpg' }]
+        })
     });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.message || 'Erreur upload MH');
-    return data.file_path;
+    const urlData = await urlRes.json();
+    if (!urlRes.ok) throw new Error(urlData.message || 'Erreur demande URL upload');
+
+    const { upload_url, file_path } = urlData.items[0];
+
+    // 2. Envoyer l'image à l'URL pré-signée
+    const uploadRes = await fetch(upload_url, {
+        method: 'PUT',
+        body: blob,
+        headers: { 'Content-Type': 'application/octet-stream' }
+    });
+    if (!uploadRes.ok) throw new Error('Erreur upload image');
+
+    return file_path;
 }
 
-async function animateCore(n) {
+async function animateWithMagicHour() {
+  closeAnimModal();
+  const n = CURRENT_ANIM_PLAN;
   const p = APP.plans[n-1];
-  if(!p || !p.url) throw new Error('Plan sans image');
-  if(!APP.mhKey) throw new Error('Clé API Magic Hour manquante. Cliquez sur le badge en haut.');
+  if(!p || !p.url) return;
 
-  const log=$('animLog');
-  const add = t => { log.style.display='block'; log.textContent += t+'\n'; log.scrollTop = log.scrollHeight; };
-
-  // 1. Upload
-  add('Plan '+n+' : Préparation de l\'image...');
-  const blob = p.blob || await toBlob(p.url);
-  if(!blob) throw new Error('Impossible de lire le blob de l\'image.');
-  
-  const filePath = await uploadToMagicHour(blob);
-  add('Image uploadée. Création de la vidéo...');
-
-  // 2. Create Video
-  const payload = {
-      name: 'StoryLab Plan '+n,
-      end_seconds: Math.min(5, p.dur || 5),
-      model: 'ltx-2.5',
-      resolution: '480p',
-      audio: false,
-      style: { prompt: animText(p) },
-      assets: { image_file_path: filePath }
-  };
-
-  const createRes = await fetch(`${MH_BASE}/image-to-video`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${APP.mhKey}` },
-      body: JSON.stringify(payload)
-  });
-  const createData = await createRes.json();
-  if (!createRes.ok) throw new Error(createData.message || 'Erreur API Magic Hour');
-  
-  const projectId = createData.id;
-  add('Génération IA en cours (Patientez 1-2 min)...');
-
-  // 3. Poll
-  let finalUrl = null;
-  for (let i = 0; i < 60; i++) {
-      await sleep(5000);
-      const pollRes = await fetch(`${MH_BASE}/video-projects/${projectId}`, {
-          headers: { 'Authorization': `Bearer ${APP.mhKey}` }
-      });
-      const pollData = await pollRes.json();
-      if (pollData.status === 'complete') {
-          finalUrl = pollData.downloads[0].url;
-          break;
-      }
-      if (pollData.status === 'error' || pollData.status === 'canceled') {
-          throw new Error('Échec de la génération: ' + pollData.status);
-      }
+  if(!APP.mhKey) {
+    alert("Clé API Magic Hour manquante. Cliquez sur le badge 'Clés API' en haut.");
+    return;
   }
 
-  if (!finalUrl) throw new Error('Délai dépassé pour la génération vidéo.');
-  
-  p.clipUrl = finalUrl;
-  p.clipBlob = null;
-  p.clipDur = payload.end_seconds;
-  updatePlanSlot(n);
-  autosave();
-  add('✓ Plan '+n+' animé avec succès !');
-}
-
-async function animatePlan(n) {
-  if(APP.busy) return;
-  if(!APP.keys.length || !APP.mhKey) { openApiModal(); return; }
-  
   APP.busy = true; APP.cancel = false; setStatus('Animation IA...');
   const log=$('animLog'); log.style.display='block'; log.textContent='';
+  const add=t=>{log.textContent+=t+'\n';log.scrollTop=log.scrollHeight};
   
   try {
-      await animateCore(n);
-      setStatus('Terminé', 'green');
+    add('Plan '+n+' : Préparation de l\'image...');
+    const blob = p.blob || await toBlob(p.url);
+    if(!blob) throw new Error('Impossible de lire le blob de l\'image.');
+    
+    const filePath = await uploadToMagicHour(blob);
+    add('Image uploadée. Création de la vidéo...');
+
+    const payload = {
+        name: 'StoryLab Plan '+n,
+        end_seconds: Math.min(5, p.dur || 5),
+        model: 'ltx-2.5',
+        resolution: '480p',
+        audio: false,
+        style: { prompt: animText(p) },
+        assets: { image_file_path: filePath }
+    };
+
+    const createRes = await fetch(`${MH_BASE}/image-to-video`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${APP.mhKey}` },
+        body: JSON.stringify(payload)
+    });
+    const createData = await createRes.json();
+    if (!createRes.ok) throw new Error(createData.message || 'Erreur API Magic Hour');
+    
+    const projectId = createData.id;
+    add('Génération IA en cours (Patientez 1-2 min)...');
+
+    let finalUrl = null;
+    for (let i = 0; i < 60; i++) {
+        await sleep(5000);
+        const pollRes = await fetch(`${MH_BASE}/video-projects/${projectId}`, {
+            headers: { 'Authorization': `Bearer ${APP.mhKey}` }
+        });
+        const pollData = await pollRes.json();
+        if (pollData.status === 'complete') {
+            finalUrl = pollData.downloads[0].url;
+            break;
+        }
+        if (pollData.status === 'error' || pollData.status === 'canceled') {
+            throw new Error('Échec de la génération: ' + pollData.status);
+        }
+    }
+
+    if (!finalUrl) throw new Error('Délai dépassé pour la génération vidéo.');
+    
+    p.clipUrl = finalUrl;
+    p.clipBlob = null;
+    p.clipDur = payload.end_seconds;
+    updatePlanSlot(n);
+    autosave();
+    add('✓ Plan '+n+' animé avec succès !');
+    setStatus('Terminé', 'green');
   } catch (e) {
-      log.textContent += '✗ Erreur : ' + e.message + '\n';
-      setStatus('Erreur', 'red');
-      alert(e.message);
+    add('✗ Erreur : ' + e.message);
+    setStatus('Erreur', 'red');
+    alert(e.message);
   } finally {
-      APP.busy = false;
+    APP.busy = false;
   }
+}
+
+// 4. Import Vidéo Externe
+function importExternalVideo(input) {
+  closeAnimModal();
+  const n = CURRENT_ANIM_PLAN;
+  const file = input.files[0];
+  if (!file || !file.type.startsWith('video/')) return;
+
+  const p = APP.plans[n-1];
+  p.clipBlob = file;
+  p.clipUrl = URL.createObjectURL(file);
+  // On estime la durée, elle sera lue à l'export
+  p.clipDur = p.dur || 5; 
+  
+  updatePlanSlot(n);
+  autosave();
+  alert('✅ Vidéo importée avec succès sur le plan ' + n + ' !');
+  input.value = ''; // Reset
 }
 
 async function animateAll() {
   if(APP.busy) return;
-  if(!APP.keys.length || !APP.mhKey) { openApiModal(); return; }
-  
-  const todo = APP.plans.map((p,i)=>i+1).filter(n=>APP.plans[n-1].url && !APP.plans[n-1].clipUrl);
-  if(!todo.length) { $('exportMsg').textContent='Rien à animer.'; $('exportMsg').classList.remove('hidden'); return; }
-  if(!confirm(`Animer ${todo.length} plan(s) avec Magic Hour ? (Cela consommera des crédits API)`)) return;
-  
-  APP.busy = true; APP.cancel = false; $('cancelBtn').classList.remove('hidden');
-  const log=$('animLog'); log.style.display='block'; log.textContent='';
-  
-  try {
-      for(const n of todo) {
-          if(APP.cancel) break;
-          setStatus(`Animation ${n}...`);
-          try {
-              await animateCore(n);
-          } catch(e) {
-              log.textContent += `✗ Plan ${n} : ${e.message}\n`;
-          }
-      }
-      setStatus('Terminé', 'green');
-  } finally {
-      APP.busy = false; $('cancelBtn').classList.add('hidden');
-  }
+  alert("Pour animer tous les plans, cliquez sur l'icône 🎬 de chaque image pour choisir la méthode souhaitée (Gratuit ou Payant).");
 }
 
 /* AVATAR & FUSION */
