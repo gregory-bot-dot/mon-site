@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>STORYLAB & AVATAR LAB // v14.0</title>
+<title>STORYLAB & AVATAR LAB // v14.1</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
@@ -115,11 +115,15 @@ textarea{min-height:110px;resize:vertical;font-size:16px}
 .bible-plan{border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:10px}
 .bible-plan summary{font-weight:600;font-size:14px;cursor:pointer}
 .bible-f{font-size:12px;margin-top:6px;word-break:break-word}.bible-f b{color:var(--muted)}
+
+/* Pont AI HUB */
+.ai-bridge{display:flex;gap:8px;margin-top:12px}
+.ai-bridge .btn{flex:1;padding:10px;font-size:12px;min-height:40px}
 </style>
 </head>
 <body>
 <div class="header">
-  <div class="header-title">STORYLAB & AVATAR LAB <span>// v14.0</span></div>
+  <div class="header-title">STORYLAB & AVATAR LAB <span>// v14.1</span></div>
   <div class="badges">
     <a class="back" href="https://gregory-bot-dot.github.io/mon-ia/" style="text-decoration:none">🧠 AI HUB</a>
     <button class="back hidden" id="backBtn" onclick="goHome()">← Menu</button>
@@ -161,8 +165,15 @@ textarea{min-height:110px;resize:vertical;font-size:16px}
       <div class="cd" style="margin-bottom:6px">Casting : jusqu’à 3 photos de référence (optionnel)</div>
       <div class="cast-grid" id="castGrid"></div>
       <input type="file" id="castInput" accept="image/*" multiple class="hidden">
+      
       <textarea id="ideaInput" placeholder="Ex: Un samouraï perdu dans une ville futuriste sous la pluie..."></textarea>
       
+      <!-- PONT AI HUB -->
+      <div class="ai-bridge">
+        <button class="btn sm" onclick="sendToAIHub()" title="Copie l'idée et ouvre AI HUB">📤 Envoyer à AI HUB</button>
+        <button class="btn sm" onclick="openImportModal()" title="Coller un prompt généré par AI HUB">📥 Importer depuis AI HUB</button>
+      </div>
+
       <label class="chk"><input type="checkbox" id="fuseFace" checked> Reprendre exactement le visage de ma photo</label>
       <label class="chk"><input type="checkbox" id="absoluteCoherence" checked> <b>Cohérence Absolue :</b> Utiliser le plan précédent comme base.</label>
       <label class="chk"><input type="checkbox" id="keepLocal" checked> Garder les images sur mon téléphone (recommandé)</label>
@@ -342,6 +353,19 @@ textarea{min-height:110px;resize:vertical;font-size:16px}
   </div>
 </div>
 
+<!-- MODAL AI HUB IMPORT -->
+<div class="modal-overlay" id="importModal">
+  <div class="modal">
+    <h2>📥 Importer depuis AI HUB</h2>
+    <p class="cd" style="margin-bottom:12px">Collez ci-dessous le prompt ou le texte généré par l'AI HUB.</p>
+    <textarea id="importText" style="min-height:150px;margin-bottom:16px;" placeholder="Collez votre texte ici..."></textarea>
+    <div style="display:flex;gap:8px">
+      <button class="btn" onclick="closeImportModal()">Annuler</button>
+      <button class="btn primary" onclick="applyImport()">Injecter dans mon idée</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="animModal">
   <div class="modal">
     <h2>🎬 Comment animer ce plan ?</h2>
@@ -466,6 +490,39 @@ function renderStyles(){
     list.appendChild(d);
   });
 }
+
+/* PONT AI HUB */
+async function sendToAIHub() {
+  const idea = $('ideaInput').value.trim();
+  if (!idea) {
+    alert("Écris d'abord une idée de base avant de l'envoyer à AI HUB.");
+    return;
+  }
+  try {
+    await navigator.clipboard.writeText(idea);
+    alert("✅ Idée copiée !\n\nL'AI HUB va s'ouvrir dans un nouvel onglet.\nCollez votre idée (Ctrl+V ou Cmd+V) pour que l'IA la développe.");
+    window.open('https://gregory-bot-dot.github.io/mon-ia/', '_blank');
+  } catch (e) {
+    alert("Erreur de copie. Voici votre idée :\n\n" + idea);
+  }
+}
+
+function openImportModal() {
+  $('importText').value = '';
+  $('importModal').classList.add('open');
+}
+function closeImportModal() {
+  $('importModal').classList.remove('open');
+}
+function applyImport() {
+  const txt = $('importText').value.trim();
+  if (!txt) return;
+  $('ideaInput').value = txt;
+  closeImportModal();
+  alert("✅ Texte importé et injecté dans votre idée !");
+}
+
+/* FIN PONT AI HUB */
 
 async function generateUniverses(){
   const idea=$('ideaInput').value.trim();
@@ -1086,10 +1143,7 @@ async function animateWithWeb(service) {
   setStatus('Préparation...');
   
   try {
-    // 1. Télécharger l'image
     await downloadImage(p.url, `plan_${n}_pour_${service}.jpg`, p.blob);
-    
-    // 2. Copier le prompt
     const promptText = animText(p);
     try {
       await navigator.clipboard.writeText(promptText);
@@ -1097,18 +1151,8 @@ async function animateWithWeb(service) {
     } catch (err) {
       alert(`✅ Image téléchargée !\n\n⚠️ Impossible de copier le prompt automatiquement. Le voici :\n\n${promptText}`);
     }
-
-    // 3. Ouvrir le site web
-    const urls = {
-      'kling': 'https://klingai.com/',
-      'pixverse': 'https://pixverse.ai/',
-      'runway': 'https://app.runwayml.com/'
-    };
-    
-    if (urls[service]) {
-      window.open(urls[service], '_blank');
-    }
-
+    const urls = { 'kling': 'https://klingai.com/', 'pixverse': 'https://pixverse.ai/', 'runway': 'https://app.runwayml.com/' };
+    if (urls[service]) window.open(urls[service], '_blank');
   } catch (e) {
     alert('Erreur : ' + e.message);
   } finally {
@@ -1123,35 +1167,22 @@ function animateLocal() {
   alert("💡 Pour l'effet local gratuit (Ken Burns), ne cliquez pas sur le bouton 🎬.\n\nIl suffit d'aller en bas de la page et de cliquer sur le bouton '🎞️ Créer la vidéo finale'. Le zoom lent sera appliqué automatiquement à l'export !");
 }
 
-// 3. Mode Magic Hour (Payant) - AVEC CORRECTION UPLOAD
+// 3. Mode Magic Hour (Payant)
 const ANIM_DEFAULT='The subject moves naturally, slow cinematic camera push-in. ';
 const animText=p=>ANIM_DEFAULT+[p.cam,p.move].filter(Boolean).join(', ')+(p.cam||p.move?'. ':'')+p.scene;
 
 async function uploadToMagicHour(blob) {
-    // 1. Demander une URL d'upload pré-signée
     const urlRes = await fetch(`${MH_BASE}/files/upload-urls`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${APP.mhKey}`
-        },
-        body: JSON.stringify({
-            items: [{ type: 'image', extension: 'jpg' }]
-        })
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${APP.mhKey}` },
+        body: JSON.stringify({ items: [{ type: 'image', extension: 'jpg' }] })
     });
     const urlData = await urlRes.json();
     if (!urlRes.ok) throw new Error(urlData.message || 'Erreur demande URL upload');
-
     const { upload_url, file_path } = urlData.items[0];
 
-    // 2. Envoyer l'image à l'URL pré-signée
-    const uploadRes = await fetch(upload_url, {
-        method: 'PUT',
-        body: blob,
-        headers: { 'Content-Type': 'application/octet-stream' }
-    });
+    const uploadRes = await fetch(upload_url, { method: 'PUT', body: blob, headers: { 'Content-Type': 'application/octet-stream' } });
     if (!uploadRes.ok) throw new Error('Erreur upload image');
-
     return file_path;
 }
 
@@ -1161,10 +1192,7 @@ async function animateWithMagicHour() {
   const p = APP.plans[n-1];
   if(!p || !p.url) return;
 
-  if(!APP.mhKey) {
-    alert("Clé API Magic Hour manquante. Cliquez sur le badge 'Clés API' en haut.");
-    return;
-  }
+  if(!APP.mhKey) { alert("Clé API Magic Hour manquante. Cliquez sur le badge 'Clés API' en haut."); return; }
 
   APP.busy = true; APP.cancel = false; setStatus('Animation IA...');
   const log=$('animLog'); log.style.display='block'; log.textContent='';
@@ -1202,27 +1230,17 @@ async function animateWithMagicHour() {
     let finalUrl = null;
     for (let i = 0; i < 60; i++) {
         await sleep(5000);
-        const pollRes = await fetch(`${MH_BASE}/video-projects/${projectId}`, {
-            headers: { 'Authorization': `Bearer ${APP.mhKey}` }
-        });
+        const pollRes = await fetch(`${MH_BASE}/video-projects/${projectId}`, { headers: { 'Authorization': `Bearer ${APP.mhKey}` } });
         const pollData = await pollRes.json();
-        if (pollData.status === 'complete') {
-            finalUrl = pollData.downloads[0].url;
-            break;
-        }
-        if (pollData.status === 'error' || pollData.status === 'canceled') {
-            throw new Error('Échec de la génération: ' + pollData.status);
-        }
+        if (pollData.status === 'complete') { finalUrl = pollData.downloads[0].url; break; }
+        if (pollData.status === 'error' || pollData.status === 'canceled') throw new Error('Échec : ' + pollData.status);
     }
 
-    if (!finalUrl) throw new Error('Délai dépassé pour la génération vidéo.');
+    if (!finalUrl) throw new Error('Délai dépassé.');
     
-    p.clipUrl = finalUrl;
-    p.clipBlob = null;
-    p.clipDur = payload.end_seconds;
-    updatePlanSlot(n);
-    autosave();
-    add('✓ Plan '+n+' animé avec succès !');
+    p.clipUrl = finalUrl; p.clipBlob = null; p.clipDur = payload.end_seconds;
+    updatePlanSlot(n); autosave();
+    add('✓ Plan '+n+' animé !');
     setStatus('Terminé', 'green');
   } catch (e) {
     add('✗ Erreur : ' + e.message);
@@ -1243,18 +1261,16 @@ function importExternalVideo(input) {
   const p = APP.plans[n-1];
   p.clipBlob = file;
   p.clipUrl = URL.createObjectURL(file);
-  // On estime la durée, elle sera lue à l'export
   p.clipDur = p.dur || 5; 
   
-  updatePlanSlot(n);
-  autosave();
-  alert('✅ Vidéo importée avec succès sur le plan ' + n + ' !');
-  input.value = ''; // Reset
+  updatePlanSlot(n); autosave();
+  alert('✅ Vidéo importée sur le plan ' + n + ' !');
+  input.value = '';
 }
 
 async function animateAll() {
   if(APP.busy) return;
-  alert("Pour animer tous les plans, cliquez sur l'icône 🎬 de chaque image pour choisir la méthode souhaitée (Gratuit ou Payant).");
+  alert("Pour animer tous les plans, cliquez sur l'icône 🎬 de chaque image pour choisir la méthode (Gratuit ou Payant).");
 }
 
 /* AVATAR & FUSION */
